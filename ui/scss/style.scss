@@ -67,11 +67,16 @@ input{
 button{
   font-family: 'Nunito', sans-serif;
   border: none;
-  float: right;
+  display: block;
   background-color: #222;
   color: #fff;
   cursor: pointer;
   text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+button[disabled] {
+  opacity: 0.3;
 }
 
 .page-container{

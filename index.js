@@ -31,8 +31,8 @@ const VERSION = '1.0.0';
         console.log("on handleSetDataResponse", data)
     }
 
-    function handleInitResponse(data) {
-        console.log("on handleInitResponse", data)
+    function handleInitResponse({ id, data }) {
+        console.log("on handleInitResponse", id, data)
         if(data){
             const oldData = localStorage.getItem('persistent_state');
             if(isDiff(oldData, data)){

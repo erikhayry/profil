@@ -1,69 +1,57 @@
-import browser from "webextension-polyfill";
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import Avatar from 'avataaars'
+import { addUser, getData, setCurrentUser } from './../../../../../utils';
 
 class OptionsContainer extends Component {
     constructor() {
         super();
         this.state = {
-            user: undefined
+            currentUser: undefined,
+            users: []
         };
-        this.setUser = this.setUser.bind(this);
+        this.restore = this.restore.bind(this);
+        this.addNewUser = this.addNewUser.bind(this);
+        this.setNewCurrentUser = this.setNewCurrentUser.bind(this);
     }
-
-    restore(){
-        console.log("restore", )
-        browser.storage.sync.get('user')
-            .then((result) => {
-                this.setState({
-                    user: result.user
-                });
-            });
-    }
-
     componentDidMount() {
         this.restore()
     }
 
-    setUser(user) {
-        browser.storage.sync.set({
-            user
-        }).then(() => {
-            this.restore()
-        });
+    restore(){
+        console.log("restore")
+        getData().then((app) => {
+                console.log('restore - ', app)
+                const { currentUser, users  } = app;
+                this.setState({
+                    currentUser, users
+                });
+            });
+    }
+
+    addNewUser(){
+        addUser()
+            .then(this.restore);
+    }
+
+    setNewCurrentUser(id){
+        setCurrentUser(id)
+            .then(this.restore);
     }
 
     render() {
-        const { user } = this.state;
+        const { currentUser, users = [] } = this.state;
         return (
             <>
                 <div className="page-container">
                     <h1>Profiler</h1>
-                    <div>
-                        Your avatar:
-                        <Avatar
-                            style={{width: '100px', height: '100px'}}
-                            avatarStyle='Circle'
-                            topType='LongHairMiaWallace'
-                            accessoriesType='Prescription02'
-                            hairColor='BrownDark'
-                            facialHairType='Blank'
-                            clotheType='Hoodie'
-                            clotheColor='PastelBlue'
-                            eyeType='Happy'
-                            eyebrowType='Default'
-                            mouthType='Smile'
-                            skinColor='Light'
-                        />
-                    </div>
-                    <p>user: {user}</p>
-                    <button disabled={user === 1} onClick={() =>
-                        this.setUser(1)
-                    }>Användare 1</button>
-                    <button disabled={user === 2} onClick={() =>
-                        this.setUser(2)
-                    }>Användare 2</button>
+                    <p>currentUser: {currentUser}</p>
+                    {users.map(({ id }) =>
+                        <button disabled={id === currentUser} onClick={() =>
+                            this.setNewCurrentUser(id)
+                        }>Användare [{id}]</button>
+                    )}
+                    <button onClick={this.addNewUser}>Lägg till användare</button>
                 </div>
             </>
         );

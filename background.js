@@ -1,9 +1,10 @@
+import {getData, getCurrentUser} from './utils/index.js';
+
 const VERSION = '1.0.0';
 //Sentry.init({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
 //Sentry.configureScope((scope) => {
 //    scope.setTag("version", VERSION);
 //});
-
 console.log("background")
 
 function setData(user, data){
@@ -13,28 +14,22 @@ function setData(user, data){
     });
 }
 
-function getData({ user }){
-    console.log("getData", user)
-    const key = `${user}_profile_data`;
-    return browser.storage.sync.get(`${user}_profile_data`)
-        .then(data =>  data[key])
-}
-
-function getUser(){
-    console.log("getUser", )
-    return browser.storage.sync.get('user');
-}
-
 function setUserData(data) {
     console.log("setUserData", data)
-    return getUser()
-        .then(({ user }) => setData(user, data))
+    //return getUser()
+        //.then(({ user }) => setData(user, data))
 }
 
 function getUserData() {
     console.log("getUserData");
-    return getUser()
-        .then(getData)
+    return getData()
+        .then(({currentUser, users}) => {
+            if(currentUser){
+                return users.find(( { id } ) => id === currentUser)
+            }
+
+            return undefined;
+        });
 }
 
 function handleMessage({type, data} ) {
