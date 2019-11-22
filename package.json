@@ -1,0 +1,27 @@
+{
+  "name": "profiler",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/erikportin/once-a-day.git"
+  },
+  "keywords": [
+    "web-extension"
+  ],
+  "author": "Erik Portin <erikportin@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/erikportin/once-a-day/issues"
+  },
+  "homepage": "https://github.com/erikportin/once-a-day#readme",
+  "dependencies": {
+    "@sentry/browser": "^4.6.3",
+    "moment": "^2.24.0",
+    "webextension-polyfill": "^0.4.0"
+  },
+  "devDependencies": {
+    "lodash": "^4.17.15"
+  }
+}
