@@ -1,36 +1,45 @@
-const HtmlWebPackPlugin = require("html-webpack-plugin");
 module.exports = {
+    mode: "production",
+
+    // Enable sourcemaps for debugging webpack's output.
+    devtool: "source-map",
+
+    resolve: {
+        // Add '.ts' and '.tsx' as resolvable extensions.
+        extensions: [".ts", ".tsx", ".js", ".jsx", ".css"]
+    },
+
     module: {
         rules: [
             {
-                test: /\.(js|jsx)$/,
+                test: /\.ts(x?)$/,
                 exclude: /node_modules/,
-                use: {
-                    loader: "babel-loader"
-                }
-            },
-            {
-                test: /\.html$/,
                 use: [
                     {
-                        loader: "html-loader"
+                        loader: "ts-loader"
+                    }
+                ]
+            },
+            // All output '.js' files will have any sourcemaps re-processed by 'source-map-loader'.
+            {
+                enforce: "pre",
+                test: /\.js$/,
+                loader: "source-map-loader"
+            },
+            {
+                test: /\.css$/,
+                use: [
+                    "style-loader",
+                    {
+                        loader: "css-loader",
+                        options: {
+                            modules: true,
+                            importLoaders: 1,
+                            sourceMap: true
+                        }
                     }
                 ]
             }
         ]
-    },
-    output: {
-        path: __dirname + '/../dist',
-        filename: 'index_bundle.js'
-    },
-    plugins: [
-        new HtmlWebPackPlugin({
-            template: "./src/options.html",
-            filename: "./options.html"
-        }),
-        new HtmlWebPackPlugin({
-            template: "./src/landing.html",
-            filename: "./landing.html"
-        })
-    ]
+    }
 };

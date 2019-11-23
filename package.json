@@ -2,7 +2,7 @@
   "name": "profiler",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/erikportin/once-a-day.git"
@@ -13,16 +13,35 @@
   "author": "Erik Portin <erikportin@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/erikportin/once-a-day/issues"
+    "url": "https://github.com/er ikportin/once-a-day/issues"
   },
   "homepage": "https://github.com/erikportin/once-a-day#readme",
+  "watch": {
+    "typescript": {
+      "patterns": [
+        "scripts"
+      ],
+      "extensions": "ts",
+      "quiet": false,
+      "legacyWatch": true,
+      "delay": 1500,
+      "runOnChangeOnly": true
+    }
+  },
+  "scripts": {
+    "typescript": "npx webpack",
+    "dev": "npm-watch"
+  },
   "dependencies": {
     "@sentry/browser": "^4.6.3",
-    "avataaars": "^1.2.1",
-    "moment": "^2.24.0",
+    "@types/node": "^12.12.12",
     "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {
-    "lodash": "^4.17.15"
+    "npm-watch": "^0.6.0",
+    "ts-loader": "^6.2.1",
+    "typescript": "^3.7.2",
+    "webpack": "^4.41.2",
+    "webpack-cli": "^3.3.10"
   }
 }
