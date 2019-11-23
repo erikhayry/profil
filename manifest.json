@@ -24,7 +24,8 @@
 	],
 	"browser_action": {
 		"default_icon": "icons/logo.png",
-		"default_title": "Profiler"
+		"default_title": "Profiler",
+		"default_popup": "/ui/index.html"
 	},
 	"options_ui": {
 		"page": "/ui/index.html",

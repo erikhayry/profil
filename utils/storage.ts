@@ -14,7 +14,7 @@ export interface IStorage {
     setData: (app: IData) => Promise<IData>;
     addUser: () => Promise<IData>
     setCurrentUser: (userId: string) => Promise<IData>
-    getCurrentUser: () => Promise<string>
+    getCurrentUser: () => Promise<IUser>
     setUserData: (userId: string, data: any) => Promise<IData>
     getUser: (userId: string) => Promise<IUser>
 }
@@ -86,11 +86,11 @@ function setCurrentUser(userId: string): Promise<IData> {
         .then(setData)
 }
 
-function getCurrentUser(): Promise<string> {
+function getCurrentUser(): Promise<IUser> {
     console.log("getCurrentUser")
     return getData()
         .then(({ currentUser }) => {
-            return currentUser;
+            return {id: currentUser};
         })
 }
 

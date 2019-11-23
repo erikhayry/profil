@@ -1,5 +1,5 @@
 //const VERSION = '1.0.0';
-//Sentry.init({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
+//Sentry.INIT({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
 //Sentry.configureScope((scope) => {
 //    scope.setTag("version", VERSION);
 //});
@@ -17,20 +17,39 @@ import {IUser} from "../utils/storage";
         return JSON.stringify(obj1) !== JSON.stringify(obj2)
     }
 
-    window.setInterval(function () {
-        console.log("Check storage")
+    function handleGetCurrentUserResponse({ id }: IUser): boolean {
+        console.log("on handleGetCurrentUserResponse", id)
+        const currentUserId = localStorage.getItem(CURRENT_USER_KEY);
+
+        return currentUserId && currentUserId !== id;
+
+    }
+
+    function updateData(){
         const data = localStorage.getItem(DATA_KEY);
-        const type = MESSAGE_TYPE.data;
+        const type = MESSAGE_TYPE.DATA;
 
         if(isDiff(prevData, data)){
             console.log('data updated', data)
             prevData = data;
             browser.runtime.sendMessage({type, data})
                 .then(handleSetDataResponse, handleError);
-        } else {
-            console.log('data not updated')
-
         }
+    }
+
+    window.setInterval(function () {
+        console.log("Check storage")
+        const type = MESSAGE_TYPE.CURRENT_USER;
+        browser.runtime.sendMessage({type})
+            .then(handleGetCurrentUserResponse, handleError)
+            .then((userHasChanged: boolean) => {
+                if(userHasChanged){
+                    console.log(" - new user")
+                    location.reload()
+                } else {
+                    updateData();
+                }
+            })
     }, 5000);
 
     function handleSetDataResponse({ id, data }: IUser) {
@@ -58,7 +77,7 @@ import {IUser} from "../utils/storage";
         console.log(`Error: ${error}`);
     }
 
-    browser.runtime.sendMessage({type: MESSAGE_TYPE.init})
+    browser.runtime.sendMessage({type: MESSAGE_TYPE.INIT})
         .then(handleInitResponse, handleError);
 
 }());
