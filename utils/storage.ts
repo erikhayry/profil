@@ -2,11 +2,12 @@ const browser = require("webextension-polyfill");
 
 export interface IUser {
     id: string;
+    name: string;
     data?: any;
 }
 export interface IData {
     users: IUser[];
-    currentUser?: string
+    currentUser: string
 }
 
 export interface IStorage {
@@ -27,11 +28,25 @@ function ID(): string {
     return '_' + Math.random().toString(36).substr(2, 9);
 }
 
+function getInitialState(){
+    const initialUser: IUser = {
+        name: 'Ny användare',
+        id: ID()
+    };
+    return  {
+        users: [initialUser],
+        currentUser: initialUser.id
+    };
+}
 
 function getData(): Promise<IData> {
     console.log("getData")
+
     return browser.storage.sync.get('app')
-        .then(({ app =  { users: [], currentUser: undefined} }: IAppStorageData) => {
+        .then(({ app }: IAppStorageData) => {
+            if(!app){
+                return setData(getInitialState());
+            }
             return app;
         })
 }
@@ -47,7 +62,8 @@ function addUser(): Promise<IData> {
     return getData()
         .then((app: IData) => {
             app.users.push({
-                id: ID()
+                id: ID(),
+                name: 'Ny användare'
             });
 
             return app;
@@ -89,8 +105,8 @@ function setCurrentUser(userId: string): Promise<IData> {
 function getCurrentUser(): Promise<IUser> {
     console.log("getCurrentUser")
     return getData()
-        .then(({ currentUser }) => {
-            return {id: currentUser};
+        .then(({ currentUser, users }) => {
+            return users.find(({ id }) => id === currentUser);
         })
 }
 
