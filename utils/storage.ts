@@ -1,8 +1,11 @@
+import {IAvatarAttributes} from "../ui/src/components/avatar-customizer/avatar-options";
+
 const browser = require("webextension-polyfill");
 
 export interface IUser {
     id: string;
     name: string;
+    avatar: IAvatarAttributes;
     data?: any;
 }
 export interface IData {
@@ -24,15 +27,28 @@ interface IAppStorageData {
     app?: IData
 }
 
+const initialUser: IUser = {
+    name: 'Ny användare',
+    id: ID(),
+    avatar: {
+        topType:'LongHairMiaWallace',
+        accessoriesType:'Prescription02',
+        hairColor:'BrownDark',
+        facialHairType:'Blank',
+        clotheType:'Hoodie',
+        clotheColor:'PastelBlue',
+        eyeType:'Happy',
+        eyebrowType:'Default',
+        mouthType:'Smile',
+        skinColor:'Light',
+    }
+};
+
 function ID(): string {
     return '_' + Math.random().toString(36).substr(2, 9);
 }
 
 function getInitialState(){
-    const initialUser: IUser = {
-        name: 'Ny användare',
-        id: ID()
-    };
     return  {
         users: [initialUser],
         currentUser: initialUser.id
@@ -61,11 +77,7 @@ function addUser(): Promise<IData> {
     console.log("addUser")
     return getData()
         .then((app: IData) => {
-            app.users.push({
-                id: ID(),
-                name: 'Ny användare'
-            });
-
+            app.users.push(initialUser);
             return app;
         })
         .then(setData)

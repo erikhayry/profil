@@ -1,0 +1,59 @@
+.container{
+    width: 100%;
+}
+
+.userList{
+    overflow: hidden;
+}
+
+.userListItem{
+    display: inline-block;
+    position: relative;
+    white-space: nowrap;
+    text-align: center;
+    vertical-align: middle;
+    margin: 0 10px;
+}
+
+.userListItem.isCurrent{
+    background-color: #ccc;
+}
+
+.avatarButton{
+    
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+}
+
+.name {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+    left: 0;
+    background-color: #fff;
+}
+
+.button {
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    background-color: #222;
+    color: #fff;
+    border-radius: 10px;
+}
+
+.button.right{
+    left: unset;
+    right: 2px;
+}
+
+.addUserButton{
+    border-radius: 10px;
+    background-color: #222;
+    color: #fff;
+    margin: 10px;
+}

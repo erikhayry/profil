@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import {Options} from "./components/options";
+import {Popup} from "./components/popup/popup";
 
 ReactDOM.render(
-    <Options  />,
+    <Popup  />,
     document.getElementById("app")
 );

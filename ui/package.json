@@ -35,6 +35,12 @@
     "webpack-cli": "^3.3.10"
   },
   "dependencies": {
+    "@types/classnames": "^2.2.9",
+    "@types/lodash": "^4.14.149",
+    "avataaars": "^1.2.1",
+    "avataaars-customizer": "^1.0.0",
+    "classnames": "^2.2.6",
+    "lodash": "^4.17.15",
     "react": "^16.12.0",
     "react-dom": "^16.12.0"
   }
