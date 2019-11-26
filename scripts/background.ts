@@ -41,6 +41,31 @@ function getUserData() {
         });
 }
 
+function sendMessage(type: MESSAGE_TYPE){
+    browser.tabs.query({
+        currentWindow: true,
+        active: true
+    }).then((tabs: {id: string}[]) => {
+        sendMessageToTabs(tabs, type)
+    }).catch(onError);
+}
+
+function sendMessageToTabs(tabs: {id: string}[], type: MESSAGE_TYPE) {
+    for (let tab of tabs) {
+        browser.tabs.sendMessage(
+            tab.id,
+            {type: type}
+        ).then((response: { response: string }) => {
+            console.log("Message from the content script:");
+            console.log(response.response);
+        }).catch(onError);
+    }
+}
+
+function onError(error: string) {
+    console.error(`Error: ${error}`);
+}
+
 function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<IUser> {
     console.log("handleMessage", type, data);
 
@@ -50,7 +75,11 @@ function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<
         case MESSAGE_TYPE.DATA:
             return setUserData(data)
         case MESSAGE_TYPE.CURRENT_USER:
-            return storage.getCurrentUser()
+            console.log(" - MESSAGE_TYPE.CURRENT_USER", data)
+            sendMessage(MESSAGE_TYPE.CURRENT_USER)
+            return;
+        default:
+            console.log('Unknown message type', type, data)
     }
 }
 

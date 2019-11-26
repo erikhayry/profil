@@ -5,6 +5,9 @@ import storage, {IData, IUser} from '../../../../utils/storage'
 import {Editor} from "../editor";
 import Avatar from "avataaars";
 import classNames from 'classnames';
+// @ts-ignore
+import browser from 'webextension-polyfill';
+import {MESSAGE_TYPE} from "../../../../scripts/background";
 
 export const Popup = () => {
     const [config, setConfig ] = useState<IData>({
@@ -34,6 +37,7 @@ export const Popup = () => {
     
     function setCurrentUser(userId: string) {
         console.log("setCurrentUser", userId)
+        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, data: userId});
         storage.setCurrentUser(userId)
             .then(updateView);
     }
