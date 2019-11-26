@@ -33,37 +33,34 @@ function getUserData() {
     console.log("getUserData");
     return storage.getData()
         .then(({currentUser, users}) => {
-            if(currentUser){
-                return users.find(( { id } ) => id === currentUser)
-            }
-
-            return undefined;
+            return users.find(( { id } ) => id === currentUser);
         });
 }
 
-function sendMessage(type: MESSAGE_TYPE){
+function sendMessage(type: MESSAGE_TYPE, user: IUser){
     browser.tabs.query({
         currentWindow: true,
         active: true
     }).then((tabs: {id: string}[]) => {
-        sendMessageToTabs(tabs, type)
+        sendMessageToTabs(tabs, type, user)
     }).catch(onError);
 }
 
-function sendMessageToTabs(tabs: {id: string}[], type: MESSAGE_TYPE) {
+function sendMessageToTabs(tabs: {id: string}[], type: MESSAGE_TYPE, user: IUser) {
+    console.log("sendMessageToTabs", tabs, type, user);
     for (let tab of tabs) {
         browser.tabs.sendMessage(
             tab.id,
-            {type: type}
-        ).then((response: { response: string }) => {
+            {type, userId: user.id}
+        ).then((response: any) => {
             console.log("Message from the content script:");
-            console.log(response.response);
+            console.log(response);
         }).catch(onError);
     }
 }
 
 function onError(error: string) {
-    console.error(`Error: ${error}`);
+    console.error(`Error: ${error}`, error);
 }
 
 function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<IUser> {
@@ -76,8 +73,8 @@ function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<
             return setUserData(data)
         case MESSAGE_TYPE.CURRENT_USER:
             console.log(" - MESSAGE_TYPE.CURRENT_USER", data)
-            sendMessage(MESSAGE_TYPE.CURRENT_USER)
-            return;
+            sendMessage(MESSAGE_TYPE.CURRENT_USER, data)
+            break;
         default:
             console.log('Unknown message type', type, data)
     }

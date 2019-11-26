@@ -34,10 +34,12 @@ export const Popup = () => {
         storage.addUser()
             .then(updateView);
     }
-    
-    function setCurrentUser(userId: string) {
+
+    async function setCurrentUser(userId: string) {
         console.log("setCurrentUser", userId)
-        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, data: userId});
+        const currentUser = await storage.getUser(userId);
+        console.log(" - currentUser", currentUser)
+        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, data: currentUser});
         storage.setCurrentUser(userId)
             .then(updateView);
     }
@@ -51,9 +53,9 @@ export const Popup = () => {
         const index = config.users.findIndex(({ id }) => userId === id);
         config.users.splice(index, 1);
 
-        if(userId === config.currentUser){
+        //if(userId === config.currentUser){
             config.currentUser = config.users[0].id;
-        }
+        //}
 
         storage.setData(config)
             .then(updateView);

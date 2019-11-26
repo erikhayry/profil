@@ -6,9 +6,17 @@
 
 import {MESSAGE_TYPE} from "./background";
 import {IUser} from "../utils/storage";
+import {type} from "os";
+
+interface IAppUserState {
+    scrollY: number,
+    scrollX: number
+}
 
 (function() {
-    const DATA_KEY = 'persistent_state';
+    const HOST_DATA_KEY = 'persistent_state';
+    const APP_USER_KEY = 'profile-current-user';
+    const APP_USER_STATE = 'profile-current-state';
     const browser = require("webextension-polyfill");
     let prevData = {};
 
@@ -17,7 +25,8 @@ import {IUser} from "../utils/storage";
     }
 
     function updateData(){
-        const data = localStorage.getItem(DATA_KEY);
+        console.log("updateData")
+        const data = localStorage.getItem(HOST_DATA_KEY);
         const type = MESSAGE_TYPE.DATA;
 
         if(isDiff(prevData, data)){
@@ -28,26 +37,48 @@ import {IUser} from "../utils/storage";
         }
     }
 
-    window.setInterval(function () {
-        console.log("Check storage")
-        updateData();
-    }, 5000);
+    window.setInterval(updateData, 5000);
 
-    function handleSetDataResponse({ id, data }: IUser) {
+    function handleSetDataResponse({ id, data}: IUser) {
         console.log("on handleSetDataResponse", id, data)
     }
 
-    function handleInitResponse({ id, data }: IUser) {
-        console.log("on handleInitResponse", id, data)
-        if(data){
-            const oldData = localStorage.getItem(DATA_KEY);
-            if(isDiff(oldData, data)){
-                localStorage.setItem(DATA_KEY, data);
-                location.reload();
+    function reload(userId: string){
+        console.log('reload', userId)
+        localStorage.setItem(APP_USER_KEY, userId);
+        const appUserState: IAppUserState = {
+            scrollY: window.scrollY,
+            scrollX: window.scrollX,
+        };
+        localStorage.setItem(APP_USER_STATE, JSON.stringify(appUserState));
+        location.reload();
+    }
+
+    function onLoad(){
+        const prevAppUserState = JSON.parse(localStorage.getItem(APP_USER_STATE)) as IAppUserState;
+        if(prevAppUserState){
+            localStorage.removeItem(APP_USER_STATE);
+            window.scrollTo(prevAppUserState.scrollX, prevAppUserState.scrollY)
+        }
+    }
+
+    function handleInitResponse({ id, data: storedData }: IUser) {
+        onLoad();
+        const oldData = localStorage.getItem(HOST_DATA_KEY);
+        console.log("on handleInitResponse", id, storedData);
+        if(!storedData) {
+            const currentUserId = localStorage.getItem(APP_USER_KEY);
+
+            if(currentUserId !== id){
+                console.log(" - no data, reset host");
+                localStorage.removeItem(HOST_DATA_KEY);
+                reload(id)
             }
-        } else {
-            console.log(' - no data for user');
-            localStorage.removeItem(DATA_KEY)
+        }
+        else if(isDiff(oldData, storedData)){
+            console.log(" - set data on host")
+            localStorage.setItem(HOST_DATA_KEY, storedData);
+            reload(id)
         }
     }
 
@@ -55,11 +86,11 @@ import {IUser} from "../utils/storage";
         console.log(`Error: ${error}`);
     }
 
-    browser.runtime.onMessage.addListener( ({ type } : { type: MESSAGE_TYPE}) => {
-        console.log("onMessage", type)
-        switch (type) {
+    browser.runtime.onMessage.addListener( ({ type, userId } : { type: MESSAGE_TYPE, userId: string}) => {
+        console.log("onMessage", type, userId)
+        switch(type) {
             case MESSAGE_TYPE.CURRENT_USER:
-                location.reload();
+                reload(userId);
                 break;
             default:
                 console.log('Unknown message type from background', type)
