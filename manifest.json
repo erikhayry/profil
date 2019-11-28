@@ -25,14 +25,17 @@
 	"browser_action": {
 		"default_icon": "icons/logo.png",
 		"default_title": "Profiler",
-		"default_popup": "/ui/index.html"
+		"default_popup": "/ui/popup.html"
 	},
 	"options_ui": {
-		"page": "/ui/index.html",
+		"page": "/ui/options.html",
 		"open_in_tab": true
 	},
 	"permissions": [
 		"tabs",
 		"storage"
+	],
+	"web_accessible_resources": [
+		"/ui/style.css"
 	]
 }

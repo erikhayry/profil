@@ -3,7 +3,17 @@ import * as ReactDOM from "react-dom";
 
 import {Popup} from "./components/popup/popup";
 
-ReactDOM.render(
-    <Popup  />,
-    document.getElementById("app")
-);
+const onPopup = document.getElementById("popup");
+
+if(onPopup){
+    ReactDOM.render(
+        <Popup  />,
+        document.getElementById("popup")
+    );
+} else {
+    ReactDOM.render(
+        <Popup  />,
+        document.getElementById("options")
+    );
+}
+

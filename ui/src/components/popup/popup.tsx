@@ -107,6 +107,11 @@ export const Popup = () => {
                 <li className={styles.userListItem}>
                     <button className={styles.addUserButton} onClick={addUser}>Lägg till användare</button>
                 </li>
+                <li>
+                    <button onClick={() => {
+                        browser.runtime.openOptionsPage();
+                    }}>Edit</button>
+                </li>
             </ul>
             {editUser && <Editor user={editUser} onCancel={onCloseEditor} onSave={onUpdateUser} />}
         </div>
