@@ -1,8 +1,10 @@
 import * as React from "react";
-import {IUser} from "../../../utils/storage";
+import {IUser} from "../../../../utils/storage";
 import {useState} from "react";
-import AvataaarsCustomerizer from './avatar-customizer/avatar-customizer';
-import {IAvatarAttributes} from "./avatar-customizer/avatar-options";
+import AvataaarsCustomerizer from '../avatar-customizer/avatar-customizer';
+import {IAvatarAttributes} from "../avatar-customizer/avatar-options";
+import styles from './editor.module.css';
+import classNames from 'classnames';
 
 interface IProps {
     user: IUser;
@@ -27,13 +29,14 @@ export const Editor = ({user, onSave, onCancel} :IProps) => {
     }
 
     return (
-        <div>
+        <>
             <AvataaarsCustomerizer value={editedUser.avatar} onChange={handleAvatarChange} />
-            <input type="text" value={editedUser.name} onChange={handleNameChange}/>
-            <button onClick={() => {
+            <br/>
+            <input className={styles.input} type="text" value={editedUser.name} onChange={handleNameChange}/>
+            <button className={styles.btn} onClick={() => {
                 onSave(editedUser)
             }}>Spara</button>
-            <button onClick={onCancel}>Stäng</button>
-        </div>
+            <button className={styles.btn} onClick={onCancel}>Stäng</button>
+        </>
     )
 };

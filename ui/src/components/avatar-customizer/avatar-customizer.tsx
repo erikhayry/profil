@@ -37,7 +37,7 @@ const AvataaarsCustomizer = (props: IProps) => {
   }
 
   return (
-    <div>
+    <>
       <div className={styles.avatar}>
         <Avatar
             style={{width: '300px', height: '300px'}}
@@ -64,61 +64,54 @@ const AvataaarsCustomizer = (props: IProps) => {
           map(options, (option: IOption) => {
             return (
                 <div className={styles.tabpane + ' ' + (selectedTab == option.type ? styles.visible : '')}>
-                  {
-                      map(option.values,(val) => {
-                      let attr = {
-                        [option.attribute]: val
-                      };
-                      if (option.transform) {
-                        // @ts-ignore
-                        attr.style = {transform:option.transform};
-                      }
-                      // if (option.colors) {
-                      //   if (option.hatColors && option.hats.indexOf(val) !== -1) {
-                      //     attr.hatColor = attributes.hatColor;
-                      //   } else {
-                      //     attr[option.colorAttribute] = attributes[option.colorAttribute];
-                      //   }
-                      // }
-                      return <div className={styles.piece} onClick={() => pieceClicked(option.attribute,val)}>
-                              <Piece pieceSize="50" pieceType={option.type} avatarStyle={'Circle'} {...attr}/>
-                              {
-                                (val === 'Blank' || val === 'NoHair') &&
-                                <div className={styles.none}>(none)</div>
-                              }
-                            </div>
-                    })
-                  }
-                  {
-                    option.colors && option.values.length > 0 &&
-                    <div className={styles.divider}><div /></div>
-                  }
-                  {
-                    option.colors && (option.type !== 'top' || option.hats.indexOf(attributes.topType) === -1) &&
-                      map(option.colors,(color,colorName) => {
-                        return <div
-                                className={styles.color}
-                                style={{backgroundColor:color}}
-                                onClick={() => pieceClicked(option.colorAttribute,colorName)}
-                              />
+                  <ul>
+                    {
+                        map(option.values,(val) => {
+                        let attr = {
+                          [option.attribute]: val
+                        };
+                        if (option.transform) {
+                          // @ts-ignore
+                          attr.style = {transform:option.transform};
+                        }
+                        return <li className={styles.piece} onClick={() => pieceClicked(option.attribute,val)}>
+                                <Piece pieceSize="50" pieceType={option.type} avatarStyle={'Circle'} {...attr}/>
+                                {
+                                  (val === 'Blank' || val === 'NoHair') &&
+                                  <div className={styles.none}>(none)</div>
+                                }
+                              </li>
                       })
-                  }
-                  {
-                    option.hatColors && option.hats.indexOf(attributes.topType) !== -1 &&
-                      map(option.hatColors,(color,colorName) => {
-                        return <div
-                                className={styles.color}
-                                style={{backgroundColor:color}}
-                                onClick={() => pieceClicked(Attribute.hatColor, colorName)}
-                              />
-                      })
-                  }
+                    }
+                  </ul>
+                  <ul>
+                    {
+                      option.colors && (option.type !== 'top' || option.hats.indexOf(attributes.topType) === -1) &&
+                        map(option.colors,(color,colorName) => {
+                          return <li
+                                  className={styles.color}
+                                  style={{backgroundColor:color}}
+                                  onClick={() => pieceClicked(option.colorAttribute,colorName)}
+                                />
+                        })
+                    }
+                    {
+                      option.hatColors && option.hats.indexOf(attributes.topType) !== -1 &&
+                        map(option.hatColors,(color,colorName) => {
+                          return <li
+                                  className={styles.color}
+                                  style={{backgroundColor:color}}
+                                  onClick={() => pieceClicked(Attribute.hatColor, colorName)}
+                                />
+                        })
+                    }
+                  </ul>
                 </div>
               );
           })
         }
       </div>
-    </div>
+    </>
   );
 }
 

@@ -2,6 +2,7 @@ import * as React from "react";
 import * as ReactDOM from "react-dom";
 
 import {Popup} from "./components/popup/popup";
+import {Options} from "./components/options/options";
 
 const onPopup = document.getElementById("popup");
 
@@ -12,8 +13,7 @@ if(onPopup){
     );
 } else {
     ReactDOM.render(
-        <Popup  />,
+        <Options  />,
         document.getElementById("options")
     );
 }
-

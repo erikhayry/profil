@@ -1,6 +1,5 @@
 import * as React from "react";
-import { Sliders } from 'react-feather';
-import styles from './popup.module.css';
+import styles from './options.module.css';
 import {useEffect, useState} from "react";
 import storage, {IData, IUser} from '../../../../utils/storage'
 import {Editor} from "../editor/editor";
@@ -10,7 +9,7 @@ import classNames from 'classnames';
 import browser from 'webextension-polyfill';
 import {MESSAGE_TYPE} from "../../../../scripts/background";
 
-export const Popup = () => {
+export const Options = () => {
     const [config, setConfig ] = useState<IData>({
         currentUser: undefined,
         users: []
@@ -71,14 +70,10 @@ export const Popup = () => {
         storage.setData(config)
             .then(updateView);
     }
-    
+
     return(
         <div className={styles.container}>
             <ul className={styles.userList}>
-                <li className={classNames({
-                  [styles.userListItem]: true,
-                  [styles.title]: true
-                })}>SVT <br /> Profiler </li>
                 {config.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
@@ -87,28 +82,24 @@ export const Popup = () => {
                     return (
                         <li className={userListItemClasses}>
                             <button className={styles.avatarButton} onClick={() =>
-                                setCurrentUser(user.id)
+                                setEditUser(user)
                             }>
                                 <Avatar
+                                    style={{width: '100px', height: '100px'}}
                                     avatarStyle='transparent'
                                     {...user.avatar}
                                 />
+                                <div className={styles.name}>{user.name}</div>
                             </button>
-                            <div className={styles.name}>{user.name}</div>
                         </li>
                     )
                 })}
-                <li className={classNames({
-                    [styles.userListItem]: true,
-                    [styles.menu]: true
-                })}>
-                    <button className={styles.settingsBtn} onClick={() => {
-                        browser.runtime.openOptionsPage();
-                    }}>
-                        <Sliders color="white"/>
-                    </button>
+                <li className={styles.userListItem}>
+                    <button className={styles.addUserButton} onClick={addUser}>Lägg till användare</button>
                 </li>
             </ul>
+            {editUser && <Editor user={editUser} onCancel={onCloseEditor} onSave={onUpdateUser} />}
         </div>
+
     )
 };

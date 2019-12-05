@@ -51,7 +51,8 @@ table {
     box-sizing: border-box;
 }
 body, html {
-    width: 800px;
+    width: 100%;
+    background: #222;
 }
 
 button{

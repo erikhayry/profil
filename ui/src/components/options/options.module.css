@@ -25,31 +25,29 @@
     margin: 0 10px;
     text-align: center;
     vertical-align: middle;
+    cursor: pointer;
 }
 
-.avatarButton {
+.avatarButton{
+    
+}
+
+
+.avatar {
     width: 100px;
     height: 100px;
     display: inline-block;
     border-radius: 50%;
     border: 5px solid #222;
-    overflow: hidden;
 }
 
-.avatarButton svg {
-    width: 100%;
-    height: auto;
-}
-
-.userListItem.isCurrent .avatarButton{
+.userListItem.isCurrent .avatar{
     border: 5px solid white;
 }
 
 .name {
     display: block;
     margin-top: 20px;
-    color: #fff;
-    font-size: 12px;
 }
 
 .menu{
@@ -77,4 +75,10 @@
     background: rgb(238,174,202);
     color: #fff;
     border: 2px solid white
+}
+
+.input{
+    border: none;
+    padding: 10px;
+    width: 100%;
 }
