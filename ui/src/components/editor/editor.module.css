@@ -1,7 +1,18 @@
+.top{
+    background: #ef9191;
+}
+
+.body{
+    background: #ef9191;
+    padding: 10px;
+    overflow: hidden;
+}
+
 .input{
     border: none;
     padding: 10px;
     width: 100%;
+    max-width: 200px;
 }
 
 .btn{

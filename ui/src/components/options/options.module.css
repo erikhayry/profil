@@ -1,8 +1,8 @@
 .container{
     width: 100%;
-    background-color: #222;
+    background-color: #fff;
     padding: 30px;
-    color: #fff;
+    color: #222;
     font-family: Helvetica;
     letter-spacing: 2px;
     font-size: 16px;
@@ -31,7 +31,6 @@
 .avatarButton{
     
 }
-
 
 .avatar {
     width: 100px;
@@ -79,6 +78,15 @@
 
 .input{
     border: none;
+    font-size: 25px;
     padding: 10px;
     width: 100%;
+    max-width: 200px;
+    position: absolute;
+    top: 270px;
+    border-radius: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    background-color: #ffffff61;
 }

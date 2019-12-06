@@ -1,15 +1,17 @@
 .avatar {
-  width:315px;
-  height:305px;
-  margin: 0 auto;
+  background-color: #fff;
+}
+
+.avatarOptions{
+
 }
 
 .tabs {
   display: block;
-  width: 100%;
   overflow: auto;
   padding: 10px 0;
   white-space: nowrap;
+  text-align: center;
 }
 
 .tab {
@@ -37,11 +39,14 @@
   display: block;
 }
 
+.pieces{
+  overflow: hidden;
+}
+
 .piece {
-  display: inline-block;
-  width: 50px;
-  height: 50px;
+  float: left;
   margin: 0 10px;
+  position: relative;
 }
 
 .piece:hover {
@@ -50,17 +55,18 @@
 }
 
 .none {
+  position: absolute;
+  left: 0;
+  top: 0;
 }
 
-.divider {
-}
 
-.divider > div {
-}
 
+.colors {
+  display: flex;
+}
 .color {
-  display: inline-block;
-  height: 30px;
-  width:30px;
+  height: 70px;
   cursor: pointer;
+  flex: 1;
 }

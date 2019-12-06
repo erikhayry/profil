@@ -73,7 +73,7 @@ export const Options = () => {
 
     return(
         <div className={styles.container}>
-            <ul className={styles.userList}>
+            {!editUser && <ul className={styles.userList}>
                 {config.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
@@ -97,8 +97,8 @@ export const Options = () => {
                 <li className={styles.userListItem}>
                     <button className={styles.addUserButton} onClick={addUser}>Lägg till användare</button>
                 </li>
-            </ul>
-            {editUser && <Editor user={editUser} onCancel={onCloseEditor} onSave={onUpdateUser} />}
+            </ul>}
+            {editUser && <Editor user={editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
         </div>
 
     )
