@@ -1,7 +1,5 @@
 .container{
-    width: 100%;
     background-color: #fff;
-    padding: 30px;
     color: #222;
     font-family: Helvetica;
     letter-spacing: 2px;
@@ -10,6 +8,10 @@
 
 .userList{
     text-align: center;
+}
+
+.userList.isDisabled {
+    filter: blur(10px);
 }
 
 .title{
@@ -28,8 +30,9 @@
     cursor: pointer;
 }
 
-.avatarButton{
-    
+.avatarButton:disabled,
+.avatarButton[disabled]{
+
 }
 
 .avatar {

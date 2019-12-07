@@ -1,10 +1,34 @@
-.top{
-    background: #ef9191;
+.editor{
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+.editor::before{
+     content: '';
+     display: block;
+     height: 160px;
+     flex-shrink: 0;
+ }
+
+.editorInner{
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: #222;
 }
 
 .body{
-    background: #ef9191;
-    padding: 10px;
+    flex: 1;
+    position: relative;
+    height: 100%;
+}
+
+.footer{
     overflow: hidden;
 }
 
@@ -12,13 +36,48 @@
     border: none;
     padding: 10px;
     width: 100%;
+    color: #fff;
     max-width: 200px;
+    background: rgba(0, 0, 0, 0.5);
+    font-size: 20px;
+    text-align: center;
+    position: absolute;
+    left: 10px;
+    z-index: 1;
+    top: 10px;
+    border-radius: 10px;
 }
 
 .btn{
-    background-color: #fff;
+    background-color: rgba(0, 0, 0, 0.4);
     border: none;
-    padding: 10px;
-    margin: 10px 0 10px 10px;
+    padding: 10px 10px 10px 30px;
+    margin: 10px;
     float: right;
+    border-radius: 10px;
+    color: #fff;
+    height: 44px;
+    min-width: 100px;
+    position: relative;
+}
+
+.btn svg{
+    position: absolute;
+    left: 10px;
+    top: 10px;
+}
+
+
+.closeBtn{
+    width: 44px;
+    height: 44px;
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1;
+    background-color: #e87f7f;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    margin: 0;
 }

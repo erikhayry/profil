@@ -71,9 +71,14 @@ export const Options = () => {
             .then(updateView);
     }
 
+    const userListClasses = classNames({
+        [styles.userList]: true,
+        [styles.isDisabled]: !!editUser
+    });
+
     return(
         <div className={styles.container}>
-            {!editUser && <ul className={styles.userList}>
+            <ul className={userListClasses}>
                 {config.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
@@ -81,7 +86,7 @@ export const Options = () => {
                     });
                     return (
                         <li className={userListItemClasses}>
-                            <button className={styles.avatarButton} onClick={() =>
+                            <button className={styles.avatarButton} disabled={!!editUser} onClick={() =>
                                 setEditUser(user)
                             }>
                                 <Avatar
@@ -97,7 +102,7 @@ export const Options = () => {
                 <li className={styles.userListItem}>
                     <button className={styles.addUserButton} onClick={addUser}>Lägg till användare</button>
                 </li>
-            </ul>}
+            </ul>
             {editUser && <Editor user={editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
         </div>
 
