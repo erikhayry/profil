@@ -33,23 +33,24 @@ export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
 
     return (
         <div className={styles.editor}>
+            <button className={styles.closeBtn} onClick={onCancel}>
+                <X color="white"/>
+                <span className={a11y.hidden}>Stäng</span>
+            </button>
             <div className={styles.editorInner}>
                 <div className={styles.body}>
                     <AvataaarsCustomerizer
                         value={editedUser.avatar}
+                        name={editedUser.name}
                         onChange={handleAvatarChange}
+                        onNameChange={handleNameChange}
                     />
                 </div>
                 <div className={styles.footer}>
-                    <input className={styles.input} type="text" value={editedUser.name} onChange={handleNameChange}/>
                     <button className={styles.btn} onClick={() => {
                         onSave(editedUser)
                     }}>
                         <Save color="white" />Spara
-                    </button>
-                    <button className={styles.closeBtn} onClick={onCancel}>
-                        <X color="white"/>
-                        <span className={a11y.hidden}>Stäng</span>
                     </button>
                     <button className={styles.btn} onClick={() => {
                         onDelete(editedUser.id)

@@ -8,6 +8,8 @@ import classNames from 'classnames';
 // @ts-ignore
 import browser from 'webextension-polyfill';
 import {MESSAGE_TYPE} from "../../../../scripts/background";
+import {Plus, X} from "react-feather";
+import a11y from "../../styles/a11y.module.css";
 
 export const Options = () => {
     const [config, setConfig ] = useState<IData>({
@@ -90,7 +92,6 @@ export const Options = () => {
                                 setEditUser(user)
                             }>
                                 <Avatar
-                                    style={{width: '100px', height: '100px'}}
                                     avatarStyle='transparent'
                                     {...user.avatar}
                                 />
@@ -99,10 +100,11 @@ export const Options = () => {
                         </li>
                     )
                 })}
-                <li className={styles.userListItem}>
-                    <button className={styles.addUserButton} onClick={addUser}>Lägg till användare</button>
-                </li>
             </ul>
+            {!editUser && <button className={styles.addUserButton} onClick={addUser}>
+                <Plus color={'white'} size={50}/>
+                <span className={a11y.hidden}>Lägg till användare</span>
+            </button>}
             {editUser && <Editor user={editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
         </div>
 

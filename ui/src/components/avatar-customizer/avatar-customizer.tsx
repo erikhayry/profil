@@ -7,12 +7,14 @@ import options, {Attribute, IAvatarAttributes, IOption} from './avatar-options';
 
 interface IProps {
   value: IAvatarAttributes,
+  name: string,
   onChange: (newAttributes: IAvatarAttributes) => void
+  onNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
-const AvataaarsCustomizer = (props: IProps) => {
+const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
   const [selectedTab,setSelectedTab] = React.useState<string>('top');
-  const [attributes,setAttributes] = React.useState<IAvatarAttributes>(props.value || {
+  const [attributes,setAttributes] = React.useState<IAvatarAttributes>(value || {
     topType:'LongHairMiaWallace',
     accessoriesType:'Prescription02',
     hairColor:'BrownDark',
@@ -31,9 +33,7 @@ const AvataaarsCustomizer = (props: IProps) => {
       [attr]:val
     };
     setAttributes(newAttributes);
-    if (props.onChange) {
-      props.onChange(newAttributes);
-    }
+    onChange(newAttributes);
   }
 
   return (
@@ -45,6 +45,7 @@ const AvataaarsCustomizer = (props: IProps) => {
             {...attributes}
           />
       </div>
+      <input className={styles.input} type="text" value={name} onChange={onNameChange}/>
       <div className={styles.avatarOptions}>
         <ul className={styles.tabs}>
           {
@@ -65,7 +66,7 @@ const AvataaarsCustomizer = (props: IProps) => {
             map(options, (option: IOption) => {
               return (
                   <div className={styles.tabpane + ' ' + (selectedTab == option.type ? styles.visible : '')}>
-                    <ul className={styles.pieces}>
+                    {option.values.length > 0 && <ul className={styles.pieces}>
                       {
                           map(option.values,(val) => {
                           let attr = {
@@ -80,7 +81,7 @@ const AvataaarsCustomizer = (props: IProps) => {
                                 </li>
                         })
                       }
-                    </ul>
+                    </ul>}
                     <ul className={styles.colors}>
                       {
                         option.colors && (option.type !== 'top' || option.hats.indexOf(attributes.topType) === -1) &&

@@ -58,6 +58,7 @@ body, html {
 button{
     background-color: transparent;
     border: none;
+    cursor: pointer;
 }
 
 ul{
