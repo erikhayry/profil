@@ -37,5 +37,7 @@
 	],
 	"web_accessible_resources": [
 		"/ui/style.css"
-	]
+	],
+	"content_security_policy": "script-src 'self' https://unpkg.com; object-src 'self'"
+
 }

@@ -16,6 +16,8 @@ export const Options = () => {
         currentUser: undefined,
         users: []
     });
+    
+    
     const [editUser, setEditUser] = useState<IUser | undefined>(undefined);
 
     useEffect(() => {

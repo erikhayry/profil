@@ -9,6 +9,12 @@ module.exports = {
         extensions: [".ts", ".tsx", ".js", ".jsx", ".css"]
     },
 
+    externals: {
+        // Use external version of React
+        "react": "React",
+        "react-dom": "ReactDOM"
+    },
+
     module: {
         rules: [
             {
