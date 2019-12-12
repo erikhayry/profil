@@ -35,7 +35,7 @@
 }
 
 .tabs {
-  width: 145px;
+  min-width: 200px;
 }
 
 .tab {
@@ -43,7 +43,7 @@
   color: primary;
   display: inline-block;
   padding: 5px 10px;
-  margin: 0 10px;
+  margin: 10px;
 }
 
 .selectedTab {

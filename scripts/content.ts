@@ -43,7 +43,7 @@ interface IAppUserState {
         console.log("on handleSetDataResponse", id, data)
     }
 
-    function reload(userId: string){
+    function reload(userId?: string){
         console.log('reload', userId)
         localStorage.setItem(APP_USER_KEY, userId);
         const appUserState: IAppUserState = {
@@ -90,7 +90,7 @@ interface IAppUserState {
         console.log("onMessage", type, userId)
         switch(type) {
             case MESSAGE_TYPE.CURRENT_USER:
-                reload(userId);
+                reload();
                 break;
             default:
                 console.log('Unknown message type from background', type)
