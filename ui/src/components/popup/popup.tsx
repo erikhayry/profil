@@ -78,7 +78,7 @@ export const Popup = () => {
                 <li className={classNames({
                   [styles.userListItem]: true,
                   [styles.title]: true
-                })}>SVT <br /> Profiler </li>
+                })}>Profiler</li>
                 {config.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,

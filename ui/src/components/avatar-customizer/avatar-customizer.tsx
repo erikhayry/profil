@@ -4,6 +4,7 @@ import Avatar from 'avataaars'
 import map from 'lodash/map'
 import styles from './avatar-customizer.module.css'
 import options, {Attribute, IAvatarAttributes, IOption} from './avatar-options';
+import classNames from 'classnames';
 
 interface IProps {
   value: IAvatarAttributes,
@@ -12,9 +13,32 @@ interface IProps {
   onNameChange: (event: React.ChangeEvent<HTMLInputElement>) => void
 }
 
+function translate(label: string){
+  switch (label){
+    case 'Skin':
+      return 'Hy';
+    case 'Head':
+      return 'Huvud & hår'
+    case 'Facial Hair':
+        return 'Skägg'      
+    case 'Eyes':
+        return 'Ögon'  
+    case 'Eyebrows':
+        return 'Ögonbryn'    
+    case 'Accessories':
+        return 'Glasögon'     
+    case 'Mouth':
+        return 'Mun'
+    case 'Clothes':
+        return 'Kläder'                                            
+    default:
+      return label  
+  }
+}
+
 const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
   const [selectedTab,setSelectedTab] = React.useState<string>('top');
-  const [attributes,setAttributes] = React.useState<IAvatarAttributes>(value || {
+  const [attributes, setAttributes] = React.useState<IAvatarAttributes>(value || {
     topType:'LongHairMiaWallace',
     accessoriesType:'Prescription02',
     hairColor:'BrownDark',
@@ -55,7 +79,7 @@ const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
                     className={styles.tab + ' ' + (selectedTab == option.type ? styles.selectedTab : '')}
                     onClick={() => setSelectedTab(option.type)}
                     >
-                    {option.label}
+                    {translate(option.label)}
                   </li>
                 );
             })
@@ -67,20 +91,22 @@ const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
               return (
                   <div className={styles.tabpane + ' ' + (selectedTab == option.type ? styles.visible : '')}>
                     {option.values.length > 0 && <ul className={styles.pieces}>
-                      {
-                          map(option.values,(val) => {
+                      {map(option.values,(val) => {
                           let attr = {
                             [option.attribute]: val
                           };
-                          return <li className={styles.piece} onClick={() => pieceClicked(option.attribute,val)}>
+                          
+                          const pieceClasses = classNames({
+                            [styles.piece]: true,
+                            //@ts-ignore
+                            [styles.isCurrent]: attributes[option.attribute] === val,
+                            [styles[`is-${option.attribute}`]]: true
+                          })
+                          return <li className={pieceClasses} onClick={() => pieceClicked(option.attribute,val)}>
                                   <Piece pieceSize="100" pieceType={option.type} avatarStyle={'transparent'} {...attr}/>
-                                  {
-                                    (val === 'Blank' || val === 'NoHair') &&
-                                    <div className={styles.none}>(none)</div>
-                                  }
                                 </li>
                         })
-                      }
+                      }                      
                     </ul>}
                     <ul className={styles.colors}>
                       {

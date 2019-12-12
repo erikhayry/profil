@@ -11,14 +11,18 @@ import {MESSAGE_TYPE} from "../../../../scripts/background";
 import {Plus, X} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
 
+interface ViewState {
+    currentUser: string;
+    users: IUser[],
+    editUser: IUser | undefined
+}
+
 export const Options = () => {
-    const [config, setConfig ] = useState<IData>({
+    const [view, setView ] = useState<ViewState>({
         currentUser: undefined,
-        users: []
+        users: [],
+        editUser: undefined
     });
-    
-    
-    const [editUser, setEditUser] = useState<IUser | undefined>(undefined);
 
     useEffect(() => {
         console.log('useEffect')
@@ -28,8 +32,10 @@ export const Options = () => {
 
     function updateView({ currentUser, users }: IData){
         console.log("updateView", currentUser, users )
-        setConfig({
-            currentUser, users
+        setView({
+            currentUser, 
+            users, 
+            editUser: undefined
         });
     }
 
@@ -49,49 +55,58 @@ export const Options = () => {
     }
 
     function onCloseEditor() {
-        setEditUser(undefined)
+        setView({
+            ...view,
+            editUser: undefined
+        })
     }
 
     function removeUser(userId: string){
         console.log("removeUser", userId);
-        const index = config.users.findIndex(({ id }) => userId === id);
-        config.users.splice(index, 1);
+        const index = view.users.findIndex(({ id }) => userId === id);
+        view.users.splice(index, 1);
 
         //if(userId === config.currentUser){
-            config.currentUser = config.users[0].id;
+            view.currentUser = view.users[0].id;
         //}
 
-        storage.setData(config)
+        storage.setData(view)
             .then(updateView);
     }
 
     function onUpdateUser(editedUser: IUser){
         console.log("onUpdateUser", editedUser);
-        const index = config.users.findIndex(({ id }) => editUser.id === id);
-        config.users[index] = editedUser;
+        const index = view.users.findIndex(({ id }) => view.editUser.id === id);
+        view.users[index] = editedUser;
 
-        setEditUser(undefined);
-        storage.setData(config)
+        setView({
+            ...view,
+            editUser: undefined
+        })
+        storage.setData(view)
             .then(updateView);
     }
-
+    
     const userListClasses = classNames({
         [styles.userList]: true,
-        [styles.isDisabled]: !!editUser
+        [styles.isDisabled]: !!view.editUser
     });
 
     return(
         <div className={styles.container}>
             <ul className={userListClasses}>
-                {config.users.map(user => {
+                {view.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
-                        [styles.isCurrent]: user.id === config.currentUser
+                        [styles.isCurrent]: user.id === view.currentUser
                     });
                     return (
                         <li className={userListItemClasses}>
-                            <button className={styles.avatarButton} disabled={!!editUser} onClick={() =>
-                                setEditUser(user)
+                            <button className={styles.avatarButton} disabled={!!view.editUser} onClick={() =>
+                                        setView({
+                                            ...view,
+                                            editUser: user
+                                        })
                             }>
                                 <Avatar
                                     avatarStyle='transparent'
@@ -103,11 +118,11 @@ export const Options = () => {
                     )
                 })}
             </ul>
-            {!editUser && <button className={styles.addUserButton} onClick={addUser}>
+            {!view.editUser && <button className={styles.addUserButton} onClick={addUser}>
                 <Plus color={'white'} size={50}/>
                 <span className={a11y.hidden}>Lägg till användare</span>
             </button>}
-            {editUser && <Editor user={editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
+            {view.editUser && <Editor user={view.editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
         </div>
 
     )

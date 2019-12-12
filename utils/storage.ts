@@ -27,21 +27,24 @@ interface IAppStorageData {
     app?: IData
 }
 
-const initialUser: IUser = {
-    name: 'Ny användare',
-    id: ID(),
-    avatar: {
-        topType:'LongHairMiaWallace',
-        accessoriesType:'Prescription02',
-        hairColor:'BrownDark',
-        facialHairType:'Blank',
-        clotheType:'Hoodie',
-        clotheColor:'PastelBlue',
-        eyeType:'Happy',
-        eyebrowType:'Default',
-        mouthType:'Smile',
-        skinColor:'Light',
+function getNewUser(): IUser {
+    return {
+        name: 'Ny användare',
+        id: ID(),
+        avatar: {
+            topType:'LongHairMiaWallace',
+            accessoriesType:'Prescription02',
+            hairColor:'BrownDark',
+            facialHairType:'Blank',
+            clotheType:'Hoodie',
+            clotheColor:'PastelBlue',
+            eyeType:'Happy',
+            eyebrowType:'Default',
+            mouthType:'Smile',
+            skinColor:'Light',
+        }    
     }
+
 };
 
 function ID(): string {
@@ -49,9 +52,10 @@ function ID(): string {
 }
 
 function getInitialState(){
+    const newUser = getNewUser();
     return  {
-        users: [initialUser],
-        currentUser: initialUser.id
+        users: [newUser],
+        currentUser: newUser.id
     };
 }
 
@@ -77,7 +81,7 @@ function addUser(): Promise<IData> {
     console.log("addUser")
     return getData()
         .then((app: IData) => {
-            app.users.push(initialUser);
+            app.users.push(getNewUser());
             return app;
         })
         .then(setData)

@@ -74,8 +74,14 @@
 
 .piece {
   float: left;
-  margin: 0 10px;
-  position: relative;
+  margin: 10px;
+  border-radius: 10px;
+  padding: 10px;
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.piece svg {
+  transform-origin: top left;
 }
 
 .piece:hover {
@@ -83,10 +89,32 @@
   cursor: pointer;
 }
 
-.none {
-  position: absolute;
-  left: 0;
-  top: 0;
+.piece.is-facialHairType{
+  background-color: rgba(255, 255, 255, 1);
+}
+
+.piece.is-eyeType, 
+.piece.is-eyebrowType,
+.piece.is-accessoriesType,
+.piece.is-mouthType{
+  height: 100px;
+  width: 100px;
+  padding: 10px 0;
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.piece.is-accessoriesType{
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+.piece.is-eyeType svg,
+.piece.is-eyebrowType svg,
+.piece.is-mouthType svg{
+  transform: scale(2);
+}
+
+.piece.isCurrent {
+  background-color: #e87f7f;
 }
 
 .colors {

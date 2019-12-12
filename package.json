@@ -19,7 +19,7 @@
   "watch": {
     "typescript": {
       "patterns": [
-        "scripts"
+        "scripts", "utils"
       ],
       "extensions": "ts",
       "quiet": false,
