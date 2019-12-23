@@ -25,12 +25,10 @@ interface IAppUserState {
     }
 
     function updateData(){
-        console.log("updateData")
         const data = localStorage.getItem(HOST_DATA_KEY);
         const type = MESSAGE_TYPE.DATA;
 
         if(isDiff(prevData, data)){
-            console.log('data updated', data)
             prevData = data;
             browser.runtime.sendMessage({type, data})
                 .then(handleSetDataResponse, handleError);
@@ -40,64 +38,58 @@ interface IAppUserState {
     window.setInterval(updateData, 5000);
 
     function handleSetDataResponse({ id, data}: IUser) {
-        console.log("on handleSetDataResponse", id, data)
-    }
-
-    function reload(userId?: string){
-        console.log('reload', userId)
-        localStorage.setItem(APP_USER_KEY, userId);
-        const appUserState: IAppUserState = {
-            scrollY: window.scrollY,
-            scrollX: window.scrollX,
-        };
-        localStorage.setItem(APP_USER_STATE, JSON.stringify(appUserState));
-        location.reload();
     }
 
     function onLoad(){
         const prevAppUserState = JSON.parse(localStorage.getItem(APP_USER_STATE)) as IAppUserState;
+
         if(prevAppUserState){
             localStorage.removeItem(APP_USER_STATE);
             window.scrollTo(prevAppUserState.scrollX, prevAppUserState.scrollY)
         }
     }
 
-    function handleInitResponse({ id, data: storedData }: IUser) {
+    function handleInitResponse({ id: serverUserId, data: serverUserData }: IUser) {
         onLoad();
-        const oldData = localStorage.getItem(HOST_DATA_KEY);
-        console.log("on handleInitResponse", id, storedData);
-        if(!storedData) {
-            const currentUserId = localStorage.getItem(APP_USER_KEY);
+        localStorage.setItem(APP_USER_KEY, serverUserId);
+    }
 
-            if(currentUserId !== id){
-                console.log(" - no data, reset host");
-                localStorage.removeItem(HOST_DATA_KEY);
-                reload(id)
-            }
+    function handleChangeUser(user: IUser){
+        const appUserState: IAppUserState = {
+            scrollY: window.scrollY,
+            scrollX: window.scrollX,
+        };
+
+        localStorage.setItem(APP_USER_KEY, user.id);
+        localStorage.setItem(APP_USER_STATE, JSON.stringify(appUserState));
+        if(user.data){
+            localStorage.setItem(HOST_DATA_KEY, user.data);
+        } else {
+            localStorage.removeItem(HOST_DATA_KEY);
         }
-        else if(isDiff(oldData, storedData)){
-            console.log(" - set data on host")
-            localStorage.setItem(HOST_DATA_KEY, storedData);
-            reload(id)
-        }
+        location.reload();
     }
 
     function handleError(error: string) {
-        console.log(`Error: ${error}`);
     }
 
-    browser.runtime.onMessage.addListener( ({ type, userId } : { type: MESSAGE_TYPE, userId: string}) => {
-        console.log("onMessage", type, userId)
+    browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IUser}) => {
         switch(type) {
             case MESSAGE_TYPE.CURRENT_USER:
-                reload();
+                handleChangeUser(user)
                 break;
             default:
-                console.log('Unknown message type from background', type)
+                console.log('Unknown message type from background', type, user)
         }
     } );
 
-    browser.runtime.sendMessage({type: MESSAGE_TYPE.INIT})
+    browser.runtime.sendMessage({
+            type: MESSAGE_TYPE.INIT,
+            data: {
+                id: localStorage.getItem(APP_USER_KEY),
+                data: localStorage.getItem(HOST_DATA_KEY)
+            }
+        })
         .then(handleInitResponse, handleError);
 
 }());

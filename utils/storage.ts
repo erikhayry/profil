@@ -7,6 +7,7 @@ export interface IUser {
     name: string;
     avatar: IAvatarAttributes;
     data?: any;
+    dataUpdated?: number;
 }
 export interface IData {
     users: IUser[];
@@ -20,6 +21,7 @@ export interface IStorage {
     setCurrentUser: (userId: string) => Promise<IData>
     getCurrentUser: () => Promise<IUser>
     setUserData: (userId: string, data: any) => Promise<IData>
+    clearCurrentUser: (userId: string) => Promise<IData>
     getUser: (userId: string) => Promise<IUser>
 }
 
@@ -93,6 +95,7 @@ function setUserData(userId: string, data: any): Promise<IData> {
         .then((app: IData) => {
             const index = app.users.findIndex(({ id }) => id === userId);
             app.users[index].data = data;
+            app.users[index].dataUpdated = new Date().getTime();
 
             return app;
         })
@@ -103,8 +106,7 @@ function getUser(userId: string): Promise<IUser> {
     console.log("getUser", userId)
     return getData()
         .then((app: IData) => {
-            const index = app.users.findIndex(({ id }) => id === userId);
-            return app.users[index];
+            return app.users.find(({ id }) => id === userId);
         })
 }
 
@@ -126,6 +128,18 @@ function getCurrentUser(): Promise<IUser> {
         })
 }
 
+function clearCurrentUser(userId: string): Promise<IData> {
+    console.log("clearCurrentUser", userId)
+    return getData()
+        .then((app: IData) => {
+            const index = app.users.findIndex(({ id }) => id === userId);
+            delete app.users[index].data;
+
+            return app;
+        })
+        .then(setData)
+}
+
 const storage: IStorage = {
     getData,
     setData,
@@ -133,7 +147,8 @@ const storage: IStorage = {
     setCurrentUser,
     getCurrentUser,
     setUserData,
-    getUser
+    getUser,
+    clearCurrentUser
 };
 
 export default storage;

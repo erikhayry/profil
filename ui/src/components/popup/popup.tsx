@@ -45,6 +45,11 @@ export const Popup = () => {
             .then(updateView);
     }
 
+    async function clearCurrentUser(userId: string) {
+        console.log("clearCurrentUser", userId)
+        storage.clearCurrentUser(userId)
+    }
+
     function onCloseEditor() {
         setEditUser(undefined)
     }
@@ -95,6 +100,9 @@ export const Popup = () => {
                                 />
                             </button>
                             <div className={styles.name}>{user.name}</div>
+                            <button onClick={() => {
+                                clearCurrentUser(user.id)
+                            }}>Clear</button>
                         </li>
                     )
                 })}

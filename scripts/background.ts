@@ -5,7 +5,8 @@ import storage, {IData, IUser} from '../utils/storage';
 export enum MESSAGE_TYPE {
     INIT = 'init',
     DATA = 'data',
-    CURRENT_USER = 'currentUser'
+    CURRENT_USER = 'currentUser',
+    SYNC_USER = 'syncUser'
 }
 
 const VERSION = '1.0.0';
@@ -15,12 +16,10 @@ const VERSION = '1.0.0';
 //});
 
 function setData(userId: string, data: any): Promise<IData> {
-    console.log("setData", userId, data);
     return storage.setUserData(userId, data)
 }
 
 function setUserData(data: any): Promise<IUser> {
-    console.log("setUserData", data)
     return storage.getCurrentUser()
             .then(({ id }: IUser) => {
                 return setData(id, data)
@@ -29,12 +28,23 @@ function setUserData(data: any): Promise<IUser> {
             })
 }
 
-function getUserData() {
-    console.log("getUserData");
+async function getCurrentUserData({user, data}: {user?: string, data?: any}) {
+    const serverUserSetOnClient = await storage.getUser(user);
+    console.log("serverUserSetOnClient", serverUserSetOnClient, user)
+    if(serverUserSetOnClient){
+        //TODO compare data date?
+        return storage.setCurrentUser(serverUserSetOnClient.id)
+                .then(({currentUser}) => storage.getUser(currentUser))
+    }
+
     return storage.getData()
         .then(({currentUser, users}) => {
             return users.find(( { id } ) => id === currentUser);
         });
+}
+
+function getUserData(userId: string) {
+    return storage.getUser(userId);
 }
 
 function sendMessage(type: MESSAGE_TYPE, user: IUser){
@@ -47,36 +57,33 @@ function sendMessage(type: MESSAGE_TYPE, user: IUser){
 }
 
 function sendMessageToTabs(tabs: {id: string}[], type: MESSAGE_TYPE, user: IUser) {
-    console.log("sendMessageToTabs", tabs, type, user);
     for (let tab of tabs) {
         browser.tabs.sendMessage(
             tab.id,
-            {type, userId: user.id}
+            {type, user}
         ).then((response: any) => {
-            console.log("Message from the content script:");
-            console.log(response);
         }).catch(onError);
     }
 }
 
 function onError(error: string) {
-    console.error(`Error: ${error}`, error);
 }
 
-function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<IUser> {
-    console.log("handleMessage", type, data);
+async function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<IUser> {
 
     switch (type) {
         case MESSAGE_TYPE.INIT:
-            return getUserData();
+            return getCurrentUserData(data);
         case MESSAGE_TYPE.DATA:
             return setUserData(data)
         case MESSAGE_TYPE.CURRENT_USER:
-            console.log(" - MESSAGE_TYPE.CURRENT_USER", data)
             sendMessage(MESSAGE_TYPE.CURRENT_USER, data)
             break;
+        case MESSAGE_TYPE.SYNC_USER:
+            const user = await storage.getUser(data);
+            browser.runtime.sendMessage({type, user})
+            break;
         default:
-            console.log('Unknown message type', type, data)
     }
 }
 
