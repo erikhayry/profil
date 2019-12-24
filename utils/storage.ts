@@ -17,8 +17,8 @@ export interface IData {
 export interface IStorage {
     getData: () => Promise<IData>;
     setData: (app: IData) => Promise<IData>;
-    addUser: () => Promise<IData>
-    setCurrentUser: (userId: string) => Promise<IData>
+    addUser: (data?: any) => Promise<IUser>
+    setCurrentUser: (userId: string) => Promise<IUser>
     getCurrentUser: () => Promise<IUser>
     setUserData: (userId: string, data: any) => Promise<IData>
     clearCurrentUser: (userId: string) => Promise<IData>
@@ -29,8 +29,8 @@ interface IAppStorageData {
     app?: IData
 }
 
-function getNewUser(): IUser {
-    return {
+function getNewUser(data?: any): IUser {
+    let newUser: IUser = {
         name: 'Ny användare',
         id: ID(),
         avatar: {
@@ -44,10 +44,15 @@ function getNewUser(): IUser {
             eyebrowType:'Default',
             mouthType:'Smile',
             skinColor:'Light',
-        }    
+        }
+    };
+
+    if(data){
+        newUser.data = data;
     }
 
-};
+    return newUser;
+}
 
 function ID(): string {
     return '_' + Math.random().toString(36).substr(2, 9);
@@ -79,14 +84,14 @@ function setData(app: IData): Promise<IData> {
         .then(getData)
 }
 
-function addUser(): Promise<IData> {
+async function addUser(data?: any): Promise<IUser> {
     console.log("addUser")
-    return getData()
-        .then((app: IData) => {
-            app.users.push(getNewUser());
-            return app;
-        })
-        .then(setData)
+    const appData = await getData();
+    const newUser = getNewUser(data);
+    appData.users.push(newUser);
+    await setData(appData);
+
+    return getUser(newUser.id);
 }
 
 function setUserData(userId: string, data: any): Promise<IData> {
@@ -110,14 +115,13 @@ function getUser(userId: string): Promise<IUser> {
         })
 }
 
-function setCurrentUser(userId: string): Promise<IData> {
+async function setCurrentUser(userId: string): Promise<IUser> {
     console.log("setCurrentUser", userId)
-    return getData()
-        .then((app: IData) => {
-            app.currentUser = userId;
-            return app;
-        })
-        .then(setData)
+    const appData = await getData();
+    appData.currentUser = userId;
+    await setData(appData);
+
+    return getCurrentUser();
 }
 
 function getCurrentUser(): Promise<IUser> {

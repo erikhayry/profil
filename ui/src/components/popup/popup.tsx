@@ -19,21 +19,14 @@ export const Popup = () => {
 
     useEffect(() => {
         console.log('useEffect')
-        storage.getData()
-            .then(updateView)
+        updateView();
     }, []);
 
-    function updateView({ currentUser, users }: IData){
-        console.log("updateView", currentUser, users )
+    async function updateView(){
+        const {currentUser, users} = await storage.getData();
         setConfig({
             currentUser, users
         });
-    }
-
-    function addUser() {
-        console.log("addUser");
-        storage.addUser()
-            .then(updateView);
     }
 
     async function setCurrentUser(userId: string) {

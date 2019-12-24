@@ -28,15 +28,75 @@ function setUserData(data: any): Promise<IUser> {
             })
 }
 
-async function getCurrentUserData({user, data}: {user?: string, data?: any}) {
-    const serverUserSetOnClient = await storage.getUser(user);
-    console.log("serverUserSetOnClient", serverUserSetOnClient, user)
-    if(serverUserSetOnClient){
-        //TODO compare data date?
-        return storage.setCurrentUser(serverUserSetOnClient.id)
-                .then(({currentUser}) => storage.getUser(currentUser))
+async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: string, data?: any}): Promise<IUser> {
+    console.log('getCurrentUserData', hostUserId, hostUserData);
+
+    //1.
+    //Host: no data, no user.
+    //Server: no data
+    if(!hostUserId && !hostUserData){
+        console.log('1')
+        return storage.getCurrentUser();
     }
 
+    //2.
+    //Host: data, no user
+    //Server no data
+    if(!hostUserId && hostUserData){
+        console.log('2')
+        const newUser = await storage.addUser(hostUserData);
+        return storage.setCurrentUser(newUser.id);
+    }
+
+    if(hostUserId && !hostUserData){
+        const serverUserSetOnClient = await storage.getUser(hostUserId);
+
+        //3.
+        //Host: no data, valid user
+        //Server: no data
+        if(serverUserSetOnClient){
+            console.log('3')
+            return storage.setCurrentUser(serverUserSetOnClient.id);
+        }
+
+        //5.
+        //Host: no data. Invalid user
+        //Server: no data
+        console.log('5')
+        return storage.getCurrentUser();
+    }
+
+
+    if(hostUserId && hostUserData){
+        const serverUserSetOnClient = await storage.getUser(hostUserId);
+
+        //4.
+        //Host: data, valid user
+        //Server: no data
+        if(serverUserSetOnClient){
+            console.log('4')
+            return storage.setCurrentUser(serverUserSetOnClient.id);
+        }
+
+        //6.
+        //Host: data. Invalid user
+        //Server: no data
+        console.log('6')
+        const newUser = await storage.addUser(hostUserData);
+        return storage.setCurrentUser(newUser.id);
+    }
+
+    const serverUserSetOnClient = await storage.getUser(hostUserId);
+    console.log("serverUserSetOnClient", serverUserSetOnClient, hostUserId)
+
+
+
+    //if(serverUserSetOnClient){
+    //    //TODO compare data date?
+    //    return storage.setCurrentUser(serverUserSetOnClient.id)
+    //            .then(({currentUser}) => storage.getUser(currentUser))
+    //}
+//
     return storage.getData()
         .then(({currentUser, users}) => {
             return users.find(( { id } ) => id === currentUser);

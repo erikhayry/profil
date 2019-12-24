@@ -30,8 +30,8 @@ export const Options = () => {
             .then(updateView)
     }, []);
 
-    function updateView({ currentUser, users }: IData){
-        console.log("updateView", currentUser, users )
+    async function updateView(){
+        const {currentUser, users} = await storage.getData();
         setView({
             currentUser, 
             users, 
@@ -39,10 +39,11 @@ export const Options = () => {
         });
     }
 
-    function addUser() {
+    async function addUser() {
         console.log("addUser");
-        storage.addUser()
-            .then(updateView);
+        await storage.addUser()
+        updateView();
+
     }
 
     async function setCurrentUser(userId: string) {
