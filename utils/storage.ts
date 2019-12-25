@@ -11,18 +11,16 @@ export interface IUser {
 }
 export interface IData {
     users: IUser[];
-    currentUser: string
 }
 
 export interface IStorage {
     getData: () => Promise<IData>;
     setData: (app: IData) => Promise<IData>;
     addUser: (data?: any) => Promise<IUser>
-    setCurrentUser: (userId: string) => Promise<IUser>
-    getCurrentUser: () => Promise<IUser>
-    setUserData: (userId: string, data: any) => Promise<IData>
-    clearCurrentUser: (userId: string) => Promise<IData>
+    setUserData: (userId: string, data: any) => Promise<IUser>
+    clearUser: (userId: string) => Promise<IData>
     getUser: (userId: string) => Promise<IUser>
+    clearApp: () => Promise<IData>
 }
 
 interface IAppStorageData {
@@ -61,8 +59,7 @@ function ID(): string {
 function getInitialState(){
     const newUser = getNewUser();
     return  {
-        users: [newUser],
-        currentUser: newUser.id
+        users: [newUser]
     };
 }
 
@@ -79,7 +76,7 @@ function getData(): Promise<IData> {
 }
 
 function setData(app: IData): Promise<IData> {
-    console.log("setData", app)
+    console.log("setData", app);
     return browser.storage.sync.set({ app })
         .then(getData)
 }
@@ -94,17 +91,15 @@ async function addUser(data?: any): Promise<IUser> {
     return getUser(newUser.id);
 }
 
-function setUserData(userId: string, data: any): Promise<IData> {
-    console.log("setUserData", userId, data)
-    return getData()
-        .then((app: IData) => {
-            const index = app.users.findIndex(({ id }) => id === userId);
-            app.users[index].data = data;
-            app.users[index].dataUpdated = new Date().getTime();
+async function setUserData(userId: string, data: any): Promise<IUser> {
+    console.log("setUserData", userId, data);
+    const appData = await getData();
+    const index = appData.users.findIndex(({ id }) => id === userId);
+    appData.users[index].data = data;
+    appData.users[index].dataUpdated = new Date().getTime();
+    await setData(appData);
 
-            return app;
-        })
-        .then(setData)
+    return getUser(userId);
 }
 
 function getUser(userId: string): Promise<IUser> {
@@ -115,25 +110,8 @@ function getUser(userId: string): Promise<IUser> {
         })
 }
 
-async function setCurrentUser(userId: string): Promise<IUser> {
-    console.log("setCurrentUser", userId)
-    const appData = await getData();
-    appData.currentUser = userId;
-    await setData(appData);
-
-    return getCurrentUser();
-}
-
-function getCurrentUser(): Promise<IUser> {
-    console.log("getCurrentUser")
-    return getData()
-        .then(({ currentUser, users }) => {
-            return users.find(({ id }) => id === currentUser);
-        })
-}
-
-function clearCurrentUser(userId: string): Promise<IData> {
-    console.log("clearCurrentUser", userId)
+function clearUser(userId: string): Promise<IData> {
+    console.log("clearUser", userId)
     return getData()
         .then((app: IData) => {
             const index = app.users.findIndex(({ id }) => id === userId);
@@ -144,15 +122,20 @@ function clearCurrentUser(userId: string): Promise<IData> {
         .then(setData)
 }
 
+function clearApp(): Promise<IData> {
+    console.log("clearApp")
+    return browser.storage.sync.clear()
+        .then(getData)
+}
+
 const storage: IStorage = {
     getData,
     setData,
     addUser,
-    setCurrentUser,
-    getCurrentUser,
     setUserData,
     getUser,
-    clearCurrentUser
+    clearUser,
+    clearApp,
 };
 
 export default storage;

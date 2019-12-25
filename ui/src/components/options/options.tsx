@@ -12,14 +12,12 @@ import {Plus, X} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
 
 interface ViewState {
-    currentUser: string;
     users: IUser[],
     editUser: IUser | undefined
 }
 
 export const Options = () => {
     const [view, setView ] = useState<ViewState>({
-        currentUser: undefined,
         users: [],
         editUser: undefined
     });
@@ -30,13 +28,18 @@ export const Options = () => {
             .then(updateView)
     }, []);
 
+
     async function updateView(){
-        const {currentUser, users} = await storage.getData();
+        const {users} = await storage.getData();
         setView({
-            currentUser, 
-            users, 
+            users,
             editUser: undefined
         });
+    }
+
+    async function clear(){
+        await storage.clearApp();
+        updateView();
     }
 
     async function addUser() {
@@ -44,15 +47,6 @@ export const Options = () => {
         await storage.addUser()
         updateView();
 
-    }
-
-    async function setCurrentUser(userId: string) {
-        console.log("setCurrentUser", userId)
-        const currentUser = await storage.getUser(userId);
-        console.log(" - currentUser", currentUser)
-        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, data: currentUser});
-        storage.setCurrentUser(userId)
-            .then(updateView);
     }
 
     function onCloseEditor() {
@@ -66,11 +60,6 @@ export const Options = () => {
         console.log("removeUser", userId);
         const index = view.users.findIndex(({ id }) => userId === id);
         view.users.splice(index, 1);
-
-        //if(userId === config.currentUser){
-            view.currentUser = view.users[0].id;
-        //}
-
         storage.setData(view)
             .then(updateView);
     }
@@ -83,7 +72,7 @@ export const Options = () => {
         setView({
             ...view,
             editUser: undefined
-        })
+        });
         storage.setData(view)
             .then(updateView);
     }
@@ -98,8 +87,7 @@ export const Options = () => {
             <ul className={userListClasses}>
                 {view.users.map(user => {
                     const userListItemClasses = classNames({
-                        [styles.userListItem]: true,
-                        [styles.isCurrent]: user.id === view.currentUser
+                        [styles.userListItem]: true
                     });
                     return (
                         <li className={userListItemClasses}>
@@ -119,6 +107,9 @@ export const Options = () => {
                     )
                 })}
             </ul>
+
+            <button onClick={clear}>Clear app</button>
+
             {!view.editUser && <button className={styles.addUserButton} onClick={addUser}>
                 <Plus color={'white'} size={50}/>
                 <span className={a11y.hidden}>Lägg till användare</span>

@@ -52,22 +52,31 @@ interface IAppUserState {
     function handleInitResponse({ id: serverUserId, data: serverUserData }: IUser) {
         //onLoad();
         console.log('handleInitResponse', serverUserId, serverUserData);
+        const hostUserId = localStorage.getItem(APP_USER_KEY);
+        const hostUserData = localStorage.getItem(HOST_DATA_KEY);
+
         localStorage.setItem(APP_USER_KEY, serverUserId);
 
-        //7.
-        //Host: no data, no user.
-        //Server: data
-        //8.
-        //Host: data, no user
-        //Server: data
-        if(serverUserData){
-            console.log('7,8');
+        if(serverUserData && !isDiff(serverUserData, hostUserData)) {
+            console.log('2,4,6,8,12');
+        }
+        if(serverUserData && isDiff(serverUserData, hostUserData)) {
+            console.log('10');
             localStorage.setItem(HOST_DATA_KEY, serverUserData);
-            //location.reload();
+            location.reload();
+        }
+        if(!serverUserData && !hostUserData){
+            console.log('1,3,5');
+        }
+        if(serverUserData && !hostUserData){
+            console.log('7,9,11');
+            localStorage.setItem(HOST_DATA_KEY, serverUserData);
+            location.reload();
         }
     }
 
     function handleChangeUser(user: IUser){
+        console.log('handleChangeUser', user)
         const appUserState: IAppUserState = {
             scrollY: window.scrollY,
             scrollX: window.scrollX,
@@ -111,35 +120,35 @@ interface IAppUserState {
     1.
         Host: no data, no user.
         Server: no data
-        => get current user from server
+        => set user 1 as current
     2.
         Host: data, no user
         Server no data
-        => create new user with host data. Set as current
+        => set user 1 as current with host data
     3.
         Host: no data, valid user
         Server: no data
-        => set host user as current
+        => do nothing
     4.
         Host: data, valid user
         Server: no data
-        => set host user as current
+        => add host data to server
     5.
        Host: no data. Invalid user
        Server: no data
-       => set host user as current
+        => set user 1 as current
     6.
        Host: data. Invalid user
        Server: no data
-       => create new user with host data. Set as current //TODO?
+        => set user 1 as current with host data
     7.
         Host: no data, no user.
         Server: data
-        => get current user from server. Update host storage
+        => set user 1 as current, update host storage
     8.
         Host: data, no user
         Server: data
-        => create new user with host data. Set as current. Update host storage (TODO skip?)
+        => create new user with host data. Set as current.
     9.
         Host: no data, valid user
         Server: data
@@ -151,10 +160,11 @@ interface IAppUserState {
     11.
        Host: no data. Invalid user
        Server: data
-       => set host user as current. Update host storage
+        => set user 1 as current with host data
     12.
        Host: data. Invalid user
        Server: data
+        => create new user with host data. Set as current.
 
     13: Host data = {EMPTY}
 

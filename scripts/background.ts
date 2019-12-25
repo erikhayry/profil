@@ -15,37 +15,54 @@ const VERSION = '1.0.0';
 //    scope.setTag("version", VERSION);
 //});
 
-function setData(userId: string, data: any): Promise<IData> {
-    return storage.setUserData(userId, data)
+async function setData(userId: string, data: any): Promise<IData> {
+    await storage.setUserData(userId, data);
+
+    return storage.getData();
 }
 
-function setUserData(data: any): Promise<IUser> {
-    return storage.getCurrentUser()
-            .then(({ id }: IUser) => {
-                return setData(id, data)
-                    .then(() => storage.getUser(id))
-
-            })
+function setUserData(user: IUser): Promise<IUser> {
+    return setData(user.id, user.data)
+            .then(() => storage.getUser(user.id))
 }
 
 async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: string, data?: any}): Promise<IUser> {
     console.log('getCurrentUserData', hostUserId, hostUserData);
 
-    //1.
-    //Host: no data, no user.
-    //Server: no data
     if(!hostUserId && !hostUserData){
-        console.log('1')
-        return storage.getCurrentUser();
+        const { users } = await storage.getData();
+        //1.
+        //Host: no data, no user.
+        //Server: no data
+        if(users.every(user => !user.data)){
+            console.log('1');
+            return users[0];
+        }
+
+        //7.
+        //Host: no data, no user.
+        //Server: data
+        console.log('7');
+        return users[0]
+
+        //return storage.addUser();
     }
 
-    //2.
-    //Host: data, no user
-    //Server no data
     if(!hostUserId && hostUserData){
-        console.log('2')
-        const newUser = await storage.addUser(hostUserData);
-        return storage.setCurrentUser(newUser.id);
+        const { users } = await storage.getData();
+        //2.
+        //Host: data, no user
+        //Server no data
+        if(users.every(user => !user.data)){
+            console.log('2');
+            return storage.setUserData(users[0].id, hostUserData);
+        }
+        //8.
+        //Host: data, no user
+        //Server: data
+        console.log('8');
+        return storage.addUser(hostUserData);
+
     }
 
     if(hostUserId && !hostUserData){
@@ -54,16 +71,27 @@ async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: st
         //3.
         //Host: no data, valid user
         //Server: no data
+        //9.
+        //Host: no data, valid user
+        //Server: data
         if(serverUserSetOnClient){
-            console.log('3')
-            return storage.setCurrentUser(serverUserSetOnClient.id);
+            console.log('3,9');
+            return serverUserSetOnClient;
         }
 
         //5.
         //Host: no data. Invalid user
         //Server: no data
-        console.log('5')
-        return storage.getCurrentUser();
+        const { users } = await storage.getData();
+        if(users.every(user => !user.data)){
+            console.log('5');
+            return users[0];
+        }
+        //11.
+        //Host: no data. Invalid user
+        //Server: data
+        console.log('11');
+        return users[0]
     }
 
 
@@ -73,46 +101,49 @@ async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: st
         //4.
         //Host: data, valid user
         //Server: no data
-        if(serverUserSetOnClient){
+        if(serverUserSetOnClient && !serverUserSetOnClient.data && hostUserData){
             console.log('4')
-            return storage.setCurrentUser(serverUserSetOnClient.id);
+            return storage.setUserData(serverUserSetOnClient.id, hostUserData);
+        }
+        if(serverUserSetOnClient && serverUserSetOnClient.data){
+            //10.
+            //Host: data, valid user
+            //Server: data
+            console.log('10')
+            return serverUserSetOnClient;
         }
 
-        //6.
-        //Host: data. Invalid user
-        //Server: no data
-        console.log('6')
-        const newUser = await storage.addUser(hostUserData);
-        return storage.setCurrentUser(newUser.id);
+        if(!serverUserSetOnClient){
+            const { users } = await storage.getData();
+            //6
+            //Host: data. Invalid user
+            //Server: no data
+            if(users.every(user => !user.data)){
+                console.log('6');
+                return storage.setUserData(users[0].id, hostUserData);
+            }
+
+            //12.
+            //Host: data. Invalid user
+            //Server: data
+            console.log('12');
+            return storage.addUser(hostUserData);
+        }
     }
-
-    const serverUserSetOnClient = await storage.getUser(hostUserId);
-    console.log("serverUserSetOnClient", serverUserSetOnClient, hostUserId)
-
-
-
-    //if(serverUserSetOnClient){
-    //    //TODO compare data date?
-    //    return storage.setCurrentUser(serverUserSetOnClient.id)
-    //            .then(({currentUser}) => storage.getUser(currentUser))
-    //}
-//
-    return storage.getData()
-        .then(({currentUser, users}) => {
-            return users.find(( { id } ) => id === currentUser);
-        });
 }
 
 function getUserData(userId: string) {
     return storage.getUser(userId);
 }
 
-function sendMessage(type: MESSAGE_TYPE, user: IUser){
+async function sendMessage(type: MESSAGE_TYPE, userId: string){
+    console.log('sendMessage', userId);
+    const currentUser = await storage.getUser(userId)
     browser.tabs.query({
         currentWindow: true,
         active: true
     }).then((tabs: {id: string}[]) => {
-        sendMessageToTabs(tabs, type, user)
+        sendMessageToTabs(tabs, type, currentUser)
     }).catch(onError);
 }
 
@@ -130,6 +161,7 @@ function onError(error: string) {
 }
 
 async function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<IUser> {
+    console.log('handleMessage', type, data)
 
     switch (type) {
         case MESSAGE_TYPE.INIT:
