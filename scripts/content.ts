@@ -6,7 +6,6 @@
 
 import {MESSAGE_TYPE} from "./background";
 import {IUser} from "../utils/storage";
-import {type} from "os";
 
 interface IAppUserState {
     scrollY: number,
@@ -25,14 +24,15 @@ interface IAppUserState {
     }
 
     function updateData(){
-        const data = localStorage.getItem(HOST_DATA_KEY);
-        const type = MESSAGE_TYPE.DATA;
 
-        if(isDiff(prevData, data)){
-            prevData = data;
-            browser.runtime.sendMessage({type, data})
-                .then(handleSetDataResponse, handleError);
-        }
+        //const data = localStorage.getItem(HOST_DATA_KEY);
+        //const type = MESSAGE_TYPE.DATA;
+//
+        //if(isDiff(prevData, data)){
+        //    prevData = data;
+        //    browser.runtime.sendMessage({type, data})
+        //        .then(handleSetDataResponse, handleError);
+        //}
     }
 
     //window.setInterval(updateData, 5000);
@@ -97,8 +97,11 @@ interface IAppUserState {
 
     browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IUser}) => {
         switch(type) {
+            case MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND:
+                handleChangeUser(user);
+                break;
             case MESSAGE_TYPE.CURRENT_USER:
-                handleChangeUser(user)
+                browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, userId: localStorage.getItem(APP_USER_KEY)});
                 break;
             default:
                 console.log('Unknown message type from background', type, user)
@@ -148,7 +151,7 @@ interface IAppUserState {
     8.
         Host: data, no user
         Server: data
-        => create new user with host data. Set as current.
+        => if user with no data add, else create new user with host data. Set as current.
     9.
         Host: no data, valid user
         Server: data
@@ -160,11 +163,11 @@ interface IAppUserState {
     11.
        Host: no data. Invalid user
        Server: data
-        => set user 1 as current with host data
+        => set user 1 as current
     12.
        Host: data. Invalid user
        Server: data
-        => create new user with host data. Set as current.
+        => if user with no data add, else create new user with host data. Set as current.
 
     13: Host data = {EMPTY}
 

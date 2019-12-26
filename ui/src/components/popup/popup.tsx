@@ -9,27 +9,52 @@ import classNames from 'classnames';
 import browser from 'webextension-polyfill';
 import {MESSAGE_TYPE} from "../../../../scripts/background";
 
+interface IView {
+    users: IUser[],
+    currentUser?: string
+}
+
 export const Popup = () => {
-    const [config, setConfig ] = useState<IData>({
-        users: []
+    const [view, setView ] = useState<IView>({
+        users: [],
     });
-    const [currentUser, setCurrentUser] = useState<string>(undefined)
 
     useEffect(() => {
         console.log('useEffect')
-        updateView();
+        async function setView() {
+            await getUsers();
+            await updateView();
+        }
+
+        setView();
     }, []);
 
     async function updateView(){
-        const {users} = await storage.getData();
-        setConfig({
-            users
+        browser.runtime.sendMessage({type: MESSAGE_TYPE.REQUEST_CURRENT_USER});
+        browser.runtime.onMessage.addListener( ({ type, userId } : { type: MESSAGE_TYPE, userId: string}) => {
+            console.log('message', type, userId);
+            console.log('view', view);
+            setView({
+                ...view,
+                currentUser: userId
+            });
+        });
+    }
+    async function getUsers(){
+        const { users } = await storage.getData();
+        console.log('getUsers', users);
+        setView({
+            ...view,
+            users: users
         });
     }
 
     function handleSetCurrentUser(userId: string){
-        setCurrentUser(userId);
-        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, data: userId});
+        setView({
+            ...view,
+            currentUser: userId
+        });
+        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER_FORM_UI, data: userId});
     }
 
     async function clearUser(userId: string) {
@@ -44,10 +69,10 @@ export const Popup = () => {
                   [styles.userListItem]: true,
                   [styles.title]: true
                 })}>Profiler</li>
-                {config.users.map(user => {
+                {view.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
-                        [styles.isCurrent]: user.id === currentUser
+                        [styles.isCurrent]: user.id === view.currentUser
                     });
                     return (
                         <li className={userListItemClasses}>
@@ -80,10 +105,3 @@ export const Popup = () => {
         </div>
     )
 };
-
-function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ){
-    console.log('handleMessage', type, data);
-}
-
-
-browser.runtime.onMessage.addListener(handleMessage);

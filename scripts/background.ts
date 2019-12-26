@@ -5,7 +5,10 @@ import storage, {IData, IUser} from '../utils/storage';
 export enum MESSAGE_TYPE {
     INIT = 'init',
     DATA = 'data',
+    CURRENT_USER_FROM_BACKGROUND = 'currentUserBackground',
+    REQUEST_CURRENT_USER = 'requestCurrentUser',
     CURRENT_USER = 'currentUser',
+    CURRENT_USER_FORM_UI = 'currentUserUi',
     SYNC_USER = 'syncUser'
 }
 
@@ -50,17 +53,19 @@ async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: st
 
     if(!hostUserId && hostUserData){
         const { users } = await storage.getData();
+        const unusedUser = users.find(user => !user.data);
         //2.
         //Host: data, no user
         //Server no data
-        if(users.every(user => !user.data)){
-            console.log('2');
-            return storage.setUserData(users[0].id, hostUserData);
-        }
         //8.
         //Host: data, no user
         //Server: data
-        console.log('8');
+        if(unusedUser){
+            console.log('2');
+            console.log('8.1');
+            return storage.setUserData(unusedUser.id, hostUserData);
+        }
+        console.log('8.2');
         return storage.addUser(hostUserData);
 
     }
@@ -115,18 +120,21 @@ async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: st
 
         if(!serverUserSetOnClient){
             const { users } = await storage.getData();
+            const unusedUser = users.find(user => !user.data);
+
             //6
             //Host: data. Invalid user
             //Server: no data
-            if(users.every(user => !user.data)){
-                console.log('6');
-                return storage.setUserData(users[0].id, hostUserData);
-            }
-
             //12.
             //Host: data. Invalid user
             //Server: data
-            console.log('12');
+            if(unusedUser){
+                console.log('6, 12.1');
+                return storage.setUserData(unusedUser.id, hostUserData);
+            }
+
+
+            console.log('12.2');
             return storage.addUser(hostUserData);
         }
     }
@@ -136,9 +144,9 @@ function getUserData(userId: string) {
     return storage.getUser(userId);
 }
 
-async function sendMessage(type: MESSAGE_TYPE, userId: string){
-    console.log('sendMessage', userId);
-    const currentUser = await storage.getUser(userId)
+async function sendMessageToContent(type: MESSAGE_TYPE, userId?: string){
+    console.log('sendMessageToContent', userId);
+    const currentUser = await storage.getUser(userId);
     browser.tabs.query({
         currentWindow: true,
         active: true
@@ -158,6 +166,7 @@ function sendMessageToTabs(tabs: {id: string}[], type: MESSAGE_TYPE, user: IUser
 }
 
 function onError(error: string) {
+    console.log('onError', error);
 }
 
 async function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<IUser> {
@@ -166,14 +175,14 @@ async function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Pr
     switch (type) {
         case MESSAGE_TYPE.INIT:
             return getCurrentUserData(data);
+        case MESSAGE_TYPE.REQUEST_CURRENT_USER:
+            console.log('req current')
+            sendMessageToContent(MESSAGE_TYPE.CURRENT_USER)
+            break;
         case MESSAGE_TYPE.DATA:
             return setUserData(data)
-        case MESSAGE_TYPE.CURRENT_USER:
-            sendMessage(MESSAGE_TYPE.CURRENT_USER, data)
-            break;
-        case MESSAGE_TYPE.SYNC_USER:
-            const user = await storage.getUser(data);
-            browser.runtime.sendMessage({type, user})
+        case MESSAGE_TYPE.CURRENT_USER_FORM_UI:
+            sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, data)
             break;
         default:
     }
