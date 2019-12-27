@@ -7,6 +7,7 @@ export interface IStorage {
     getData: () => Promise<IApp>;
     setData: (app: IApp) => Promise<IApp>;
     addUser: (data?: any) => Promise<IUser>
+    deleteUser: (userId: string) => Promise<IApp>
     setUserData: (userId: string, data: any) => Promise<IUser>
     clearUser: (userId: string) => Promise<IApp>
     getUser: (userId: string) => Promise<IUser>
@@ -22,7 +23,7 @@ function getNewUser(data?: any): IUser {
         name: 'Ny användare',
         id: ID(),
         avatar: randomAvatar()
-    }
+    };
 
     if(data){
         newUser.data = data;
@@ -70,12 +71,21 @@ async function addUser(data?: any): Promise<IUser> {
     return getUser(newUser.id);
 }
 
+async function deleteUser(userId: string): Promise<IApp> {
+    console.log("deleteUser", userId);
+    const appData = await getData();
+    const index = appData.users.findIndex(({ id }) => userId === id);
+    if(index){
+        appData.users.splice(index, 1);
+    }
+    return setData(appData);
+}
+
 async function setUserData(userId: string, data: any): Promise<IUser> {
     console.log("setUserData", userId, data);
     const appData = await getData();
     const index = appData.users.findIndex(({ id }) => id === userId);
     appData.users[index].data = data;
-    appData.users[index].dataUpdated = new Date().getTime();
     await setData(appData);
 
     return getUser(userId);
@@ -115,6 +125,7 @@ const storage: IStorage = {
     getUser,
     clearUser,
     clearApp,
+    deleteUser,
 };
 
 export default storage;

@@ -16,7 +16,6 @@ interface IAppUserState {
     const APP_USER_KEY = 'profile-current-user';
     const APP_USER_STATE = 'profile-current-state';
     const browser = require("webextension-polyfill");
-    let prevData = {};
 
     function isDiff(obj1: any, obj2: any){
         return JSON.stringify(obj1) !== JSON.stringify(obj2)
@@ -27,20 +26,29 @@ interface IAppUserState {
         const userId = localStorage.getItem(APP_USER_KEY);
         const type = MESSAGE_TYPE.ADD_DATA_FOR_USER;
 
-        if(isDiff(prevData, data)){
-            prevData = data;
-            browser.runtime.sendMessage({
-                type,
-                userId,
-                data
+        browser.runtime.sendMessage({
+            type,
+            userId,
+            data
+        }).then(handleSetDataResponse, handleError);
 
-            }).then(handleSetDataResponse, handleError);
-        }
     }
 
     window.setInterval(updateData, 5000);
 
-    function handleSetDataResponse({ id, data}: IUser) {}
+    function handleSetDataResponse(user: IUser) {
+        const { id: serverUserId, data: serverUserData } = user;
+        const hostUserId = localStorage.getItem(APP_USER_KEY);
+        if(hostUserId !== serverUserId){
+            localStorage.setItem(APP_USER_KEY, serverUserId);
+            if(serverUserData){
+                localStorage.setItem(HOST_DATA_KEY, serverUserData);
+            } else {
+                localStorage.removeItem(HOST_DATA_KEY);
+            }
+            location.reload();
+        }
+    }
 
     function onLoad(){
         const prevAppUserState = JSON.parse(localStorage.getItem(APP_USER_STATE)) as IAppUserState;
@@ -54,25 +62,23 @@ interface IAppUserState {
     function handleInitResponse(user: IUser) {
         onLoad();
         const { id: serverUserId, data: serverUserData } = user;
-        const hostUserData = localStorage.getItem(HOST_DATA_KEY);
+        const hostUserData = localStorage.getItem(HOST_DATA_KEY)
+        const hostUserId = localStorage.getItem(APP_USER_KEY);
 
         localStorage.setItem(APP_USER_KEY, serverUserId);
+        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, userId: localStorage.getItem(APP_USER_KEY)});
 
-        if(serverUserData && !isDiff(serverUserData, hostUserData)) {
-            console.log('2,4,6,8,12');
-        }
-        if(serverUserData && isDiff(serverUserData, hostUserData)) {
+        if(serverUserData && (!hostUserData || isDiff(serverUserData, hostUserData))) {
             console.log('10');
             localStorage.setItem(HOST_DATA_KEY, serverUserData);
             location.reload();
-        }
-        if(!serverUserData && !hostUserData){
-            console.log('1,3,5');
-        }
-        if(serverUserData && !hostUserData){
-            console.log('7,9,11');
-            localStorage.setItem(HOST_DATA_KEY, serverUserData);
-            location.reload();
+        } else {
+            //browser?.notifications?.create({
+            //    "type": "basic",
+            //    "iconUrl": browser.extension.getURL("icons/logo@2x.png"),
+            //    "title": 'Profil',
+            //    "message": `${user.name} är vald`
+            //});
         }
     }
 

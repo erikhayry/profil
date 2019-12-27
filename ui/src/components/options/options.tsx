@@ -58,9 +58,7 @@ export const Options = () => {
 
     function removeUser(userId: string){
         console.log("removeUser", userId);
-        const index = view.users.findIndex(({ id }) => userId === id);
-        view.users.splice(index, 1);
-        storage.setData(view)
+        storage.deleteUser(userId)
             .then(updateView);
     }
 

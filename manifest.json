@@ -33,7 +33,8 @@
 	},
 	"permissions": [
 		"tabs",
-		"storage"
+		"storage",
+		"notifications"
 	],
 	"web_accessible_resources": [
 		"/ui/style.css"

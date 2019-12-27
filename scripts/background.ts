@@ -9,16 +9,27 @@ const VERSION = '1.0.0';
 //    scope.setTag("version", VERSION);
 //});
 
-async function setData(userId: string, data: any): Promise<IApp> {
-    console.log("setData", userId, data)
-    await storage.setUserData(userId, data);
 
-    return storage.getData();
+function isDiff(obj1: any, obj2: any){
+    return JSON.stringify(obj1) !== JSON.stringify(obj2)
+}
+
+async function setData(hostUserId: string, data: any): Promise<IUser> {
+    console.log("setData", hostUserId, data)
+    const serverUserSetOnClient = await storage.getUser(hostUserId);
+    if(serverUserSetOnClient){
+        if(isDiff(serverUserSetOnClient.data, data)){
+            await storage.setUserData(serverUserSetOnClient.id, data);
+        }
+        return serverUserSetOnClient;
+    }
+    const { users } = await storage.getData();
+    return users[0];
 }
 
 function setUserData(id: string, data: string): Promise<IUser> {
     return setData(id, data)
-            .then(() => storage.getUser(id))
+            .then((user:IUser) => storage.getUser(user.id))
 }
 
 async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Promise<IUser> {
@@ -31,14 +42,14 @@ async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Pro
         //Server: no data
         if(users.every(user => !user.data)){
             console.log('1');
-            return users[0];
+            return Promise.resolve(users[0]);
         }
 
         //7.
         //Host: no data, no user.
         //Server: data
         console.log('7');
-        return users[0]
+        return Promise.resolve(users[0])
 
         //return storage.addUser();
     }
@@ -73,7 +84,7 @@ async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Pro
         //Server: data
         if(serverUserSetOnClient){
             console.log('3,9');
-            return serverUserSetOnClient;
+            return Promise.resolve(serverUserSetOnClient);
         }
 
         //5.
@@ -82,13 +93,13 @@ async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Pro
         const { users } = await storage.getData();
         if(users.every(user => !user.data)){
             console.log('5');
-            return users[0];
+            return Promise.resolve(users[0]);
         }
         //11.
         //Host: no data. Invalid user
         //Server: data
         console.log('11');
-        return users[0]
+        return Promise.resolve(users[0])
     }
 
     if(hostUserId && hostUserData){
@@ -106,12 +117,11 @@ async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Pro
             //Host: data, valid user
             //Server: data
             console.log('10')
-            return serverUserSetOnClient;
+            return Promise.resolve(serverUserSetOnClient);
         }
 
         if(!serverUserSetOnClient){
             const { users } = await storage.getData();
-            const unusedUser = users.find(user => !user.data);
 
             //6
             //Host: data. Invalid user
@@ -119,14 +129,8 @@ async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Pro
             //12.
             //Host: data. Invalid user
             //Server: data
-            if(unusedUser){
-                console.log('6, 12.1');
-                return storage.setUserData(unusedUser.id, hostUserData);
-            }
-
-
-            console.log('12.2');
-            return storage.addUser(hostUserData);
+            console.log('6, 12');
+            return Promise.resolve(users[0]);
         }
     }
 }
