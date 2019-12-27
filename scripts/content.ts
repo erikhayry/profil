@@ -4,8 +4,7 @@
 //    scope.setTag("version", VERSION);
 //});
 
-import {MESSAGE_TYPE} from "./background";
-import {IUser} from "../utils/storage";
+import {IUser, MESSAGE_TYPE} from "../types/index";
 
 interface IAppUserState {
     scrollY: number,
@@ -26,7 +25,7 @@ interface IAppUserState {
     function updateData(){
 
         //const data = localStorage.getItem(HOST_DATA_KEY);
-        //const type = MESSAGE_TYPE.DATA;
+        //const type = MESSAGE_TYPE.SET_DATA;
 //
         //if(isDiff(prevData, data)){
         //    prevData = data;
@@ -37,8 +36,7 @@ interface IAppUserState {
 
     //window.setInterval(updateData, 5000);
 
-    function handleSetDataResponse({ id, data}: IUser) {
-    }
+    function handleSetDataResponse({ id, data}: IUser) {}
 
     function onLoad(){
         const prevAppUserState = JSON.parse(localStorage.getItem(APP_USER_STATE)) as IAppUserState;
@@ -49,7 +47,9 @@ interface IAppUserState {
         }
     }
 
-    function handleInitResponse({ id: serverUserId, data: serverUserData }: IUser) {
+    function handleInitResponse(user: IUser) {
+        console.log("handleInitResponse", user)
+        const { id: serverUserId, data: serverUserData } = user;
         //onLoad();
         console.log('handleInitResponse', serverUserId, serverUserData);
         const hostUserId = localStorage.getItem(APP_USER_KEY);

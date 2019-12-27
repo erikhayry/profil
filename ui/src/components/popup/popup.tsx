@@ -2,12 +2,13 @@ import * as React from "react";
 import { Sliders } from 'react-feather';
 import styles from './popup.module.css';
 import {useEffect, useState} from "react";
-import storage, {IData, IUser} from '../../../../utils/storage'
+import storage from '../../../../utils/storage'
 import Avatar from "avataaars";
 import classNames from 'classnames';
 // @ts-ignore
 import browser from 'webextension-polyfill';
-import {MESSAGE_TYPE} from "../../../../scripts/background";
+import {IUser, MESSAGE_TYPE} from "../../../../types/index";
+import useCurrentUser from "../../../utils/onMessage";
 
 interface IView {
     users: IUser[],
@@ -18,43 +19,37 @@ export const Popup = () => {
     const [view, setView ] = useState<IView>({
         users: [],
     });
+    const currentUser = useCurrentUser();
+
+    useEffect(() => {
+        console.log("currentUser", currentUser);
+        if(currentUser){
+            setView({
+                ...view,
+                currentUser
+            })
+        }
+    }, [currentUser]);
 
     useEffect(() => {
         console.log('useEffect')
-        async function setView() {
-            await getUsers();
-            await updateView();
+        async function init() {
+            const { users } = await storage.getData();
+            setView({
+                users
+            });
+            browser.runtime.sendMessage({type: MESSAGE_TYPE.REQUEST_CURRENT_USER});
         }
 
-        setView();
+        init();
     }, []);
-
-    async function updateView(){
-        browser.runtime.sendMessage({type: MESSAGE_TYPE.REQUEST_CURRENT_USER});
-        browser.runtime.onMessage.addListener( ({ type, userId } : { type: MESSAGE_TYPE, userId: string}) => {
-            console.log('message', type, userId);
-            console.log('view', view);
-            setView({
-                ...view,
-                currentUser: userId
-            });
-        });
-    }
-    async function getUsers(){
-        const { users } = await storage.getData();
-        console.log('getUsers', users);
-        setView({
-            ...view,
-            users: users
-        });
-    }
 
     function handleSetCurrentUser(userId: string){
         setView({
             ...view,
             currentUser: userId
         });
-        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER_FORM_UI, data: userId});
+        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER_FORM_UI, userId});
     }
 
     async function clearUser(userId: string) {

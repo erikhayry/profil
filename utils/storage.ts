@@ -1,17 +1,7 @@
 import {IAvatarAttributes} from "../ui/src/components/avatar-customizer/avatar-options";
+import {IData, IUser} from "../types/index";
 
 const browser = require("webextension-polyfill");
-
-export interface IUser {
-    id: string;
-    name: string;
-    avatar: IAvatarAttributes;
-    data?: any;
-    dataUpdated?: number;
-}
-export interface IData {
-    users: IUser[];
-}
 
 export interface IStorage {
     getData: () => Promise<IData>;

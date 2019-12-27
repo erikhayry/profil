@@ -1,5 +1,4 @@
 import * as React from "react";
-import {IUser} from "../../../../utils/storage";
 import {useState} from "react";
 import AvataaarsCustomerizer from '../avatar-customizer/avatar-customizer';
 import {IAvatarAttributes} from "../avatar-customizer/avatar-options";
@@ -7,6 +6,7 @@ import styles from './editor.module.css';
 import a11y from '../../styles/a11y.module.css';
 import classNames from 'classnames';
 import {X, Save, Trash2} from "react-feather";
+import {IUser} from "../../../../types/index";
 
 interface IProps {
     user: IUser;

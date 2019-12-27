@@ -1,16 +1,7 @@
 // @ts-ignore
 const browser = require("webextension-polyfill");
-import storage, {IData, IUser} from '../utils/storage';
-
-export enum MESSAGE_TYPE {
-    INIT = 'init',
-    DATA = 'data',
-    CURRENT_USER_FROM_BACKGROUND = 'currentUserBackground',
-    REQUEST_CURRENT_USER = 'requestCurrentUser',
-    CURRENT_USER = 'currentUser',
-    CURRENT_USER_FORM_UI = 'currentUserUi',
-    SYNC_USER = 'syncUser'
-}
+import storage from '../utils/storage';
+import {IData, IUser, MESSAGE_TYPE} from "../types/index";
 
 const VERSION = '1.0.0';
 //Sentry.INIT({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
@@ -20,7 +11,6 @@ const VERSION = '1.0.0';
 
 async function setData(userId: string, data: any): Promise<IData> {
     await storage.setUserData(userId, data);
-
     return storage.getData();
 }
 
@@ -140,10 +130,6 @@ async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: st
     }
 }
 
-function getUserData(userId: string) {
-    return storage.getUser(userId);
-}
-
 async function sendMessageToContent(type: MESSAGE_TYPE, userId?: string){
     console.log('sendMessageToContent', userId);
     const currentUser = await storage.getUser(userId);
@@ -169,9 +155,13 @@ function onError(error: string) {
     console.log('onError', error);
 }
 
-async function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Promise<IUser> {
-    console.log('handleMessage', type, data)
-
+async function handleMessage({type, data, userId, user}: {
+    type: MESSAGE_TYPE,
+    data?: {id?: string, data?: any},
+    userId?: string,
+    user?: IUser
+}): Promise<IUser> {
+    console.log('handleMessage', type, data, userId, user);
     switch (type) {
         case MESSAGE_TYPE.INIT:
             return getCurrentUserData(data);
@@ -179,10 +169,10 @@ async function handleMessage({type, data}: {type: MESSAGE_TYPE, data: any} ): Pr
             console.log('req current')
             sendMessageToContent(MESSAGE_TYPE.CURRENT_USER)
             break;
-        case MESSAGE_TYPE.DATA:
-            return setUserData(data)
+        case MESSAGE_TYPE.SET_DATA:
+            return setUserData(user)
         case MESSAGE_TYPE.CURRENT_USER_FORM_UI:
-            sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, data)
+            sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, userId);
             break;
         default:
     }
