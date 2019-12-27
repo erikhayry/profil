@@ -9,7 +9,7 @@ import classNames from 'classnames';
 import browser from 'webextension-polyfill';
 import {Plus, X} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
-import {IUser} from "../../../../types/index";
+import {IUser} from "../../../../typings/index";
 
 interface ViewState {
     users: IUser[],

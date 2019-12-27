@@ -7,7 +7,7 @@ import Avatar from "avataaars";
 import classNames from 'classnames';
 // @ts-ignore
 import browser from 'webextension-polyfill';
-import {IUser, MESSAGE_TYPE} from "../../../../types/index";
+import {IUser, MESSAGE_TYPE} from "../../../../typings/index";
 import useCurrentUser from "../../../utils/onMessage";
 
 interface IView {

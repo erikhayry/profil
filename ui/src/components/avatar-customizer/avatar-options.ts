@@ -25,6 +25,8 @@ export interface IAvatarAttributes {
     eyebrowType: string;
     mouthType: string;
     skinColor: string;
+    facialHairColor: string
+
 }
 export interface IOption {
     label: string,
@@ -37,7 +39,6 @@ export interface IOption {
     hats?: string[],
     hatColors?: Record<string, string>
 }
-
 
 const options: IOption[] = [
     {
@@ -270,3 +271,17 @@ const options: IOption[] = [
 ];
 
 export default options;
+
+export function randomAvatar():IAvatarAttributes{
+    const avatar = options.reduce((acc:any, {attribute, values, colorAttribute, colors}:IOption) => {
+        acc[attribute] = values[Math.floor(Math.random() * values.length)];
+        if(colorAttribute){
+            const colorKeys = Object.keys(colors);
+            acc[colorAttribute] = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+        }
+        return acc;
+    },{});
+
+
+    return avatar as IAvatarAttributes;
+}

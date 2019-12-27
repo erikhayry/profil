@@ -1,25 +1,27 @@
 // @ts-ignore
 const browser = require("webextension-polyfill");
 import storage from '../utils/storage';
-import {IData, IUser, MESSAGE_TYPE} from "../types/index";
+    import {IApp, IUser, MESSAGE_TYPE} from "../typings/index";
 
 const VERSION = '1.0.0';
-//Sentry.INIT({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
+//Sentry.INIT_APP({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
 //Sentry.configureScope((scope) => {
 //    scope.setTag("version", VERSION);
 //});
 
-async function setData(userId: string, data: any): Promise<IData> {
+async function setData(userId: string, data: any): Promise<IApp> {
+    console.log("setData", userId, data)
     await storage.setUserData(userId, data);
+
     return storage.getData();
 }
 
-function setUserData(user: IUser): Promise<IUser> {
-    return setData(user.id, user.data)
-            .then(() => storage.getUser(user.id))
+function setUserData(id: string, data: string): Promise<IUser> {
+    return setData(id, data)
+            .then(() => storage.getUser(id))
 }
 
-async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: string, data?: any}): Promise<IUser> {
+async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Promise<IUser> {
     console.log('getCurrentUserData', hostUserId, hostUserData);
 
     if(!hostUserId && !hostUserData){
@@ -89,7 +91,6 @@ async function getCurrentUserData({id: hostUserId, data: hostUserData}: {id?: st
         return users[0]
     }
 
-
     if(hostUserId && hostUserData){
         const serverUserSetOnClient = await storage.getUser(hostUserId);
 
@@ -157,21 +158,22 @@ function onError(error: string) {
 
 async function handleMessage({type, data, userId, user}: {
     type: MESSAGE_TYPE,
-    data?: {id?: string, data?: any},
+    data?: any,
     userId?: string,
     user?: IUser
 }): Promise<IUser> {
     console.log('handleMessage', type, data, userId, user);
     switch (type) {
-        case MESSAGE_TYPE.INIT:
-            return getCurrentUserData(data);
+        case MESSAGE_TYPE.INIT_APP:
+            return getCurrentUserData(userId, data);
         case MESSAGE_TYPE.REQUEST_CURRENT_USER:
             console.log('req current')
             sendMessageToContent(MESSAGE_TYPE.CURRENT_USER)
             break;
-        case MESSAGE_TYPE.SET_DATA:
-            return setUserData(user)
+        case MESSAGE_TYPE.ADD_DATA_FOR_USER:
+            return setUserData(userId, data)
         case MESSAGE_TYPE.CURRENT_USER_FORM_UI:
+            console.log("CURRENT_USER_FORM_UI", userId)
             sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, userId);
             break;
         default:

@@ -1,10 +1,11 @@
-import React from "react";
+import React, {useRef} from "react";
 import { Piece } from 'avataaars'
 import Avatar from 'avataaars'
 import map from 'lodash/map'
 import styles from './avatar-customizer.module.css'
-import options, {Attribute, IAvatarAttributes, IOption} from './avatar-options';
+import options, {Attribute, IAvatarAttributes, IOption, randomAvatar} from './avatar-options';
 import classNames from 'classnames';
+import {Edit, Plus} from "react-feather";
 
 interface IProps {
   value: IAvatarAttributes,
@@ -38,18 +39,8 @@ function translate(label: string){
 
 const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
   const [selectedTab,setSelectedTab] = React.useState<string>('top');
-  const [attributes, setAttributes] = React.useState<IAvatarAttributes>(value || {
-    topType:'LongHairMiaWallace',
-    accessoriesType:'Prescription02',
-    hairColor:'BrownDark',
-    facialHairType:'Blank',
-    clotheType:'Hoodie',
-    clotheColor:'PastelBlue',
-    eyeType:'Happy',
-    eyebrowType:'Default',
-    mouthType:'Smile',
-    skinColor:'Light',
-  });
+  const [attributes, setAttributes] = React.useState<IAvatarAttributes>(value || randomAvatar());
+  const textInputRef = useRef(null);
 
   function pieceClicked(attr: Attribute, val: string) {
     let newAttributes = {
@@ -58,6 +49,11 @@ const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
     };
     setAttributes(newAttributes);
     onChange(newAttributes);
+  }
+
+  function editName(){
+    textInputRef.current.focus();
+    textInputRef.current.value = '';
   }
 
   return (
@@ -69,7 +65,12 @@ const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
             {...attributes}
           />
       </div>
-      <input className={styles.input} type="text" value={name} onChange={onNameChange}/>
+      <div className={styles.inputWrapper}>
+        <input className={styles.input} type="text" value={name} ref={textInputRef} onChange={onNameChange} />
+        <button className={styles.inputBtn} onClick={editName}>
+          <Edit color={'white'} />Ändra namn
+        </button>
+      </div>
       <div className={styles.avatarOptions}>
         <ul className={styles.tabs}>
           {

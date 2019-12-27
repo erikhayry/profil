@@ -1,39 +1,28 @@
-import {IAvatarAttributes} from "../ui/src/components/avatar-customizer/avatar-options";
-import {IData, IUser} from "../types/index";
+import {IApp, IUser} from "../typings/index";
+import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
 
 const browser = require("webextension-polyfill");
 
 export interface IStorage {
-    getData: () => Promise<IData>;
-    setData: (app: IData) => Promise<IData>;
+    getData: () => Promise<IApp>;
+    setData: (app: IApp) => Promise<IApp>;
     addUser: (data?: any) => Promise<IUser>
     setUserData: (userId: string, data: any) => Promise<IUser>
-    clearUser: (userId: string) => Promise<IData>
+    clearUser: (userId: string) => Promise<IApp>
     getUser: (userId: string) => Promise<IUser>
-    clearApp: () => Promise<IData>
+    clearApp: () => Promise<IApp>
 }
 
 interface IAppStorageData {
-    app?: IData
+    app?: IApp
 }
 
 function getNewUser(data?: any): IUser {
     let newUser: IUser = {
         name: 'Ny användare',
         id: ID(),
-        avatar: {
-            topType:'LongHairMiaWallace',
-            accessoriesType:'Prescription02',
-            hairColor:'BrownDark',
-            facialHairType:'Blank',
-            clotheType:'Hoodie',
-            clotheColor:'PastelBlue',
-            eyeType:'Happy',
-            eyebrowType:'Default',
-            mouthType:'Smile',
-            skinColor:'Light',
-        }
-    };
+        avatar: randomAvatar()
+    }
 
     if(data){
         newUser.data = data;
@@ -53,7 +42,7 @@ function getInitialState(){
     };
 }
 
-function getData(): Promise<IData> {
+function getData(): Promise<IApp> {
     console.log("getData")
 
     return browser.storage.sync.get('app')
@@ -65,7 +54,7 @@ function getData(): Promise<IData> {
         })
 }
 
-function setData(app: IData): Promise<IData> {
+function setData(app: IApp): Promise<IApp> {
     console.log("setData", app);
     return browser.storage.sync.set({ app })
         .then(getData)
@@ -95,15 +84,15 @@ async function setUserData(userId: string, data: any): Promise<IUser> {
 function getUser(userId: string): Promise<IUser> {
     console.log("getUser", userId)
     return getData()
-        .then((app: IData) => {
+        .then((app: IApp) => {
             return app.users.find(({ id }) => id === userId);
         })
 }
 
-function clearUser(userId: string): Promise<IData> {
+function clearUser(userId: string): Promise<IApp> {
     console.log("clearUser", userId)
     return getData()
-        .then((app: IData) => {
+        .then((app: IApp) => {
             const index = app.users.findIndex(({ id }) => id === userId);
             delete app.users[index].data;
 
@@ -112,7 +101,7 @@ function clearUser(userId: string): Promise<IData> {
         .then(setData)
 }
 
-function clearApp(): Promise<IData> {
+function clearApp(): Promise<IApp> {
     console.log("clearApp")
     return browser.storage.sync.clear()
         .then(getData)

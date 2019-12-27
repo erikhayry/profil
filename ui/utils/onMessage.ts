@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 // @ts-ignore
 import browser from 'webextension-polyfill';
-import {MESSAGE_TYPE} from "../../types/index";
+import {MESSAGE_TYPE} from "../../typings/index";
 
 const useCurrentUser = () => {
     const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);

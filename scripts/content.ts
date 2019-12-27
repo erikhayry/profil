@@ -1,10 +1,10 @@
 //const VERSION = '1.0.0';
-//Sentry.INIT({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
+//Sentry.INIT_APP({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
 //Sentry.configureScope((scope) => {
 //    scope.setTag("version", VERSION);
 //});
 
-import {IUser, MESSAGE_TYPE} from "../types/index";
+import {IUser, MESSAGE_TYPE} from "../typings/index";
 
 interface IAppUserState {
     scrollY: number,
@@ -23,18 +23,22 @@ interface IAppUserState {
     }
 
     function updateData(){
+        const data = localStorage.getItem(HOST_DATA_KEY);
+        const userId = localStorage.getItem(APP_USER_KEY);
+        const type = MESSAGE_TYPE.ADD_DATA_FOR_USER;
 
-        //const data = localStorage.getItem(HOST_DATA_KEY);
-        //const type = MESSAGE_TYPE.SET_DATA;
-//
-        //if(isDiff(prevData, data)){
-        //    prevData = data;
-        //    browser.runtime.sendMessage({type, data})
-        //        .then(handleSetDataResponse, handleError);
-        //}
+        if(isDiff(prevData, data)){
+            prevData = data;
+            browser.runtime.sendMessage({
+                type,
+                userId,
+                data
+
+            }).then(handleSetDataResponse, handleError);
+        }
     }
 
-    //window.setInterval(updateData, 5000);
+    window.setInterval(updateData, 5000);
 
     function handleSetDataResponse({ id, data}: IUser) {}
 
@@ -48,11 +52,8 @@ interface IAppUserState {
     }
 
     function handleInitResponse(user: IUser) {
-        console.log("handleInitResponse", user)
+        onLoad();
         const { id: serverUserId, data: serverUserData } = user;
-        //onLoad();
-        console.log('handleInitResponse', serverUserId, serverUserData);
-        const hostUserId = localStorage.getItem(APP_USER_KEY);
         const hostUserData = localStorage.getItem(HOST_DATA_KEY);
 
         localStorage.setItem(APP_USER_KEY, serverUserId);
@@ -76,7 +77,6 @@ interface IAppUserState {
     }
 
     function handleChangeUser(user: IUser){
-        console.log('handleChangeUser', user)
         const appUserState: IAppUserState = {
             scrollY: window.scrollY,
             scrollX: window.scrollX,
@@ -93,6 +93,7 @@ interface IAppUserState {
     }
 
     function handleError(error: string) {
+        console.error(error)
     }
 
     browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IUser}) => {
@@ -101,19 +102,17 @@ interface IAppUserState {
                 handleChangeUser(user);
                 break;
             case MESSAGE_TYPE.CURRENT_USER:
-                browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, userId: localStorage.getItem(APP_USER_KEY)});
+                browser.runtime.sendMessage({type, userId: localStorage.getItem(APP_USER_KEY)});
                 break;
             default:
-                console.log('Unknown message type from background', type, user)
+                console.info('Unknown message type from background', type, user)
         }
     } );
 
     browser.runtime.sendMessage({
-            type: MESSAGE_TYPE.INIT,
-            data: {
-                id: localStorage.getItem(APP_USER_KEY),
-                data: localStorage.getItem(HOST_DATA_KEY)
-            }
+            type: MESSAGE_TYPE.INIT_APP,
+            userId: localStorage.getItem(APP_USER_KEY),
+            data: localStorage.getItem(HOST_DATA_KEY)
         })
         .then(handleInitResponse, handleError);
 
