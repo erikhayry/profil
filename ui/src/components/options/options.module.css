@@ -28,25 +28,26 @@
 }
 
 .userListItem{
-    text-align: center;
     cursor: pointer;
     padding: 10px;
     box-sizing: border-box;
     flex: 1;
     min-height: 25%;
-    flex: 1;
+    min-width: 25%;
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
 
 .avatarButton{
-    width: 25vh;
-    height: 25vh;
+    width: 250px;
+    height: 250px;
     overflow: hidden;
     border-radius: 50%;
     background-color: #f1f1f1;
-    position: relative;
+    display: block;
+    margin: 0 auto;
 }
 
 .userListItem svg{
@@ -73,19 +74,17 @@
 
 .name {
     margin-top: 20px;
-    font-size: 40px;
-    position: absolute;
-    bottom: 20px;
-    background-color: rgba(255, 255, 255, 0.4);
+    font-size: 20px;
+    background-color: #222;
+    color: #fff;
     padding: 5px 15px;
-    left: 50%;
-    transform: translateX(-50%);
+    display: inline-block;
+    text-transform: uppercase;
 }
 
 .menu{
     vertical-align: middle;
 }
-
 
 .settingsBtn {
     background-color: primary;
@@ -125,4 +124,16 @@
     top: 10px;
     right: 10px;
     position: fixed;
+}
+
+.prompt{
+    position: fixed;
+    z-index: 1;
+    width: 100vw;
+    height: 100vh;
+    left: 0;
+    top: 0;
+    background-color: pink;
+    padding: 20px;
+    text-align: center;
 }

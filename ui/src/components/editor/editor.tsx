@@ -11,30 +11,30 @@ import {IUser} from "../../../../typings/index";
 interface IProps {
     user: IUser;
     onSave: (editedUser: IUser) => void
-    onDelete: (userId: string) => void
+    onDelete: (user: IUser) => void
     onCancel: () => void
 }
 
 export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
-    const [editedUser, setEditedUser] = useState<IUser>(user)
+    const [editableUser, setEditableUser] = useState<IUser>(user)
     function handleAvatarChange(customizedAttributes: IAvatarAttributes) {
         console.log("handleAvatarChange")
-        setEditedUser({
-            ...editedUser,
+        setEditableUser({
+            ...editableUser,
             avatar: customizedAttributes
         })
     }
 
     function handleNameChange(event: React.ChangeEvent<HTMLInputElement>){
-        setEditedUser({
-            ...editedUser,
+        setEditableUser({
+            ...editableUser,
             name: event.target.value
         })
     }
 
     function handleUndo(user: IUser){
         console.log("handleUndo", user)
-        setEditedUser({
+        setEditableUser({
             ...user
         })
     }
@@ -48,8 +48,8 @@ export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
             <div className={styles.editorInner}>
                 <div className={styles.body}>
                     <AvataaarsCustomerizer
-                        value={editedUser.avatar}
-                        name={editedUser.name}
+                        value={editableUser.avatar}
+                        name={editableUser.name}
                         onChange={handleAvatarChange}
                         onNameChange={handleNameChange}
                     />
@@ -61,12 +61,12 @@ export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
                         <CornerDownLeft color="white" />Ångra ändringar
                     </button>
                     <button className={styles.btn} onClick={() => {
-                        onDelete(editedUser.id)
+                        onDelete(editableUser)
                     }}>
                         <Trash2 color="white"/>Radera
                     </button>
                     <button className={styles.btn} onClick={() => {
-                        onSave(editedUser)
+                        onSave(editableUser)
                     }}>
                         <Save color="white" />Spara
                     </button>

@@ -6,6 +6,7 @@ import styles from './avatar-customizer.module.css'
 import options, {Attribute, IAvatarAttributes, IOption, randomAvatar} from './avatar-options';
 import classNames from 'classnames';
 import {Edit, Plus} from "react-feather";
+import a11y from "../../styles/a11y.module.css";
 
 interface IProps {
   value: IAvatarAttributes,
@@ -68,7 +69,7 @@ const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
       <div className={styles.inputWrapper}>
         <input className={styles.input} type="text" value={name} ref={textInputRef} onChange={onNameChange} />
         <button className={styles.inputBtn} onClick={editName}>
-          <Edit color={'white'} />Ändra namn
+          <Edit color={'white'} /><span className={a11y.hidden}>Ändra namn</span>
         </button>
       </div>
       <div className={styles.avatarOptions}>

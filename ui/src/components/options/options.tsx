@@ -13,13 +13,13 @@ import {IUser} from "../../../../typings/index";
 
 interface ViewState {
     users: IUser[],
-    editUser: IUser | undefined
+    editUser?: IUser,
+    deleteUser?: IUser,
 }
 
 export const Options = () => {
     const [view, setView ] = useState<ViewState>({
-        users: [],
-        editUser: undefined
+        users: []
     });
 
     useEffect(() => {
@@ -33,7 +33,8 @@ export const Options = () => {
         const {users} = await storage.getData();
         setView({
             users,
-            editUser: undefined
+            editUser: undefined,
+            deleteUser: undefined
         });
     }
 
@@ -56,10 +57,18 @@ export const Options = () => {
         })
     }
 
-    function removeUser(userId: string){
-        console.log("removeUser", userId);
+    function onConfirmedRemoveUser(userId: string){
         storage.deleteUser(userId)
             .then(updateView);
+    }
+
+    function removeUser(user: IUser){
+        console.log("removeUser", user);
+        setView({
+            ...view,
+            deleteUser: user
+        })
+
     }
 
     function onUpdateUser(editedUser: IUser){
@@ -99,8 +108,8 @@ export const Options = () => {
                                     avatarStyle='transparent'
                                     {...user.avatar}
                                 />
-                                <div className={styles.name}>{user.name}</div>
                             </button>
+                            <h2 className={styles.name}>{user.name}</h2>
                         </li>
                     )
                 })}
@@ -113,6 +122,28 @@ export const Options = () => {
                 <span className={a11y.hidden}>Lägg till användare</span>
             </button>}
             {view.editUser && <Editor user={view.editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
+            {view.deleteUser && <div className={styles.prompt}>
+                <h1>Är du säker du vill radera {view.deleteUser.name} och all hens historik</h1>
+                <Avatar
+                    avatarStyle='transparent'
+                    {...view.deleteUser.avatar}
+                />
+                <ul>
+                    <li>
+                        <button onClick={() => {
+                            onConfirmedRemoveUser(view.deleteUser.id)
+                        }}>Ja</button>
+                    </li>
+                    <li>
+                        <button onClick={() => {
+                            setView({
+                                ...view,
+                                deleteUser: undefined
+                            })
+                        }}>Nej</button>
+                    </li>
+                </ul>
+            </div>}
         </div>
 
     )

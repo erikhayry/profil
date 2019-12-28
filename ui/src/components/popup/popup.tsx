@@ -50,6 +50,7 @@ export const Popup = () => {
             currentUser: userId
         });
         browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER_FORM_UI, userId});
+        window.close();
     }
 
     async function clearUser(userId: string) {
@@ -59,11 +60,11 @@ export const Popup = () => {
     
     return(
         <div className={styles.container}>
-            <ul className={styles.userList}>
-                <li className={classNames({
-                  [styles.userListItem]: true,
-                  [styles.title]: true
-                })}>Profiler</li>
+            <h1 className={classNames({
+                [styles.title]: true
+            })}>Profiler</h1>
+            {!currentUser && <div>Laddar / webbsida stöds ej</div>}
+            {currentUser && <ul className={styles.userList}>
                 {view.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
@@ -96,7 +97,7 @@ export const Popup = () => {
                         <Sliders color="white"/>
                     </button>
                 </li>
-            </ul>
+            </ul>}
         </div>
     )
 };

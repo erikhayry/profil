@@ -75,9 +75,11 @@ async function deleteUser(userId: string): Promise<IApp> {
     console.log("deleteUser", userId);
     const appData = await getData();
     const index = appData.users.findIndex(({ id }) => userId === id);
-    if(index){
+    console.log(index)
+    if(index > -1){
         appData.users.splice(index, 1);
     }
+    console.log(appData.users)
     return setData(appData);
 }
 
