@@ -272,12 +272,21 @@ const options: IOption[] = [
 
 export default options;
 
+function getRandomAttribute(values: string[]) {
+    return  values[Math.floor(Math.random() * values.length)]
+}
+
 export function randomAvatar():IAvatarAttributes{
     const avatar = options.reduce((acc:any, {attribute, values, colorAttribute, colors}:IOption) => {
-        acc[attribute] = values[Math.floor(Math.random() * values.length)];
+        if(attribute === Attribute.facialHairType) {
+            acc[attribute] = Math.random() > 0.5 ? values[0] : getRandomAttribute(values)
+        } else {
+            acc[attribute] = getRandomAttribute(values);
+        }
+
         if(colorAttribute){
             const colorKeys = Object.keys(colors);
-            acc[colorAttribute] = colorKeys[Math.floor(Math.random() * colorKeys.length)];
+            acc[colorAttribute] = getRandomAttribute(colorKeys);
         }
         return acc;
     },{});

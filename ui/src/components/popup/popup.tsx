@@ -1,7 +1,7 @@
 import * as React from "react";
-import { Sliders } from 'react-feather';
-import styles from './popup.module.css';
 import {useEffect, useState} from "react";
+import {Sliders} from 'react-feather';
+import styles from './popup.module.css';
 import storage from '../../../../utils/storage'
 import Avatar from "avataaars";
 import classNames from 'classnames';
@@ -9,6 +9,7 @@ import classNames from 'classnames';
 import browser from 'webextension-polyfill';
 import {IUser, MESSAGE_TYPE} from "../../../../typings/index";
 import useCurrentUser from "../../../utils/onMessage";
+import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 
 interface IView {
     users: IUser[],
@@ -63,21 +64,26 @@ export const Popup = () => {
             <h1 className={classNames({
                 [styles.title]: true
             })}>Profiler</h1>
-            {!currentUser && <div>Laddar / webbsida stöds ej</div>}
-            {currentUser && <ul className={styles.userList}>
+            {!currentUser && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
+            {<ul className={styles.userList}>
                 {view.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
-                        [styles.isCurrent]: user.id === view.currentUser
+                        [styles.isCurrent]: user.id === view.currentUser,
+                        [styles.isLegit]: Boolean(currentUser)
                     });
                     return (
                         <li className={userListItemClasses}>
-                            <button className={styles.avatarButton} onClick={() =>
-                                handleSetCurrentUser(user.id)
-                            }>
+                            <button
+                                className={styles.avatarButton}
+                                disabled={!currentUser}
+                                onClick={() =>
+                                    handleSetCurrentUser(user.id)
+                                }
+                            >
                                 <Avatar
                                     avatarStyle='transparent'
-                                    {...user.avatar}
+                                    {...withEmotion(user.avatar, Boolean(currentUser) ? undefined : Emotion.SAD)}
                                 />
                             </button>
                             <div className={styles.name}>{user.name}</div>

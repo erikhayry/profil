@@ -1,15 +1,15 @@
 import * as React from "react";
-import styles from './options.module.css';
 import {useEffect, useState} from "react";
+import styles from './options.module.css';
 import storage from '../../../../utils/storage'
 import {Editor} from "../editor/editor";
 import Avatar from "avataaars";
 import classNames from 'classnames';
 // @ts-ignore
-import browser from 'webextension-polyfill';
-import {Plus, X} from "react-feather";
+import {Plus} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
 import {IUser} from "../../../../typings/index";
+import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 
 interface ViewState {
     users: IUser[],

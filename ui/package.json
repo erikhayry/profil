@@ -17,7 +17,7 @@
   },
   "scripts": {
     "typescript": "npx webpack",
-    "dev": "npm-watch"
+    "dev": "npm run typescript && npm-watch"
   },
   "author": "",
   "license": "ISC",

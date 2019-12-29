@@ -31,7 +31,7 @@
   },
   "scripts": {
     "typescript": "npx webpack",
-    "dev": "npm-watch"
+    "dev": "npm run typescript && npm-watch"
   },
   "dependencies": {
     "@sentry/browser": "^4.6.3",
