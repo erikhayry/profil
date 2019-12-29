@@ -1,7 +1,7 @@
 // @ts-ignore
 const browser = require("webextension-polyfill");
 import storage from '../utils/storage';
-    import {IApp, IUser, MESSAGE_TYPE} from "../typings/index";
+    import {IApp, IClientUser, IServerUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
 
 const VERSION = '1.0.0';
 //Sentry.INIT_APP({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
@@ -14,7 +14,7 @@ function isDiff(obj1: any, obj2: any){
     return JSON.stringify(obj1) !== JSON.stringify(obj2)
 }
 
-async function setData(hostUserId: string, data: any): Promise<IUser> {
+async function setData(hostUserId: string, data: any): Promise<IServerUser> {
     console.log("setData", hostUserId, data)
     const serverUserSetOnClient = await storage.getUser(hostUserId);
     if(serverUserSetOnClient){
@@ -27,16 +27,16 @@ async function setData(hostUserId: string, data: any): Promise<IUser> {
     return users[0];
 }
 
-function setUserData(id: string, data: string): Promise<IUser> {
+function setUserData(id: string, data: string): Promise<IServerUser> {
     return setData(id, data)
-            .then((user:IUser) => storage.getUser(user.id))
+            .then((user:IServerUser) => storage.getUser(user.id))
 }
 
-async function getCurrentUserData(hostUserId?:string, hostUserData?:string): Promise<IUser> {
+async function getCurrentUserData(client: SUPPORTED_CLIENT, hostUserId?:string, hostUserData?:string): Promise<IClientUser> {
     console.log('getCurrentUserData', hostUserId, hostUserData);
 
     if(!hostUserId && !hostUserData){
-        const { users } = await storage.getData();
+        const { users } = await storage.getData(client);
         //1.
         //Host: no data, no user.
         //Server: no data
@@ -146,7 +146,7 @@ async function sendMessageToContent(type: MESSAGE_TYPE, userId?: string){
     }).catch(onError);
 }
 
-function sendMessageToTabs(tabs: {id: string}[], type: MESSAGE_TYPE, user: IUser) {
+function sendMessageToTabs(tabs: {id: string}[], type: MESSAGE_TYPE, user: IServerUser) {
     for (let tab of tabs) {
         browser.tabs.sendMessage(
             tab.id,
@@ -160,16 +160,17 @@ function onError(error: string) {
     console.log('onError', error);
 }
 
-async function handleMessage({type, data, userId, user}: {
+async function handleMessage({type, client,data, userId, user}: {
     type: MESSAGE_TYPE,
+    client: SUPPORTED_CLIENT,
     data?: any,
     userId?: string,
-    user?: IUser
-}): Promise<IUser> {
-    console.log('handleMessage', type, data, userId, user);
+    user?: IServerUser
+}): Promise<IServerUser> {
+    console.log('handleMessage', type, data, userId, user, client);
     switch (type) {
         case MESSAGE_TYPE.INIT_APP:
-            return getCurrentUserData(userId, data);
+            return getCurrentUserData(client, userId, data);
         case MESSAGE_TYPE.REQUEST_CURRENT_USER:
             console.log('req current')
             sendMessageToContent(MESSAGE_TYPE.CURRENT_USER)

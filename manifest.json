@@ -18,7 +18,7 @@
 				"https://www.svtplay.se/*"
 			],
 			"js": [
-				"dist/content.js"
+				"dist/client.js"
 			]
 		}
 	],

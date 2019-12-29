@@ -4,7 +4,7 @@
 //    scope.setTag("version", VERSION);
 //});
 
-import {IUser, MESSAGE_TYPE} from "../typings/index";
+import {IClientUser, IServerUser, MESSAGE_TYPE} from "../typings/index";
 
 interface IAppUserState {
     scrollY: number,
@@ -12,7 +12,7 @@ interface IAppUserState {
 }
 
 (function() {
-    const HOST_DATA_KEY = 'persistent_state';
+    const CLIENT_DATA_KEY = 'persistent_state';
     const APP_USER_KEY = 'profile-current-user';
     const APP_USER_STATE = 'profile-current-state';
     const browser = require("webextension-polyfill");
@@ -22,7 +22,7 @@ interface IAppUserState {
     }
 
     function updateData(){
-        const data = localStorage.getItem(HOST_DATA_KEY);
+        const data = localStorage.getItem(CLIENT_DATA_KEY);
         const userId = localStorage.getItem(APP_USER_KEY);
         const type = MESSAGE_TYPE.ADD_DATA_FOR_USER;
 
@@ -36,15 +36,15 @@ interface IAppUserState {
 
     window.setInterval(updateData, 5000);
 
-    function handleSetDataResponse(user: IUser) {
+    function handleSetDataResponse(user: IClientUser) {
         const { id: serverUserId, data: serverUserData } = user;
-        const hostUserId = localStorage.getItem(APP_USER_KEY);
-        if(hostUserId !== serverUserId){
+        const clientUserId = localStorage.getItem(APP_USER_KEY);
+        if(clientUserId !== serverUserId){
             localStorage.setItem(APP_USER_KEY, serverUserId);
             if(serverUserData){
-                localStorage.setItem(HOST_DATA_KEY, serverUserData);
+                localStorage.setItem(CLIENT_DATA_KEY, serverUserData);
             } else {
-                localStorage.removeItem(HOST_DATA_KEY);
+                localStorage.removeItem(CLIENT_DATA_KEY);
             }
             location.reload();
         }
@@ -59,18 +59,18 @@ interface IAppUserState {
         }
     }
 
-    function handleInitResponse(user: IUser) {
+    function handleInitResponse(user: IClientUser) {
         onLoad();
         const { id: serverUserId, data: serverUserData } = user;
-        const hostUserData = localStorage.getItem(HOST_DATA_KEY)
-        const hostUserId = localStorage.getItem(APP_USER_KEY);
+        const clientUserData = localStorage.getItem(CLIENT_DATA_KEY)
+        const clientUserId = localStorage.getItem(APP_USER_KEY);
 
         localStorage.setItem(APP_USER_KEY, serverUserId);
         browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, userId: localStorage.getItem(APP_USER_KEY)});
 
-        if(serverUserData && (!hostUserData || isDiff(serverUserData, hostUserData))) {
+        if(serverUserData && (!clientUserData || isDiff(serverUserData, clientUserData))) {
             console.log('10');
-            localStorage.setItem(HOST_DATA_KEY, serverUserData);
+            localStorage.setItem(CLIENT_DATA_KEY, serverUserData);
             location.reload();
         } else {
             //browser?.notifications?.create({
@@ -82,7 +82,7 @@ interface IAppUserState {
         }
     }
 
-    function handleChangeUser(user: IUser){
+    function handleChangeUser(user: IClientUser){
         const appUserState: IAppUserState = {
             scrollY: window.scrollY,
             scrollX: window.scrollX,
@@ -91,9 +91,9 @@ interface IAppUserState {
         localStorage.setItem(APP_USER_KEY, user.id);
         localStorage.setItem(APP_USER_STATE, JSON.stringify(appUserState));
         if(user.data){
-            localStorage.setItem(HOST_DATA_KEY, user.data);
+            localStorage.setItem(CLIENT_DATA_KEY, user.data);
         } else {
-            localStorage.removeItem(HOST_DATA_KEY);
+            localStorage.removeItem(CLIENT_DATA_KEY);
         }
         location.reload();
     }
@@ -102,7 +102,7 @@ interface IAppUserState {
         console.error(error)
     }
 
-    browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IUser}) => {
+    browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IServerUser}) => {
         switch(type) {
             case MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND:
                 handleChangeUser(user);
@@ -118,7 +118,7 @@ interface IAppUserState {
     browser.runtime.sendMessage({
             type: MESSAGE_TYPE.INIT_APP,
             userId: localStorage.getItem(APP_USER_KEY),
-            data: localStorage.getItem(HOST_DATA_KEY)
+            data: localStorage.getItem(CLIENT_DATA_KEY)
         })
         .then(handleInitResponse, handleError);
 
@@ -132,7 +132,7 @@ interface IAppUserState {
     2.
         Host: data, no user
         Server no data
-        => set user 1 as current with host data
+        => set user 1 as current with client data
     3.
         Host: no data, valid user
         Server: no data
@@ -140,7 +140,7 @@ interface IAppUserState {
     4.
         Host: data, valid user
         Server: no data
-        => add host data to server
+        => add client data to server
     5.
        Host: no data. Invalid user
        Server: no data
@@ -148,23 +148,23 @@ interface IAppUserState {
     6.
        Host: data. Invalid user
        Server: no data
-        => set user 1 as current with host data
+        => set user 1 as current with client data
     7.
         Host: no data, no user.
         Server: data
-        => set user 1 as current, update host storage
+        => set user 1 as current, update client storage
     8.
         Host: data, no user
         Server: data
-        => if user with no data add, else create new user with host data. Set as current.
+        => if user with no data add, else create new user with client data. Set as current.
     9.
         Host: no data, valid user
         Server: data
-        => set host user as current. Update host storage
+        => set client user as current. Update client storage
     10.
         Host: data, valid user
         Server: data
-        => set host user as current. Update host storage
+        => set client user as current. Update client storage
     11.
        Host: no data. Invalid user
        Server: data
@@ -172,7 +172,7 @@ interface IAppUserState {
     12.
        Host: data. Invalid user
        Server: data
-        => if user with no data add, else create new user with host data. Set as current.
+        => if user with no data add, else create new user with client data. Set as current.
 
     13: Host data = {EMPTY}
 

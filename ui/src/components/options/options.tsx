@@ -8,13 +8,13 @@ import classNames from 'classnames';
 // @ts-ignore
 import {Plus} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
-import {IUser} from "../../../../typings/index";
+import {IServerUser} from "../../../../typings/index";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 
 interface ViewState {
-    users: IUser[],
-    editUser?: IUser,
-    deleteUser?: IUser,
+    users: IServerUser[],
+    editUser?: IServerUser,
+    deleteUser?: IServerUser,
 }
 
 export const Options = () => {
@@ -62,7 +62,7 @@ export const Options = () => {
             .then(updateView);
     }
 
-    function removeUser(user: IUser){
+    function removeUser(user: IServerUser){
         console.log("removeUser", user);
         setView({
             ...view,
@@ -71,7 +71,7 @@ export const Options = () => {
 
     }
 
-    function onUpdateUser(editedUser: IUser){
+    function onUpdateUser(editedUser: IServerUser){
         console.log("onUpdateUser", editedUser);
         const index = view.users.findIndex(({ id }) => view.editUser.id === id);
         view.users[index] = editedUser;

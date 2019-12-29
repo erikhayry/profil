@@ -1,4 +1,4 @@
-import {IApp, IUser} from "../typings/index";
+import {IApp, IClientData, IServerUser, IUserData, SUPPORTED_CLIENT} from "../typings/index";
 import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
 
 const browser = require("webextension-polyfill");
@@ -6,11 +6,11 @@ const browser = require("webextension-polyfill");
 export interface IStorage {
     getData: () => Promise<IApp>;
     setData: (app: IApp) => Promise<IApp>;
-    addUser: (data?: any) => Promise<IUser>
+    addUser: (data?: any) => Promise<IServerUser>
     deleteUser: (userId: string) => Promise<IApp>
-    setUserData: (userId: string, data: any) => Promise<IUser>
+    setUserData: (userId: string, data: any) => Promise<IServerUser>
     clearUser: (userId: string) => Promise<IApp>
-    getUser: (userId: string) => Promise<IUser>
+    getUser: (userId: string) => Promise<IServerUser>
     clearApp: () => Promise<IApp>
 }
 
@@ -18,11 +18,12 @@ interface IAppStorageData {
     app?: IApp
 }
 
-function getNewUser(data?: any): IUser {
-    let newUser: IUser = {
+function getNewUser(data?: any): IServerUser {
+    let newUser: IServerUser = {
         name: 'Ny användare',
         id: ID(),
-        avatar: randomAvatar()
+        avatar: randomAvatar(),
+        data: {} as IUserData
     };
 
     if(data){
@@ -43,7 +44,7 @@ function getInitialState(){
     };
 }
 
-function getData(): Promise<IApp> {
+function getData(client: SUPPORTED_CLIENT): Promise<IApp> {
     console.log("getData")
 
     return browser.storage.sync.get('app')
@@ -51,7 +52,15 @@ function getData(): Promise<IApp> {
             if(!app){
                 return setData(getInitialState());
             }
-            return app;
+            return {
+                ...app,
+                users: app.users.map(user => {
+                    return {
+                        ...user,
+                        data: user.data.get(client)
+                    }
+                })
+            };
         })
 }
 
@@ -61,7 +70,7 @@ function setData(app: IApp): Promise<IApp> {
         .then(getData)
 }
 
-async function addUser(data?: any): Promise<IUser> {
+async function addUser(data?: any): Promise<IServerUser> {
     console.log("addUser")
     const appData = await getData();
     const newUser = getNewUser(data);
@@ -83,7 +92,7 @@ async function deleteUser(userId: string): Promise<IApp> {
     return setData(appData);
 }
 
-async function setUserData(userId: string, data: any): Promise<IUser> {
+async function setUserData(userId: string, data: any): Promise<IServerUser> {
     console.log("setUserData", userId, data);
     const appData = await getData();
     const index = appData.users.findIndex(({ id }) => id === userId);
@@ -93,7 +102,7 @@ async function setUserData(userId: string, data: any): Promise<IUser> {
     return getUser(userId);
 }
 
-function getUser(userId: string): Promise<IUser> {
+function getUser(userId: string): Promise<IServerUser> {
     console.log("getUser", userId)
     return getData()
         .then((app: IApp) => {

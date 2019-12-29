@@ -9,14 +9,34 @@ export enum MESSAGE_TYPE {
     CURRENT_USER_FORM_UI = 'currentUserUi'
 }
 
-export interface IUser {
+export enum SUPPORTED_CLIENT {
+    SVT= 'svt',
+    UR = 'UR',
+    SVT_BARN = 'svt_barn',
+    SR = 'sr'
+}
+
+export interface IClientData {
+    data?: any
+    dataUpdated?: number
+}
+
+export type IUserData = Map<SUPPORTED_CLIENT, IClientData>
+
+export interface IClientUser {
     id: string;
     name: string;
     avatar: IAvatarAttributes;
-    data?: any;
-    dataUpdated?: number;
+    data?: any
+}
+
+export interface IServerUser {
+    id: string;
+    name: string;
+    avatar: IAvatarAttributes;
+    data: IUserData
 }
 export interface IApp {
-    users: IUser[];
+    users: IServerUser[];
 }
 

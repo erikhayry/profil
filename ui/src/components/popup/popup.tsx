@@ -7,12 +7,12 @@ import Avatar from "avataaars";
 import classNames from 'classnames';
 // @ts-ignore
 import browser from 'webextension-polyfill';
-import {IUser, MESSAGE_TYPE} from "../../../../typings/index";
+import {IServerUser, MESSAGE_TYPE} from "../../../../typings/index";
 import useCurrentUser from "../../../utils/onMessage";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 
 interface IView {
-    users: IUser[],
+    users: IServerUser[],
     currentUser?: string
 }
 

@@ -6,17 +6,17 @@ import styles from './editor.module.css';
 import a11y from '../../styles/a11y.module.css';
 import classNames from 'classnames';
 import {X, Save, Trash2, CornerDownLeft} from "react-feather";
-import {IUser} from "../../../../typings/index";
+import {IServerUser} from "../../../../typings/index";
 
 interface IProps {
-    user: IUser;
-    onSave: (editedUser: IUser) => void
-    onDelete: (user: IUser) => void
+    user: IServerUser;
+    onSave: (editedUser: IServerUser) => void
+    onDelete: (user: IServerUser) => void
     onCancel: () => void
 }
 
 export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
-    const [editableUser, setEditableUser] = useState<IUser>(user)
+    const [editableUser, setEditableUser] = useState<IServerUser>(user)
     function handleAvatarChange(customizedAttributes: IAvatarAttributes) {
         console.log("handleAvatarChange")
         setEditableUser({
@@ -32,7 +32,7 @@ export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
         })
     }
 
-    function handleUndo(user: IUser){
+    function handleUndo(user: IServerUser){
         console.log("handleUndo", user)
         setEditableUser({
             ...user
