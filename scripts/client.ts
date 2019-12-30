@@ -4,7 +4,9 @@
 //    scope.setTag("version", VERSION);
 //});
 
-import {IClientUser, IServerUser, MESSAGE_TYPE} from "../typings/index";
+import {IClientUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
+import { browser } from "webextension-polyfill-ts";
+import {getClient} from "../utils/client-handler";
 
 interface IAppUserState {
     scrollY: number,
@@ -12,40 +14,47 @@ interface IAppUserState {
 }
 
 (function() {
-    const CLIENT_DATA_KEY = 'persistent_state';
     const APP_USER_KEY = 'profile-current-user';
     const APP_USER_STATE = 'profile-current-state';
-    const browser = require("webextension-polyfill");
 
     function isDiff(obj1: any, obj2: any){
         return JSON.stringify(obj1) !== JSON.stringify(obj2)
     }
 
     function updateData(){
-        const data = localStorage.getItem(CLIENT_DATA_KEY);
+        const client = getClient(location.host);
+        const storageKeysWithData = client.dataKeys.map(dataKey => {
+            return {
+                key: dataKey,
+                data: localStorage.getItem(dataKey)
+            }
+        });
         const userId = localStorage.getItem(APP_USER_KEY);
         const type = MESSAGE_TYPE.ADD_DATA_FOR_USER;
 
         browser.runtime.sendMessage({
             type,
             userId,
-            data
+            storageKeysWithData,
+            clientId: client.id
         }).then(handleSetDataResponse, handleError);
 
     }
 
-    window.setInterval(updateData, 5000);
+    //window.setInterval(updateData, 5000);
 
     function handleSetDataResponse(user: IClientUser) {
-        const { id: serverUserId, data: serverUserData } = user;
+        const { id: serverUserId, storageKeysWithData } = user;
         const clientUserId = localStorage.getItem(APP_USER_KEY);
         if(clientUserId !== serverUserId){
             localStorage.setItem(APP_USER_KEY, serverUserId);
-            if(serverUserData){
-                localStorage.setItem(CLIENT_DATA_KEY, serverUserData);
-            } else {
-                localStorage.removeItem(CLIENT_DATA_KEY);
-            }
+            storageKeysWithData.forEach(({key, data} ) => {
+                if(data){
+                    localStorage.setItem(key, data);
+                } else {
+                    localStorage.removeItem(key);
+                }
+            });
             location.reload();
         }
     }
@@ -60,26 +69,30 @@ interface IAppUserState {
     }
 
     function handleInitResponse(user: IClientUser) {
+        console.log("handleInitResponse", user);
         onLoad();
-        const { id: serverUserId, data: serverUserData } = user;
-        const clientUserData = localStorage.getItem(CLIENT_DATA_KEY)
-        const clientUserId = localStorage.getItem(APP_USER_KEY);
+        const { id: serverUserId } = user;
 
         localStorage.setItem(APP_USER_KEY, serverUserId);
-        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER, userId: localStorage.getItem(APP_USER_KEY)});
+        browser.runtime.sendMessage({
+            type: MESSAGE_TYPE.CURRENT_USER,
+            userId: localStorage.getItem(APP_USER_KEY),
+            client: SUPPORTED_CLIENT.SVT
+        });
 
-        if(serverUserData && (!clientUserData || isDiff(serverUserData, clientUserData))) {
-            console.log('10');
-            localStorage.setItem(CLIENT_DATA_KEY, serverUserData);
-            location.reload();
-        } else {
-            //browser?.notifications?.create({
-            //    "type": "basic",
-            //    "iconUrl": browser.extension.getURL("icons/logo@2x.png"),
-            //    "title": 'Profil',
-            //    "message": `${user.name} är vald`
-            //});
-        }
+        user.storageKeysWithData.forEach(( {key, data} ) => {
+            let reload = false;
+            const clientUserData =  localStorage.getItem(key);
+            if(data && (!clientUserData || isDiff(data, clientUserData))) {
+                localStorage.setItem(key, data);
+                reload = true;
+            }
+            if(reload){
+                location.reload();
+            }
+        });
+
+
     }
 
     function handleChangeUser(user: IClientUser){
@@ -90,11 +103,15 @@ interface IAppUserState {
 
         localStorage.setItem(APP_USER_KEY, user.id);
         localStorage.setItem(APP_USER_STATE, JSON.stringify(appUserState));
-        if(user.data){
-            localStorage.setItem(CLIENT_DATA_KEY, user.data);
-        } else {
-            localStorage.removeItem(CLIENT_DATA_KEY);
-        }
+
+        user.storageKeysWithData.forEach(( {key, data} ) => {
+            if(data){
+                localStorage.setItem(key, data);
+            } else {
+                localStorage.removeItem(key);
+            }
+        });
+
         location.reload();
     }
 
@@ -102,23 +119,35 @@ interface IAppUserState {
         console.error(error)
     }
 
-    browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IServerUser}) => {
+    browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IClientUser}) => {
         switch(type) {
             case MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND:
                 handleChangeUser(user);
                 break;
             case MESSAGE_TYPE.CURRENT_USER:
-                browser.runtime.sendMessage({type, userId: localStorage.getItem(APP_USER_KEY)});
+                console.log("sendMessage", type);
+                browser.runtime.sendMessage({
+                    type: MESSAGE_TYPE.INITIAL_STATE_RESPONSE,
+                    userId: localStorage.getItem(APP_USER_KEY),
+                    clientId: getClient(location.host)?.id
+                });
                 break;
             default:
                 console.info('Unknown message type from background', type, user)
         }
     } );
 
+    const client = getClient(location.host);
     browser.runtime.sendMessage({
             type: MESSAGE_TYPE.INIT_APP,
+            clientId: client.id,
             userId: localStorage.getItem(APP_USER_KEY),
-            data: localStorage.getItem(CLIENT_DATA_KEY)
+            storageKeysWithData: client.dataKeys.map(dataKey => {
+                return {
+                    key: dataKey,
+                    data: localStorage.getItem(dataKey)
+                }
+            })
         })
         .then(handleInitResponse, handleError);
 

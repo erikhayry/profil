@@ -1,4 +1,4 @@
-import React, {useRef} from "react";
+import React, {useEffect, useRef} from "react";
 import { Piece } from 'avataaars'
 import Avatar from 'avataaars'
 import map from 'lodash/map'
@@ -42,6 +42,10 @@ const AvataaarsCustomizer = ({value, name, onChange, onNameChange}: IProps) => {
   const [selectedTab,setSelectedTab] = React.useState<string>('top');
   const [attributes, setAttributes] = React.useState<IAvatarAttributes>(value || randomAvatar());
   const textInputRef = useRef(null);
+  
+  useEffect(() => {
+      setAttributes(value)
+  }, [value])
 
   function pieceClicked(attr: Attribute, val: string) {
     let newAttributes = {

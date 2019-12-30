@@ -1,27 +1,37 @@
 import { useState, useEffect } from 'react';
 // @ts-ignore
 import browser from 'webextension-polyfill';
-import {MESSAGE_TYPE} from "../../typings/index";
+import {MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../typings/index";
 
-const useCurrentUser = () => {
-    const [currentUser, setCurrentUser] = useState<string | undefined>(undefined);
+const useInitialClientState = () => {
+    const [initialState, setInitialState] = useState<{
+        currentUser: string,
+        clientId: SUPPORTED_CLIENT
+    } | undefined>(undefined);
     useEffect(() => {
-        function updateUser(userId?: string) {
-            console.log("updateUser", userId)
-            setCurrentUser(userId);
+        function updateAppState(clientId: SUPPORTED_CLIENT, userId: string) {
+            console.log("updateAppState", userId)
+            setInitialState({
+                clientId,
+                currentUser: userId
+            });
         }
-        browser.runtime.onMessage.addListener( ({ type, userId } : { type: MESSAGE_TYPE, userId: string}) => {
+        browser.runtime.onMessage.addListener( ({ type, userId, clientId} : {
+            type: MESSAGE_TYPE,
+            userId: string,
+            clientId: SUPPORTED_CLIENT
+        }) => {
             console.log("onMessage", type, userId)
             switch (type) {
-                case MESSAGE_TYPE.CURRENT_USER:
-                    updateUser(userId)
+                case MESSAGE_TYPE.INITIAL_STATE_RESPONSE:
+                    updateAppState(clientId, userId)
             }
         });
-        return () => browser.runtime.onMessage.removeEventListener(updateUser);
+        return () => browser.runtime.onMessage.removeEventListener(updateAppState);
     }, []);
 
-    return currentUser;
+    return initialState;
 };
 
 
-export default useCurrentUser;
+export default useInitialClientState;

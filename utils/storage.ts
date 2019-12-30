@@ -1,14 +1,13 @@
-import {IApp, IClientData, IServerUser, IUserData, SUPPORTED_CLIENT} from "../typings/index";
+import {IApp, IClientData, IServerUser, IStorageKeyWithData, IUserData, SUPPORTED_CLIENT} from "../typings/index";
 import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
-
-const browser = require("webextension-polyfill");
+import { browser } from "webextension-polyfill-ts";
 
 export interface IStorage {
     getData: () => Promise<IApp>;
     setData: (app: IApp) => Promise<IApp>;
-    addUser: (data?: any) => Promise<IServerUser>
+    addUser: (storageKeysWithData?: IStorageKeyWithData[]) => Promise<IServerUser>
     deleteUser: (userId: string) => Promise<IApp>
-    setUserData: (userId: string, data: any) => Promise<IServerUser>
+    setUserData: (userId: string, storageKeysWithData: IStorageKeyWithData[], client: SUPPORTED_CLIENT) => Promise<IServerUser>
     clearUser: (userId: string) => Promise<IApp>
     getUser: (userId: string) => Promise<IServerUser>
     clearApp: () => Promise<IApp>
@@ -18,16 +17,16 @@ interface IAppStorageData {
     app?: IApp
 }
 
-function getNewUser(data?: any): IServerUser {
+function getNewUser(clientsData?: IUserData): IServerUser {
     let newUser: IServerUser = {
         name: 'Ny användare',
         id: ID(),
         avatar: randomAvatar(),
-        data: {} as IUserData
+        clientsData: {} as IUserData
     };
 
-    if(data){
-        newUser.data = data;
+    if(clientsData){
+        newUser.clientsData = clientsData;
     }
 
     return newUser;
@@ -44,7 +43,7 @@ function getInitialState(){
     };
 }
 
-function getData(client: SUPPORTED_CLIENT): Promise<IApp> {
+function getData(): Promise<IApp> {
     console.log("getData")
 
     return browser.storage.sync.get('app')
@@ -52,15 +51,7 @@ function getData(client: SUPPORTED_CLIENT): Promise<IApp> {
             if(!app){
                 return setData(getInitialState());
             }
-            return {
-                ...app,
-                users: app.users.map(user => {
-                    return {
-                        ...user,
-                        data: user.data.get(client)
-                    }
-                })
-            };
+            return app;
         })
 }
 
@@ -92,11 +83,11 @@ async function deleteUser(userId: string): Promise<IApp> {
     return setData(appData);
 }
 
-async function setUserData(userId: string, data: any): Promise<IServerUser> {
-    console.log("setUserData", userId, data);
+async function setUserData(userId: string, storageKeysWithData: IStorageKeyWithData[], client: SUPPORTED_CLIENT): Promise<IServerUser> {
+    console.log("setUserData", userId, storageKeysWithData, client);
     const appData = await getData();
     const index = appData.users.findIndex(({ id }) => id === userId);
-    appData.users[index].data = data;
+    appData.users[index].clientsData[client].storageKeysWithData = storageKeysWithData;
     await setData(appData);
 
     return getUser(userId);
@@ -115,7 +106,7 @@ function clearUser(userId: string): Promise<IApp> {
     return getData()
         .then((app: IApp) => {
             const index = app.users.findIndex(({ id }) => id === userId);
-            delete app.users[index].data;
+            delete app.users[index].clientsData;
 
             return app;
         })

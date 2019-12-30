@@ -5,32 +5,30 @@ import styles from './popup.module.css';
 import storage from '../../../../utils/storage'
 import Avatar from "avataaars";
 import classNames from 'classnames';
-// @ts-ignore
-import browser from 'webextension-polyfill';
-import {IServerUser, MESSAGE_TYPE} from "../../../../typings/index";
-import useCurrentUser from "../../../utils/onMessage";
+import { browser } from "webextension-polyfill-ts";
+import {IServerUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
+import useInitialClientState from "../../../utils/onMessage";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 
 interface IView {
     users: IServerUser[],
     currentUser?: string
+    clientId?: SUPPORTED_CLIENT
 }
 
 export const Popup = () => {
     const [view, setView ] = useState<IView>({
         users: [],
     });
-    const currentUser = useCurrentUser();
+    const initialClientState = useInitialClientState();
 
     useEffect(() => {
-        console.log("currentUser", currentUser);
-        if(currentUser){
-            setView({
-                ...view,
-                currentUser
-            })
-        }
-    }, [currentUser]);
+        console.log("initialClientState", initialClientState);
+        setView({
+            ...view,
+            ...initialClientState
+        })
+    }, [initialClientState]);
 
     useEffect(() => {
         console.log('useEffect')
@@ -39,7 +37,7 @@ export const Popup = () => {
             setView({
                 users
             });
-            browser.runtime.sendMessage({type: MESSAGE_TYPE.REQUEST_CURRENT_USER});
+            browser.runtime.sendMessage({type: MESSAGE_TYPE.REQUEST_INITIAL_STATE, clientId: view.clientId});
         }
 
         init();
@@ -50,7 +48,7 @@ export const Popup = () => {
             ...view,
             currentUser: userId
         });
-        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER_FORM_UI, userId});
+        browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER_FORM_UI, userId, clientId: view.clientId});
         window.close();
     }
 
@@ -64,26 +62,26 @@ export const Popup = () => {
             <h1 className={classNames({
                 [styles.title]: true
             })}>Profiler</h1>
-            {!currentUser && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
+            {!view.currentUser && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
             {<ul className={styles.userList}>
                 {view.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
                         [styles.isCurrent]: user.id === view.currentUser,
-                        [styles.isLegit]: Boolean(currentUser)
+                        [styles.isLegit]: Boolean(view.currentUser)
                     });
                     return (
                         <li className={userListItemClasses}>
                             <button
                                 className={styles.avatarButton}
-                                disabled={!currentUser}
+                                disabled={!view.currentUser}
                                 onClick={() =>
                                     handleSetCurrentUser(user.id)
                                 }
                             >
                                 <Avatar
                                     avatarStyle='transparent'
-                                    {...withEmotion(user.avatar, Boolean(currentUser) ? undefined : Emotion.SAD)}
+                                    {...withEmotion(user.avatar, Boolean(view.currentUser) ? undefined : Emotion.SAD)}
                                 />
                             </button>
                             <div className={styles.name}>{user.name}</div>
