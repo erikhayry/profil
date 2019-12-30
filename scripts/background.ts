@@ -17,28 +17,31 @@ async function setData(client: SUPPORTED_CLIENT, clientUserId: string, data: any
     console.log("setData", client, clientUserId, data);
     const serverUserSetOnClient = await storage.getUser(clientUserId);
     if(serverUserSetOnClient){
+        console.log('serverUserSetOnClient',serverUserSetOnClient)
         const clientDataFromServer = serverUserSetOnClient.clientsData[client];
 
         if(isDiff(clientDataFromServer, data)){
-            await storage.setUserData(serverUserSetOnClient.id, data, client);
+            return storage.setUserData(serverUserSetOnClient.id, data, client);
         }
-        return serverUserSetOnClient;
+        return storage.getUser(clientUserId);
     }
     const { users } = await storage.getData();
     return users[0];
 }
 
 async function setUserData(client: SUPPORTED_CLIENT, id: string, storageKeysWithData: IStorageKeyWithData[]): Promise<IClientUser> {
+    console.log('setUserData', client, id, storageKeysWithData)
     const currentUser = await setData(client, id, storageKeysWithData)
             .then((user:IServerUser) => storage.getUser(user.id));
 
+    console.log('setUserData', currentUser)
     return Promise.resolve(serverUserToClient(currentUser, client))
 }
 
 function serverUserToClient(user: IServerUser, client: SUPPORTED_CLIENT):IClientUser{
     return {
         ...user,
-        storageKeysWithData: user.clientsData[client].storageKeysWithData,
+        storageKeysWithData: user.clientsData[client]?.storageKeysWithData || [],
         clients: Object.keys(user.clientsData) as SUPPORTED_CLIENT[]
     }
 }
@@ -59,8 +62,6 @@ async function getCurrentUserData(client: SUPPORTED_CLIENT, clientStorageKeysWit
     console.log("users", users)
     const firstUser = users[0];
     const clientUserDataExists = clientStorageKeysWithData.some(({data}) => data);
-
-
     const serverUserDataExists = users.some(user => user.clientsData[client]?.storageKeysWithData.some(({ data }) => data));
     const unusedUser = users.find(user => user.clientsData[client]?.storageKeysWithData.every(({ data }) => !data));
 
@@ -135,7 +136,7 @@ async function getCurrentUserData(client: SUPPORTED_CLIENT, clientStorageKeysWit
         //Server: no data
         if(
             serverUserSetOnClient &&
-            serverUserSetOnClient.clientsData[client].storageKeysWithData.every(({ data }) => !data) &&
+            serverUserSetOnClient.clientsData[client]?.storageKeysWithData.every(({ data }) => !data) &&
             clientUserDataExists
         ){
             console.log('4')
@@ -143,7 +144,7 @@ async function getCurrentUserData(client: SUPPORTED_CLIENT, clientStorageKeysWit
         }
         if(
             serverUserSetOnClient &&
-            serverUserSetOnClient.clientsData[client].storageKeysWithData.some(({ data }) => !data)
+            serverUserSetOnClient.clientsData[client]?.storageKeysWithData.some(({ data }) => !data)
         ){
             //10.
             //Client: data, valid user

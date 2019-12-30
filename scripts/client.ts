@@ -32,6 +32,8 @@ interface IAppUserState {
         const userId = localStorage.getItem(APP_USER_KEY);
         const type = MESSAGE_TYPE.ADD_DATA_FOR_USER;
 
+        console.log('updateData', client, storageKeysWithData, userId, type);
+
         browser.runtime.sendMessage({
             type,
             userId,
@@ -41,10 +43,11 @@ interface IAppUserState {
 
     }
 
-    //window.setInterval(updateData, 5000);
+    window.setTimeout(updateData, 5000);
 
     function handleSetDataResponse(user: IClientUser) {
-        const { id: serverUserId, storageKeysWithData } = user;
+        console.log('handleSetDataResponse', user)
+        const { id: serverUserId, storageKeysWithData = [] } = user;
         const clientUserId = localStorage.getItem(APP_USER_KEY);
         if(clientUserId !== serverUserId){
             localStorage.setItem(APP_USER_KEY, serverUserId);
@@ -104,7 +107,7 @@ interface IAppUserState {
         localStorage.setItem(APP_USER_KEY, user.id);
         localStorage.setItem(APP_USER_STATE, JSON.stringify(appUserState));
 
-        user.storageKeysWithData.forEach(( {key, data} ) => {
+        user?.storageKeysWithData.forEach(( {key, data} ) => {
             if(data){
                 localStorage.setItem(key, data);
             } else {

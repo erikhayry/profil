@@ -87,7 +87,9 @@ async function setUserData(userId: string, storageKeysWithData: IStorageKeyWithD
     console.log("setUserData", userId, storageKeysWithData, client);
     const appData = await getData();
     const index = appData.users.findIndex(({ id }) => id === userId);
-    appData.users[index].clientsData[client].storageKeysWithData = storageKeysWithData;
+    appData.users[index].clientsData[client] = {
+        storageKeysWithData
+    };
     await setData(appData);
 
     return getUser(userId);
