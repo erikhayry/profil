@@ -4,9 +4,10 @@
 //    scope.setTag("version", VERSION);
 //});
 
-import {IClientUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
+import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE} from "../typings/index";
 import { browser } from "webextension-polyfill-ts";
-import {getClient} from "../utils/client-handler";
+import Messenger from "../utils/messenger";
+import {isDiff} from "../utils/data-handler";
 
 interface IAppUserState {
     scrollY: number,
@@ -14,43 +15,17 @@ interface IAppUserState {
 }
 
 (function() {
-    const APP_USER_KEY = 'profile-current-user';
-    const APP_USER_STATE = 'profile-current-state';
-
-    function isDiff(obj1: any, obj2: any){
-        return JSON.stringify(obj1) !== JSON.stringify(obj2)
-    }
-
     function updateData(){
-        const client = getClient(location.host);
-        const storageKeysWithData = client.dataKeys.map(dataKey => {
-            return {
-                key: dataKey,
-                data: localStorage.getItem(dataKey)
-            }
-        });
-        const userId = localStorage.getItem(APP_USER_KEY);
-        const type = MESSAGE_TYPE.ADD_DATA_FOR_USER;
-
-        console.log('updateData', client, storageKeysWithData, userId, type);
-
-        browser.runtime.sendMessage({
-            type,
-            userId,
-            storageKeysWithData,
-            clientId: client.id
-        }).then(handleSetDataResponse, handleError);
-
+        Messenger.client.addDataForUser(location.host)
+            .then(handleSetDataResponse, handleError);
     }
-
-    window.setTimeout(updateData, 5000);
 
     function handleSetDataResponse(user: IClientUser) {
         console.log('handleSetDataResponse', user)
         const { id: serverUserId, storageKeysWithData = [] } = user;
-        const clientUserId = localStorage.getItem(APP_USER_KEY);
+        const clientUserId = localStorage.getItem(CLIENT_APP_KEY.APP_USER_KEY);
         if(clientUserId !== serverUserId){
-            localStorage.setItem(APP_USER_KEY, serverUserId);
+            localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
             storageKeysWithData.forEach(({key, data} ) => {
                 if(data){
                     localStorage.setItem(key, data);
@@ -63,10 +38,10 @@ interface IAppUserState {
     }
 
     function onLoad(){
-        const prevAppUserState = JSON.parse(localStorage.getItem(APP_USER_STATE)) as IAppUserState;
+        const prevAppUserState = JSON.parse(localStorage.getItem(CLIENT_APP_KEY.APP_USER_STATE)) as IAppUserState;
 
         if(prevAppUserState){
-            localStorage.removeItem(APP_USER_STATE);
+            localStorage.removeItem(CLIENT_APP_KEY.APP_USER_STATE);
             window.scrollTo(prevAppUserState.scrollX, prevAppUserState.scrollY)
         }
     }
@@ -76,12 +51,8 @@ interface IAppUserState {
         onLoad();
         const { id: serverUserId } = user;
 
-        localStorage.setItem(APP_USER_KEY, serverUserId);
-        browser.runtime.sendMessage({
-            type: MESSAGE_TYPE.CURRENT_USER,
-            userId: localStorage.getItem(APP_USER_KEY),
-            client: SUPPORTED_CLIENT.SVT
-        });
+        localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
+        Messenger.client.currentUser(location.host);
 
         user.storageKeysWithData.forEach(( {key, data} ) => {
             let reload = false;
@@ -104,8 +75,8 @@ interface IAppUserState {
             scrollX: window.scrollX,
         };
 
-        localStorage.setItem(APP_USER_KEY, user.id);
-        localStorage.setItem(APP_USER_STATE, JSON.stringify(appUserState));
+        localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, user.id);
+        localStorage.setItem(CLIENT_APP_KEY.APP_USER_STATE, JSON.stringify(appUserState));
 
         user?.storageKeysWithData.forEach(( {key, data} ) => {
             if(data){
@@ -122,6 +93,10 @@ interface IAppUserState {
         console.error(error)
     }
 
+    //new MessengerListener()
+    //    .onCURRENT_USER_FROM_BACKGROUND(handleChangeUser)
+    //    .onCURRENT_USER(() => Messenger.client.initialStateRes(location.host))
+
     browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IClientUser}) => {
         switch(type) {
             case MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND:
@@ -129,31 +104,20 @@ interface IAppUserState {
                 break;
             case MESSAGE_TYPE.CURRENT_USER:
                 console.log("sendMessage", type);
-                browser.runtime.sendMessage({
-                    type: MESSAGE_TYPE.INITIAL_STATE_RESPONSE,
-                    userId: localStorage.getItem(APP_USER_KEY),
-                    clientId: getClient(location.host)?.id
-                });
+                Messenger.client.initialStateRes(location.host);
                 break;
             default:
                 console.info('Unknown message type from background', type, user)
         }
-    } );
+    });
 
-    const client = getClient(location.host);
-    browser.runtime.sendMessage({
-            type: MESSAGE_TYPE.INIT_APP,
-            clientId: client.id,
-            userId: localStorage.getItem(APP_USER_KEY),
-            storageKeysWithData: client.dataKeys.map(dataKey => {
-                return {
-                    key: dataKey,
-                    data: localStorage.getItem(dataKey)
-                }
-            })
-        })
+
+    /*
+        INIT CLIENT
+     */
+    Messenger.client.initAppReq(location.host)
         .then(handleInitResponse, handleError);
-
+    window.setTimeout(updateData, 5000);
 }());
 
 /*

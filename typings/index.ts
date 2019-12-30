@@ -10,6 +10,11 @@ export enum MESSAGE_TYPE {
     CURRENT_USER_FORM_UI = 'currentUserUi'
 }
 
+export enum CLIENT_APP_KEY {
+    APP_USER_KEY = 'profile-current-user',
+    APP_USER_STATE = 'profile-current-state'
+}
+
 export enum SUPPORTED_CLIENT {
     SVT = 'svt',
     UR = 'ur',
@@ -26,7 +31,7 @@ export interface IClientData {
     storageKeysWithData: IStorageKeyWithData[]
 }
 
-export type IUserData = Record<SUPPORTED_CLIENT, IClientData>
+export type IUserData = Record<string, IStorageKeyWithData[]>
 
 export interface IClientUser {
     id: string;

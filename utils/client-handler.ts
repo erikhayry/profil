@@ -6,7 +6,7 @@ interface IClientOrigins {
     dataKeys: string[]
 }
 
-const CLIENT_ORIGINS: IClientOrigins[] = [
+export const CLIENT_ORIGINS: IClientOrigins[] = [
     {
         origins: ['https://www.svtplay.se', 'www.svtplay.se'],
         id: SUPPORTED_CLIENT.SVT,
