@@ -24,13 +24,13 @@ export const Options = () => {
 
     useEffect(() => {
         console.log('useEffect')
-        storage.getData()
+        storage.getUsers()
             .then(updateView)
     }, []);
 
 
     async function updateView(){
-        const {users} = await storage.getData();
+        const users = await storage.getUsers();
         setView({
             users,
             editUser: undefined,

@@ -33,7 +33,7 @@ export const Popup = () => {
     useEffect(() => {
         console.log('useEffect')
         async function init() {
-            const { users } = await storage.getData();
+            const users = await storage.getUsers();
             setView({
                 users
             });

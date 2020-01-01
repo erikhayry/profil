@@ -26,7 +26,7 @@ async function setData(client: SUPPORTED_CLIENT, clientUserId: string, data: any
         }
         return storage.getUser(clientUserId);
     }
-    const { users } = await storage.getData();
+    const users = await storage.getUsers();
     return users[0];
 }
 
