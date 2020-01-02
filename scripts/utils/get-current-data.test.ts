@@ -1,4 +1,4 @@
-import {getCurrentUserData} from "./get-current-data";
+import {getCurrentUser} from "./get-current-data";
 import {IApp, IServerUser, IStorageKeyWithData, SUPPORTED_CLIENT} from "../../typings/index";
 import server, {IServer} from "../../utils/server";
 import {randomAvatar} from "../../ui/src/components/avatar-customizer/avatar-options";
@@ -45,7 +45,7 @@ describe('getCurrentData - no client user', () =>{
     });
 
     it('one server user, no server user data', async () => {
-        currentUser = await getCurrentUserData(client, clientNoUserData);
+        currentUser = await getCurrentUser(client);
 
         expect(currentUser.id).toEqual('1');
         expect(currentUser.name).toEqual('Ny användare');
@@ -53,7 +53,7 @@ describe('getCurrentData - no client user', () =>{
     });
 
     it('one server user, server user data', async () => {
-        currentUser = await getCurrentUserData(client, clientNoUserData);
+        currentUser = await getCurrentUser(client);
 
         users[0].clientsData = {
             [SUPPORTED_CLIENT.SVT]: [
@@ -71,7 +71,7 @@ describe('getCurrentData - no client user', () =>{
 
     it('multiple server user, server user data and no data, no client data, no client user', async () => {
         users.push(mockUser('2'));
-        currentUser = await getCurrentUserData(client, clientNoUserData);
+        currentUser = await getCurrentUser(client);
 
         expect(currentUser).toBeUndefined();
     });
@@ -89,7 +89,7 @@ describe('getCurrentData - client user', () =>{
     });
 
     it('one server user, no server user data', async () => {
-        currentUser = await getCurrentUserData(client, clientNoUserData, clientUserId);
+        currentUser = await getCurrentUser(client, clientUserId);
 
         expect(currentUser.id).toEqual(clientUserId);
         expect(currentUser.name).toEqual('Ny användare');
@@ -97,7 +97,7 @@ describe('getCurrentData - client user', () =>{
     });
 
     it('one server user, server user data', async () => {
-        currentUser = await getCurrentUserData(client, clientNoUserData, clientUserId);
+        currentUser = await getCurrentUser(client, clientUserId);
 
         users[0].clientsData = {
             [SUPPORTED_CLIENT.SVT]: [
@@ -115,7 +115,7 @@ describe('getCurrentData - client user', () =>{
 
     it('multiple server user, server user data and no data, no client data', async () => {
         users.push(mockUser('2'));
-        currentUser = await getCurrentUserData(client, clientNoUserData, clientUserId);
+        currentUser = await getCurrentUser(client, clientUserId);
 
         expect(currentUser.id).toEqual(clientUserId);
         expect(currentUser.name).toEqual('Ny användare');

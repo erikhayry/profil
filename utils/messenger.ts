@@ -4,6 +4,7 @@ import {getClient} from "./client-handler";
 
 function getMessageBody(origin: string){
     const client = getClient(origin);
+    console.log('client', client)
     const storageKeysWithData = client.dataKeys.map(dataKey => {
         return {
             key: dataKey,
@@ -20,9 +21,11 @@ function getMessageBody(origin: string){
 
 function initAppReq(origin: string):Promise<IClientUser>{
     const messageBody = getMessageBody(origin);
+    console.log('mb', messageBody)
     return browser.runtime.sendMessage({
         type: MESSAGE_TYPE.INIT_APP,
-        ...messageBody
+        clientId: messageBody.clientId,
+        userId: messageBody.userId
     })
 }
 

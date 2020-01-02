@@ -10,6 +10,7 @@ import {Plus} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
 import {IServerUser} from "../../../../typings/index";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
+import server from "../../../../utils/server";
 
 interface ViewState {
     users: IServerUser[],
@@ -80,7 +81,7 @@ export const Options = () => {
             ...view,
             editUser: undefined
         });
-        storage.setData(view)
+        server.setData(view)
             .then(updateView);
     }
     

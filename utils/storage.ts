@@ -91,8 +91,7 @@ function clearUser(userId: string): Promise<IApp> {
     return server.getData()
         .then((app: IApp) => {
             const index = app.users.findIndex(({ id }) => id === userId);
-            delete app.users[index].clientsData;
-
+            app.users[index].clientsData = {};
             return app;
         })
         .then(server.setData)
