@@ -18,7 +18,7 @@ interface IView {
 
 export const Popup = () => {
     const [view, setView ] = useState<IView>({
-        users: [],
+        users: []
     });
     const initialClientState = useInitialClientState();
 
@@ -35,6 +35,7 @@ export const Popup = () => {
         async function init() {
             const users = await storage.getUsers();
             setView({
+                ...view,
                 users
             });
             browser.runtime.sendMessage({type: MESSAGE_TYPE.REQUEST_INITIAL_STATE, clientId: view.clientId});
@@ -62,26 +63,26 @@ export const Popup = () => {
             <h1 className={classNames({
                 [styles.title]: true
             })}>Profiler</h1>
-            {!view.currentUser && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
+            {!view.clientId && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
             {<ul className={styles.userList}>
                 {view.users.map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
                         [styles.isCurrent]: user.id === view.currentUser,
-                        [styles.isLegit]: Boolean(view.currentUser)
+                        [styles.isLegit]: Boolean(view.clientId)
                     });
                     return (
                         <li className={userListItemClasses}>
                             <button
                                 className={styles.avatarButton}
-                                disabled={!view.currentUser}
+                                disabled={!Boolean(view.clientId)}
                                 onClick={() =>
                                     handleSetCurrentUser(user.id)
                                 }
                             >
                                 <Avatar
                                     avatarStyle='transparent'
-                                    {...withEmotion(user.avatar, Boolean(view.currentUser) ? undefined : Emotion.SAD)}
+                                    {...withEmotion(user.avatar, Boolean(view.clientId) ? undefined : Emotion.SAD)}
                                 />
                             </button>
                             <div className={styles.name}>{user.name}</div>
