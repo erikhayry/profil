@@ -22,17 +22,20 @@ interface IAppUserState {
 
     function handleSetDataResponse(user: IClientUser) {
         if(user){
+            let reload = false;
             const { id: serverUserId, storageKeysWithData = [] } = user;
             const clientUserId = localStorage.getItem(CLIENT_APP_KEY.APP_USER_KEY);
-            if(clientUserId !== serverUserId){
-                localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
-                storageKeysWithData.forEach(({key, data} ) => {
-                    if(data){
-                        localStorage.setItem(key, data);
-                    } else {
-                        localStorage.removeItem(key);
-                    }
-                });
+            localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
+            storageKeysWithData.forEach(({key, data} ) => {
+                if(!data){
+                    reload = true;
+                    localStorage.removeItem(key);
+                } else if(isDiff(data, localStorage.getItem(key))){
+                    reload = true;
+                    localStorage.setItem(key, data);
+                }
+            });
+            if(reload){
                 location.reload();
             }
         } else {
@@ -74,6 +77,7 @@ interface IAppUserState {
     }
 
     function handleChangeUser(user: IClientUser){
+        console.log("handleChangeUser", user.storageKeysWithData)
         const appUserState: IAppUserState = {
             scrollY: window.scrollY,
             scrollX: window.scrollX,
@@ -120,5 +124,5 @@ interface IAppUserState {
      */
     Messenger.client.initAppReq(location.host)
         .then(handleInitResponse, handleError);
-    window.setTimeout(updateData, 5000);
+    window.setInterval(updateData, 5000);
 }());

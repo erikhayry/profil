@@ -2,6 +2,7 @@ import { browser } from "webextension-polyfill-ts";
 import storage from '../utils/storage';
     import {IApp, IClientUser, IServerUser, IStorageKeyWithData, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
 import {getCurrentUser} from "./utils/get-current-data";
+import {serverUserToClient} from "../utils/data-handler";
 
 const VERSION = '1.0.0';
 //Sentry.INIT_APP({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
@@ -41,14 +42,6 @@ async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, stora
 
 }
 
-function serverUserToClient(user: IServerUser, client: SUPPORTED_CLIENT):IClientUser{
-    return {
-        ...user,
-        storageKeysWithData: user.clientsData[client] || [],
-        clients: Object.keys(user.clientsData || {}) as SUPPORTED_CLIENT[]
-    }
-}
-
 async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IClientUser>{
     const currentUser = await getCurrentUser(client, clientUserId);
 
@@ -77,7 +70,7 @@ function sendMessageToTabs(tabs: {id?: number}[], type: MESSAGE_TYPE, user?: ICl
 function onError(error: string) {
 }
 
-async function handleMessage({type, clientId, storageKeysWithData, userId, user}: {
+async function handleMessage({type, clientId, storageKeysWithData, userId}: {
     type: MESSAGE_TYPE,
     clientId: SUPPORTED_CLIENT,
     storageKeysWithData: IStorageKeyWithData[],
