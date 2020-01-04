@@ -1,6 +1,6 @@
 import {isDiff, serverUserToClient} from "./data-handler";
 import {IUserData, SUPPORTED_CLIENT} from "../typings/index";
-import {IAvatarAttributes, randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
+import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
 import {CLIENT_ORIGINS} from "./client-handler";
 
 describe('data-handler', function() {

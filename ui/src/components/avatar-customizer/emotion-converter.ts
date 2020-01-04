@@ -1,4 +1,4 @@
-import options, {IAvatarAttributes, IOption} from "./avatar-options";
+import {IAvatarAttributes} from "../avatar/profil-avatar";
 
 export enum Emotion{
     HAPPY= 'happy',
@@ -6,15 +6,20 @@ export enum Emotion{
 }
 
 export function withEmotion(avatar: IAvatarAttributes, emotion?: Emotion):IAvatarAttributes{
+    let ret = {
+        ...avatar
+    }
     if(emotion === Emotion.HAPPY){
-        avatar.mouthType = 'Smile';
-        avatar.eyebrowType = 'RaisedExcited';
+        ret.mouthType = 'Smile';
+        ret.eyebrowType = 'RaisedExcited';
+        ret.eyeType = 'Hearts';
     } else if(emotion === Emotion.SAD){
-        avatar.mouthType = 'Disbelief';
-        avatar.eyebrowType = 'Angry';
+        ret.mouthType = 'Disbelief';
+        ret.eyebrowType = 'Angry';
+        ret.eyeType = 'Surprised';
     }
 
     return {
-        ...avatar
+        ...ret
     };
 }

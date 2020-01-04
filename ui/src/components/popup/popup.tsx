@@ -3,12 +3,12 @@ import {useEffect, useState} from "react";
 import {Sliders} from 'react-feather';
 import styles from './popup.module.css';
 import storage from '../../../../utils/storage'
-import Avatar from "avataaars";
 import classNames from 'classnames';
 import { browser } from "webextension-polyfill-ts";
 import {IServerUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
 import useInitialClientState from "../../../utils/onMessage";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
+import {ProfilAvatar} from "../avatar/profil-avatar";
 
 interface IView {
     users: IServerUser[],
@@ -80,9 +80,8 @@ export const Popup = () => {
                                     handleSetCurrentUser(user.id)
                                 }
                             >
-                                <Avatar
-                                    avatarStyle='transparent'
-                                    {...withEmotion(user.avatar, Boolean(view.clientId) ? undefined : Emotion.SAD)}
+                                <ProfilAvatar
+                                    attributes={withEmotion(user.avatar, Boolean(view.clientId) ? undefined : Emotion.SAD)}
                                 />
                             </button>
                             <div className={styles.name}>{user.name}</div>

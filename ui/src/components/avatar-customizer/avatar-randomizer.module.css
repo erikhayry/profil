@@ -1,0 +1,47 @@
+@value animationDelay: 300ms;
+
+.hideTop g[id*='Top/'] ,
+.hideSkin g[id*='Skin/'] ,
+.hideEyebrow g[id*='Eyebrow/'],
+.hideEyes g[id*='Eyes/'],
+.hideNose g[id*='Nose/'],
+.hideMouth g[id*='Mouth/'],
+.hideClothing g[id*='Clothing/']{
+    transition: opacity 1s ease-in-out;
+    opacity: 0;
+}
+
+.show g[id]{
+    transition: opacity animationDelay ease-in-out;
+    opacity: 1;
+}
+
+.hideSkin.show g[id*='Skin/'] {
+    transition-delay: calc(animationDelay * 1);
+}
+
+.hideEyes.show g[id*='Eyes/'] {
+    transition-delay: calc(animationDelay * 2);
+}
+
+.hideMouth.show g[id*='Mouth/'] {
+    transition-delay: calc(animationDelay * 3);
+}
+
+.hideNose.show g[id*='Nose/'] {
+    transition-delay: calc(animationDelay * 4);
+}
+
+.hideEyebrow.show g[id*='Eyebrow/'] {
+    transition-delay: calc(animationDelay * 5);
+}
+
+.hideClothing.show g[id*='Clothing/']{
+    transition-delay: calc(animationDelay * 6);
+}
+
+.hideTop.show g[id*='Top/']  {
+    transition-delay: calc(animationDelay * 7);
+}
+
+

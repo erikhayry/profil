@@ -3,10 +3,11 @@ import { Piece } from 'avataaars'
 import Avatar from 'avataaars'
 import map from 'lodash/map'
 import styles from './avatar-customizer.module.css'
-import options, {Attribute, IAvatarAttributes, IOption, randomAvatar} from './avatar-options';
+import options, {randomAvatar} from './avatar-options';
 import classNames from 'classnames';
 import {Edit, Plus} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
+import {Attribute, IAvatarAttributes, IOption} from "../avatar/profil-avatar";
 
 interface IProps {
   value: IAvatarAttributes,

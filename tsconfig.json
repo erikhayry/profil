@@ -12,6 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "baseUrl": "." // This must be specified if "paths" is.
   },
+  "exclude": ["lib/**/*"],
   "paths": {
     "*": [
       "node_modules/*",

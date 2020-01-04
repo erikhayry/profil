@@ -1,12 +1,12 @@
 import * as React from "react";
 import {useState} from "react";
 import AvataaarsCustomerizer from '../avatar-customizer/avatar-customizer';
-import {IAvatarAttributes} from "../avatar-customizer/avatar-options";
 import styles from './editor.module.css';
 import a11y from '../../styles/a11y.module.css';
 import classNames from 'classnames';
 import {X, Save, Trash2, CornerDownLeft} from "react-feather";
 import {IServerUser} from "../../../../typings/index";
+import {IAvatarAttributes} from "../avatar/profil-avatar";
 
 interface IProps {
     user: IServerUser;

@@ -9,8 +9,10 @@ import classNames from 'classnames';
 import {Plus} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
 import {IServerUser} from "../../../../typings/index";
-import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 import server from "../../../../utils/server";
+import timeMachine from "../avatar-customizer/time-machine";
+import {AvatarRevealer} from "../avatar-customizer/avatar-revealer";
+import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 
 interface ViewState {
     users: IServerUser[],
@@ -69,7 +71,44 @@ export const Options = () => {
             ...view,
             deleteUser: user
         })
+    }
 
+    function onDeleteBtnMouseEvent(event:React.MouseEvent<HTMLElement>){
+        if(event.type === "mouseenter"){
+            setView({
+                ...view,
+                deleteUser: {
+                    ...view.deleteUser,
+                    avatar: withEmotion(view.editUser.avatar, Emotion.SAD)
+                }
+            })
+        } else {
+            setView({
+                ...view,
+                deleteUser: {
+                    ...view.editUser
+                }
+            })
+        }
+    }
+
+    function onUndoDeleteBtnMouseEvent(event:React.MouseEvent<HTMLElement>){
+        if(event.type === "mouseenter"){
+            setView({
+                ...view,
+                deleteUser: {
+                    ...view.deleteUser,
+                    avatar: withEmotion(view.editUser.avatar, Emotion.HAPPY)
+                }
+            })
+        } else {
+            setView({
+                ...view,
+                deleteUser: {
+                    ...view.editUser
+                }
+            })
+        }
     }
 
     function onUpdateUser(editedUser: IServerUser){
@@ -105,9 +144,8 @@ export const Options = () => {
                                             editUser: user
                                         })
                             }>
-                                <Avatar
-                                    avatarStyle='transparent'
-                                    {...user.avatar}
+                                <AvatarRevealer
+                                    attributes={timeMachine(user.avatar)}
                                 />
                             </button>
                             <h2 className={styles.name}>{user.name}</h2>
@@ -131,12 +169,12 @@ export const Options = () => {
                 />
                 <ul>
                     <li>
-                        <button onClick={() => {
+                        <button className={styles.promptBtn} onMouseEnter={onDeleteBtnMouseEvent} onMouseLeave={onDeleteBtnMouseEvent} onClick={() => {
                             onConfirmedRemoveUser(view.deleteUser.id)
                         }}>Ja</button>
                     </li>
                     <li>
-                        <button onClick={() => {
+                        <button className={styles.promptBtn} onMouseEnter={onUndoDeleteBtnMouseEvent} onMouseLeave={onUndoDeleteBtnMouseEvent} onClick={() => {
                             setView({
                                 ...view,
                                 deleteUser: undefined

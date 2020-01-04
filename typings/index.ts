@@ -1,4 +1,4 @@
-import {IAvatarAttributes} from "../ui/src/components/avatar-customizer/avatar-options";
+import {IAvatarAttributes} from "../ui/src/components/avatar/profil-avatar";
 
 export enum MESSAGE_TYPE {
     INIT_APP = 'init',
