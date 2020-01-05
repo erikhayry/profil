@@ -18,7 +18,7 @@ export const CLIENT_ORIGINS: IClientOrigins[] = [
         dataKeys: ['ProgressTracker']
     },
     {
-        origins: ['https://sverigesradio.se'],
+        origins: ['https://sverigesradio.se', 'sverigesradio.se'],
         id: SUPPORTED_CLIENT.SR,
         dataKeys: ['listen-later']
     },
