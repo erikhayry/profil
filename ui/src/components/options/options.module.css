@@ -6,38 +6,56 @@
     font-family: Helvetica;
     letter-spacing: 2px;
     font-size: 16px;
+    height: 100vh;
 }
 
 .userList{
     text-align: center;
-    height: 100vh;
-    flex-wrap: wrap;
     display: flex;
+    overflow: auto;
+    position: relative;
+    padding: 10px;
+    height: 100vh;
+    align-items: center;
 }
 
 .userList.isDisabled {
     filter: blur(10px);
 }
 
+.userList.hasNew{
+    overflow: visible;
+}
+
 .title{
-    text-align: right;
-    vertical-align: top;
-    padding: 10px;
-    line-height: 1.5;
-    text-transform: uppercase;
+    position: absolute;
+    left: 10px;
+    top: 10px;
+    transition: filter 500ms ease-in-out;
+}
+
+.title.isDisabled{
+    filter: blur(4px);
 }
 
 .userListItem{
     cursor: pointer;
-    padding: 10px;
+    margin: 10px 40px;
     box-sizing: border-box;
-    flex: 1;
-    min-height: 25%;
-    min-width: 25%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
+    min-width: 250px;
+    padding-top: 250px;
+    position: relative;
+    flex-grow: 1;
+    filter: blur(0);
+    transition: filter 500ms ease-in-out;
+}
+
+.userListItem:first-child{
+    z-index: 1;
+}
+
+.userListItem.isNew ~ .userListItem {
+    filter: blur(4px);
 }
 
 .avatarButton{
@@ -47,7 +65,36 @@
     border-radius: 50%;
     background-color: #f1f1f1;
     display: block;
-    margin: 0 auto;
+    transition: all 1s ease-in-out;
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%) translateY(0) scale(1);
+}
+.avatarButton.isNew{
+    position: absolute;
+    transform: translateX(-50%) translateY(-50%) scale(3);
+    left: 50vw;
+    top: 50%;
+    z-index: 1;
+}
+
+.ghostAvatarWrapper{
+    composes: avatarButton;
+    z-index: -1;
+}
+
+.ghostAvatarWrapper g[id*='Top/'] ,
+.ghostAvatarWrapper g[id*='Skin/'] ,
+.ghostAvatarWrapper g[id*='Eyebrow/'],
+.ghostAvatarWrapper g[id*='Eyes/'],
+.ghostAvatarWrapper g[id*='Nose/'],
+.ghostAvatarWrapper g[id*='Mouth/'],
+.ghostAvatarWrapper g[id*='Clothing/']{
+    opacity: 0;
+}
+.ghostAvatarWrapper.hasNewSibling{
+    filter: blur(4px);
 }
 
 .userListItem svg{
@@ -80,6 +127,10 @@
     padding: 5px 15px;
     display: inline-block;
     text-transform: uppercase;
+}
+
+.isNew .name{
+    visibility: hidden;
 }
 
 .menu{
@@ -121,7 +172,7 @@
     cursor: pointer;
     text-align: center;
     padding: 0;
-    top: 10px;
+    bottom: 10px;
     right: 10px;
     position: fixed;
 }
@@ -132,14 +183,51 @@
     width: 100vw;
     height: 100vh;
     left: 0;
-    top: 0;
+    bottom: 0;
     background-color: pink;
     padding: 20px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.promptTitle{
+    font-size: 32px;
+    color: primary;
+    text-transform: uppercase;
+    line-height: 1.5;
+}
+
+.promptAvatarWrapper{
+    height: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.promptAvatar{
+    background-color: primary;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .promptBtn{
-    padding: 10px;
+    padding: 10px 40px;
     margin: 10px;
-    background-color: rgba(0,0,0,0.5);
+    background-color: primary;
+    color: secondary;
+    border-radius: 10px;
+    font-size: 35px;
+}
+
+.promptOptions{
+    display: flex;
+}
+
+.temp{
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    opacity: 0.2;
 }

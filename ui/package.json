@@ -6,7 +6,9 @@
   "watch": {
     "typescript": {
       "patterns": [
-        "src", "utils", "typings"
+        "src",
+        "utils",
+        "typings"
       ],
       "extensions": "ts, tsx, css",
       "quiet": false,

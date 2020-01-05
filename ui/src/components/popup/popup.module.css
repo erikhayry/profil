@@ -2,7 +2,7 @@
 
 .container{
     width: 100%;
-    background-color: secondary;
+    background-color: primary;
     padding: 30px;
     color: primary;
     font-family: Helvetica;
@@ -10,9 +10,14 @@
     font-size: 16px;
 }
 
+.header{
+
+}
+
 .userList{
     text-align: center;
     padding-bottom: 100px;
+    padding-top: 25px;
 }
 
 .info{
@@ -25,20 +30,12 @@
     transform: translateY(-50%);
 }
 
-.title{
-    text-align: right;
-    vertical-align: top;
-    padding: 10px;
-    line-height: 1.5;
-    text-transform: uppercase;
-}
-
 .userListItem{
     display: inline-block;
-    margin: 10px;
+    margin: 10px 0;
     text-align: center;
     vertical-align: middle;
-    filter: grayscale(1)
+    filter: grayscale(0)
 }
 
 .avatarButton {
@@ -46,25 +43,25 @@
     height: 100px;
     display: inline-block;
     border-radius: 50%;
-    border: 5px solid secondary;
+    border: none;
     overflow: hidden;
+    padding: 0;
 }
 
 .avatarButton svg {
     width: 100%;
     height: auto;
 }
+
 .userListItem.isLegit{
     filter: grayscale(0)
 }
 .userListItem.isCurrent .avatarButton{
-    border: 5px solid white;
+    background-color: lightGray;
 }
 
 .name {
-    display: block;
-    margin-top: 20px;
-    color: primary;
+    color: secondary;
     font-size: 12px;
 }
 
@@ -82,9 +79,7 @@
 
 
 .settingsBtn {
-    background-color: white;
     color: primary;
-    border: none;
     font-size: 16px;
     text-transform: uppercase;
     margin: 10px 20px;
@@ -92,13 +87,13 @@
     width: 44px;
     height: 44px;
     cursor: pointer;
-    background: linear-gradient(320deg, rgba(34, 193, 195, 0.7) 0%, rgba(107, 45, 253, 0.7) 100%);
     text-align: center;
-    padding: 0px;
+    background: pink;
+    padding: 0;
+    border: 2px solid white
 }
 
 .settingsBtn:hover{
-    background: rgb(238,174,202);
+    background: linear-gradient(320deg, rgba(34, 193, 195, 0.7) 0%, rgba(107, 45, 253, 0.7) 100%);
     color: primary;
-    border: 2px solid white
 }

@@ -15,7 +15,10 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"https://www.svtplay.se/*"
+				"https://www.svtplay.se/*",
+				"https://urplay.se/*",
+				"https://sverigesradio.se/*",
+				"https://www.svt.se/barnkanalen/*"
 			],
 			"js": [
 				"dist/client.js"

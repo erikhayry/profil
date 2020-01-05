@@ -9,10 +9,11 @@ import {IServerUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/i
 import useInitialClientState from "../../../utils/onMessage";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 import {ProfilAvatar} from "../avatar/profil-avatar";
+import {Title} from "../title/title";
 
 interface IView {
     users: IServerUser[],
-    currentUser?: string
+    currentUser?: IServerUser,
     clientId?: SUPPORTED_CLIENT
 }
 
@@ -26,7 +27,8 @@ export const Popup = () => {
         console.log("initialClientState", initialClientState);
         setView({
             ...view,
-            ...initialClientState
+            currentUser: view.users.find(user => user.id === initialClientState.currentUser),
+            clientId: initialClientState?.clientId
         })
     }, [initialClientState]);
 
@@ -47,7 +49,7 @@ export const Popup = () => {
     function handleSetCurrentUser(userId: string){
         setView({
             ...view,
-            currentUser: userId
+            currentUser: view.users.find(user => user.id === userId)
         });
         browser.runtime.sendMessage({type: MESSAGE_TYPE.CURRENT_USER_FORM_UI, userId, clientId: view.clientId});
         window.close();
@@ -57,37 +59,60 @@ export const Popup = () => {
         console.log("clearUser", userId)
         storage.clearUser(userId)
     }
+
+    const isLegit = Boolean(view.clientId);
     
     return(
         <div className={styles.container}>
-            <h1 className={classNames({
-                [styles.title]: true
-            })}>Profiler</h1>
-            {!view.clientId && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
+            <div className={styles.header}>
+                <Title title={'Profil'} />
+            </div>
+            {!isLegit && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
             {<ul className={styles.userList}>
-                {view.users.map(user => {
+                {view.currentUser &&
+                    <li className={classNames({
+                        [styles.userListItem]: true,
+                        [styles.isCurrent]: true,
+                        [styles.isLegit]: isLegit
+                    })}>
+                        <button
+                            className={styles.avatarButton}
+                            disabled={true}
+                        >
+                            <ProfilAvatar
+                                attributes={withEmotion(view.currentUser.avatar, isLegit ? undefined : Emotion.SAD)}
+                            />
+                        </button>
+                        <div className={styles.name}>{view.currentUser.name}</div>
+                    </li>
+                }
+                {view.users
+                    .filter(user => {
+                        if(!view.currentUser) {
+                            return true
+                        }
+
+                        return view.currentUser.id !== user.id
+                    })
+                    .map(user => {
                     const userListItemClasses = classNames({
                         [styles.userListItem]: true,
-                        [styles.isCurrent]: user.id === view.currentUser,
-                        [styles.isLegit]: Boolean(view.clientId)
+                        [styles.isLegit]: isLegit
                     });
                     return (
                         <li className={userListItemClasses}>
                             <button
                                 className={styles.avatarButton}
-                                disabled={!Boolean(view.clientId)}
+                                disabled={!isLegit}
                                 onClick={() =>
                                     handleSetCurrentUser(user.id)
                                 }
                             >
                                 <ProfilAvatar
-                                    attributes={withEmotion(user.avatar, Boolean(view.clientId) ? undefined : Emotion.SAD)}
+                                    attributes={withEmotion(user.avatar, isLegit ? undefined : Emotion.SAD)}
                                 />
                             </button>
                             <div className={styles.name}>{user.name}</div>
-                            <button onClick={() => {
-                                clearUser(user.id)
-                            }}>Clear</button>
                         </li>
                     )
                 })}

@@ -1,0 +1,30 @@
+@import url('https://fonts.googleapis.com/css?family=Kulim+Park&display=swap');
+@value rainbowRed, rainbowOrange, rainbowYellow, rainbowGreen, rainbowBlue, rainbowPurple from "../../styles/colors.css";
+
+.title{
+    font-family: 'Kulim Park', sans-serif;
+    font-size: 50px;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    font-weight: bold;
+}
+
+.title span:nth-child(1){
+    color: rainbowRed;
+}
+.title span:nth-child(2){
+    color: rainbowOrange;
+
+}
+.title span:nth-child(3){
+    color: rainbowYellow;
+}
+.title span:nth-child(4){
+    color: rainbowGreen;
+}
+.title span:nth-child(5){
+    color: rainbowBlue;
+}
+.title span:nth-child(6){
+    color: rainbowPurple;
+}

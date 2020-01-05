@@ -24,13 +24,10 @@ interface IAppUserState {
         if(user){
             let reload = false;
             const { id: serverUserId, storageKeysWithData = [] } = user;
-            const clientUserId = localStorage.getItem(CLIENT_APP_KEY.APP_USER_KEY);
             localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
+
             storageKeysWithData.forEach(({key, data} ) => {
-                if(!data){
-                    reload = true;
-                    localStorage.removeItem(key);
-                } else if(isDiff(data, localStorage.getItem(key))){
+                if(isDiff(data, localStorage.getItem(key))){
                     reload = true;
                     localStorage.setItem(key, data);
                 }

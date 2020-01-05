@@ -1,5 +1,14 @@
 @value primary: #fff;
 @value secondary: #222;
+
 @value darken: rgba(0, 0, 0, 0.2);
 
 @value pink: #e87f7f;
+@value lightGray: #f1f1f1;
+
+@value rainbowRed: #e60001;
+@value rainbowOrange: #ff8d02;
+@value rainbowYellow: #ffee02;
+@value rainbowGreen: #018122;
+@value rainbowBlue: #014cff;
+@value rainbowPurple: #760287;

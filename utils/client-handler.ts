@@ -11,6 +11,21 @@ export const CLIENT_ORIGINS: IClientOrigins[] = [
         origins: ['https://www.svtplay.se', 'www.svtplay.se'],
         id: SUPPORTED_CLIENT.SVT,
         dataKeys: ['persistent_state']
+    },
+    {
+        origins: ['https://urplay.se', 'urplay.se'],
+        id: SUPPORTED_CLIENT.UR,
+        dataKeys: ['ProgressTracker']
+    },
+    {
+        origins: ['https://sverigesradio.se'],
+        id: SUPPORTED_CLIENT.SR,
+        dataKeys: ['listen-later']
+    },
+    {
+        origins: ['https://www.svt.se'],
+        id: SUPPORTED_CLIENT.SVT_BARN,
+        dataKeys: ['bp_global', 'bp_episodedata', 'bp_videosettings', 'bp_historylist']
     }
 ];
 

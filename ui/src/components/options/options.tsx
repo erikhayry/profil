@@ -13,11 +13,14 @@ import server from "../../../../utils/server";
 import timeMachine from "../avatar-customizer/time-machine";
 import {AvatarRevealer} from "../avatar-customizer/avatar-revealer";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
+import {Title} from "../title/title";
+import {ProfilAvatar} from "../avatar/profil-avatar";
 
 interface ViewState {
     users: IServerUser[],
     editUser?: IServerUser,
     deleteUser?: IServerUser,
+    newUser?: IServerUser
 }
 
 export const Options = () => {
@@ -26,18 +29,27 @@ export const Options = () => {
     });
 
     useEffect(() => {
-        console.log('useEffect')
+        console.log('useEffect');
         storage.getUsers()
-            .then(updateView)
+            .then(() => updateView());
     }, []);
 
+    useEffect(() => {
+        if(view.newUser){
+            window.setTimeout(updateView, 4000)
+        } else {
+            //remove timeout
+        }
+    }, [view.newUser]);
 
-    async function updateView(){
+
+    async function updateView(newUser?: IServerUser){
         const users = await storage.getUsers();
         setView({
             users,
             editUser: undefined,
-            deleteUser: undefined
+            deleteUser: undefined,
+            newUser
         });
     }
 
@@ -48,8 +60,9 @@ export const Options = () => {
 
     async function addUser() {
         console.log("addUser");
-        await storage.addUser()
-        updateView();
+        const user =  await storage.addUser();
+
+        updateView(user);
 
     }
 
@@ -62,7 +75,7 @@ export const Options = () => {
 
     function onConfirmedRemoveUser(userId: string){
         storage.deleteUser(userId)
-            .then(updateView);
+            .then(() => updateView());
     }
 
     function removeUser(user: IServerUser){
@@ -121,24 +134,40 @@ export const Options = () => {
             editUser: undefined
         });
         server.setData(view)
-            .then(updateView);
+            .then(() => updateView());
     }
     
     const userListClasses = classNames({
         [styles.userList]: true,
-        [styles.isDisabled]: !!view.editUser
+        [styles.isDisabled]: Boolean(view.editUser),
+        [styles.hasNew]: Boolean(view.newUser),
+    });
+
+    const titleClasses = classNames({
+        [styles.title]: true,
+        [styles.isDisabled]: Boolean(view.editUser)
     });
 
     return(
         <div className={styles.container}>
+            <Title title={'Profil'} className={titleClasses} />
             <ul className={userListClasses}>
-                {view.users.map(user => {
+                {view.users.reverse().map((user, index) => {
                     const userListItemClasses = classNames({
-                        [styles.userListItem]: true
+                        [styles.userListItem]: true,
+                        [styles.isNew]: user.id === view.newUser?.id,
+                    });
+                    const userListItemBtnClasses = classNames({
+                        [styles.avatarButton]: true,
+                        [styles.isNew]: user.id === view.newUser?.id,
+                    });
+                    const ghostAvatarWrapperClasses = classNames({
+                        [styles.ghostAvatarWrapper]: true,
+                        [styles.hasNewSibling]: user.id === view.newUser?.id,
                     });
                     return (
-                        <li className={userListItemClasses}>
-                            <button className={styles.avatarButton} disabled={!!view.editUser} onClick={() =>
+                        <li className={userListItemClasses} key={user.id}>
+                            <button className={userListItemBtnClasses} disabled={!!view.editUser} onClick={() =>
                                         setView({
                                             ...view,
                                             editUser: user
@@ -148,27 +177,31 @@ export const Options = () => {
                                     attributes={timeMachine(user.avatar)}
                                 />
                             </button>
+                            {index === 0 && <div className={ghostAvatarWrapperClasses}>
+                                <ProfilAvatar attributes={user.avatar} className={styles.ghostAvatar} />
+                            </div>}
                             <h2 className={styles.name}>{user.name}</h2>
                         </li>
                     )
                 })}
             </ul>
 
-            <button onClick={clear}>Clear app</button>
+            <button className={styles.temp} onClick={clear}>Clear app</button>
 
             {!view.editUser && <button className={styles.addUserButton} onClick={addUser}>
                 <Plus color={'white'} size={50}/>
                 <span className={a11y.hidden}>Lägg till användare</span>
             </button>}
+
             {view.editUser && <Editor user={view.editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
+
             {view.deleteUser && <div className={styles.prompt}>
-                <h1>Är du säker du vill radera {view.deleteUser.name} och all hens historik</h1>
-                <Avatar
-                    avatarStyle='transparent'
-                    {...view.deleteUser.avatar}
-                />
-                <ul>
-                    <li>
+                <h1 className={styles.promptTitle}>Är du säker du vill radera {view.deleteUser.name} och all hens historik?</h1>
+                <div className={styles.promptAvatarWrapper}>
+                    <ProfilAvatar attributes={view.deleteUser.avatar} className={styles.promptAvatar}/>
+                </div>
+                <ul className={styles.promptOptions}>
+                    <li className={styles.promptOption}>
                         <button className={styles.promptBtn} onMouseEnter={onDeleteBtnMouseEvent} onMouseLeave={onDeleteBtnMouseEvent} onClick={() => {
                             onConfirmedRemoveUser(view.deleteUser.id)
                         }}>Ja</button>

@@ -1,6 +1,6 @@
 import * as React from "react";
 import {IAvatarAttributes, ProfilAvatar} from "../avatar/profil-avatar";
-import styles from './avatar-randomizer.module.css'
+import styles from './avatar-revealer.module.css'
 import {useEffect, useState} from "react";
 import classNames from 'classnames';
 
