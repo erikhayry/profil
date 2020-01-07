@@ -38,7 +38,9 @@ async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, stora
         })
     }
 
-    return Promise.resolve(undefined);
+    return Promise.resolve({
+        profileSelectorUrl
+    });
 }
 
 async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IBackgroundResponse>{
