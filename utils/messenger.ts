@@ -2,6 +2,7 @@ import {browser, Tabs} from "webextension-polyfill-ts";
 import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
 import {getClient} from "./client-handler";
 import Tab = Tabs.Tab;
+import {IBackgroundResponse} from "../scripts/background";
 
 function getMessageBody(origin: string){
     const client = getClient(origin);
@@ -20,7 +21,7 @@ function getMessageBody(origin: string){
     }
 }
 
-function initAppReq(origin: string):Promise<IClientUser>{
+function initAppReq(origin: string):Promise<IBackgroundResponse>{
     const messageBody = getMessageBody(origin);
     console.log('mb', messageBody)
     return browser.runtime.sendMessage({
@@ -48,7 +49,7 @@ function currentUser(origin: string): void {
     });
 }
 
-function addDataForUser(origin: string): Promise<IClientUser>{
+function addDataForUser(origin: string): Promise<IBackgroundResponse>{
     const messageBody = getMessageBody(origin);
     return browser.runtime.sendMessage({
         type: MESSAGE_TYPE.ADD_DATA_FOR_USER,

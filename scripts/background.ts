@@ -5,6 +5,13 @@ import {getCurrentUser} from "./utils/get-current-data";
 import {isDiff, serverUserToClient} from "../utils/data-handler";
 import messenger from "../utils/messenger";
 
+const profileSelectorUrl = browser.runtime.getURL('/ui/selector.html');
+
+export interface IBackgroundResponse {
+    currentUser?: IClientUser,
+    profileSelectorUrl: string
+}
+
 async function setData(client: SUPPORTED_CLIENT, clientUserId: string, data: any): Promise<IServerUser> {
     const serverUserSetOnClient = await storage.getUser(clientUserId);
     if(serverUserSetOnClient){
@@ -19,21 +26,27 @@ async function setData(client: SUPPORTED_CLIENT, clientUserId: string, data: any
     return undefined;
 }
 
-async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, storageKeysWithData: IStorageKeyWithData[]): Promise<IClientUser | undefined> {
+async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, storageKeysWithData: IStorageKeyWithData[]): Promise<IBackgroundResponse> {
     let currentUser = await getCurrentUser(client, clientUserId);
 
     if(currentUser){
         currentUser = await setData(client, clientUserId, storageKeysWithData)
                 .then((user:IServerUser) => storage.getUser(user.id));
-        return Promise.resolve(serverUserToClient(currentUser, client))
+        return Promise.resolve({
+            currentUser: serverUserToClient(currentUser, client),
+            profileSelectorUrl
+        })
     }
 
     return Promise.resolve(undefined);
 }
 
-async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IClientUser>{
+async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IBackgroundResponse>{
     const currentUser = await getCurrentUser(client, clientUserId);
-    return Promise.resolve(currentUser ? serverUserToClient(currentUser, client) : undefined)
+    return Promise.resolve({
+        currentUser: serverUserToClient(currentUser, client),
+        profileSelectorUrl
+    })
 }
 
 async function handleCurrentUserRequest(clientId: SUPPORTED_CLIENT, userId: string){
@@ -47,7 +60,7 @@ async function handleMessage({type, clientId, storageKeysWithData, userId}: {
     storageKeysWithData: IStorageKeyWithData[],
     userId?: string,
     user?: IClientUser
-}): Promise<IClientUser> {
+}): Promise<IBackgroundResponse> {
     switch (type) {
         case MESSAGE_TYPE.INIT_APP:
             return handleInitApp(clientId, userId);

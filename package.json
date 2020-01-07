@@ -37,13 +37,14 @@
   },
   "dependencies": {
     "@sentry/browser": "^4.6.3",
-    "@types/node": "^12.12.12",
-    "@types/react-transition-group": "^4.2.3",
     "react-transition-group": "^4.3.0",
     "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {
+    "@types/node": "^12.12.12",
+    "@types/react-transition-group": "^4.2.3",
     "@types/jest": "^24.0.25",
+    "@sentry/typescript": "^5.10.0",
     "jest": "^24.9.0",
     "npm-watch": "^0.6.0",
     "ts-jest": "^24.2.0",

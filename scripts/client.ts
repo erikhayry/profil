@@ -1,6 +1,8 @@
+//import * as Sentry from "Sentry";
+//
 //const VERSION = '1.0.0';
-//Sentry.INIT_APP({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
-//Sentry.configureScope((scope) => {
+//Sentry.init({ dsn: 'https://25806d610e264b83a4a363f1bca8cfe3@sentry.io/1873455' });
+//Sentry.configureScope((scope: any) => {
 //    scope.setTag("version", VERSION);
 //});
 
@@ -8,6 +10,7 @@ import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE} from "../typings/index";
 import { browser } from "webextension-polyfill-ts";
 import Messenger from "../utils/messenger";
 import {isDiff} from "../utils/data-handler";
+import {IBackgroundResponse} from "./background";
 
 interface IAppUserState {
     scrollY: number,
@@ -20,10 +23,10 @@ interface IAppUserState {
             .then(handleSetDataResponse, handleError);
     }
 
-    function handleSetDataResponse(user: IClientUser) {
-        if(user){
+    function handleSetDataResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
+        if(currentUser){
             let reload = false;
-            const { id: serverUserId, storageKeysWithData = [] } = user;
+            const { id: serverUserId, storageKeysWithData = [] } = currentUser;
             localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
 
             storageKeysWithData.forEach(({key, data} ) => {
@@ -37,6 +40,7 @@ interface IAppUserState {
             }
         } else {
             console.info('no user found');
+            //window.location.href = `${profileSelectorUrl}?href=${window.location.href}`;
         }
     }
 
@@ -49,15 +53,15 @@ interface IAppUserState {
         }
     }
 
-    function handleInitResponse(user: IClientUser | undefined) {
+    function handleInitResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
         onLoad();
-        if(user){
-            const { id: serverUserId } = user;
+        if(currentUser){
+            const { id: serverUserId } = currentUser;
 
             localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
             Messenger.client.currentUser(location.host);
 
-            user.storageKeysWithData.forEach(( {key, data} ) => {
+            currentUser.storageKeysWithData.forEach(( {key, data} ) => {
                 let reload = false;
                 const clientUserData =  localStorage.getItem(key);
                 if(data && (!clientUserData || isDiff(data, clientUserData))) {
@@ -70,6 +74,7 @@ interface IAppUserState {
             });
         } else {
             console.info('no user found');
+            window.location.href = `${profileSelectorUrl}?href=${window.location.href}`;
         }
     }
 
@@ -97,10 +102,6 @@ interface IAppUserState {
     function handleError(error: string) {
         console.error(error)
     }
-
-    //new MessengerListener()
-    //    .onCURRENT_USER_FROM_BACKGROUND(handleChangeUser)
-    //    .onCURRENT_USER(() => Messenger.client.initialStateRes(location.host))
 
     browser.runtime.onMessage.addListener( ({ type, user } : { type: MESSAGE_TYPE, user: IClientUser}) => {
         switch(type) {
