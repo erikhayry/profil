@@ -1,6 +1,7 @@
-import { browser } from "webextension-polyfill-ts";
-import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE} from "../typings/index";
+import {browser, Tabs} from "webextension-polyfill-ts";
+import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
 import {getClient} from "./client-handler";
+import Tab = Tabs.Tab;
 
 function getMessageBody(origin: string){
     const client = getClient(origin);
@@ -55,7 +56,34 @@ function addDataForUser(origin: string): Promise<IClientUser>{
     })
 }
 
+async function sendMessageToContent(type: MESSAGE_TYPE, client: SUPPORTED_CLIENT, user?: IClientUser): Promise<boolean>{
+    try {
+        const tabs = await browser.tabs.query({
+            currentWindow: true,
+            active: true
+        });
+
+        const messages = tabs.map((tab) => {
+            return sendMessageToTab(tab, type, user);
+        });
+
+        return Promise.all(messages).then(() => true);
+    } catch(error){
+        return Promise.reject(error)
+    }
+}
+
+function sendMessageToTab(tab:Tab, type: MESSAGE_TYPE, user?: IClientUser): Promise<any> {
+        return browser.tabs.sendMessage(
+            tab.id,
+            {type, user}
+        )
+}
+
 export default {
+    background: {
+        sendMessageToContent
+    },
     client: {
         initAppReq,
         initialStateRes,

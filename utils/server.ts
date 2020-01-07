@@ -11,7 +11,7 @@ interface IAppStorageData {
 }
 
 function getData(): Promise<IApp> {
-    console.log("getData")
+    console.info("getData");
     return browser.storage.sync.get('app')
         .then(({ app }: IAppStorageData) => {
             return app;
@@ -19,7 +19,7 @@ function getData(): Promise<IApp> {
 }
 
 function setData(app: IApp): Promise<IApp> {
-    console.log("setData", app);
+    console.info("setData", app);
     return browser.storage.sync.set({ app })
         .then(getData)
 }

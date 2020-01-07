@@ -1,19 +1,9 @@
 import { browser } from "webextension-polyfill-ts";
 import storage from '../utils/storage';
-    import {IApp, IClientUser, IServerUser, IStorageKeyWithData, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
+import {IClientUser, IServerUser, IStorageKeyWithData, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../typings/index";
 import {getCurrentUser} from "./utils/get-current-data";
-import {serverUserToClient} from "../utils/data-handler";
-
-const VERSION = '1.0.0';
-//Sentry.INIT_APP({ dsn: 'https://dd2362f7d005446585e6414b1662594e@sentry.io/1407701' });
-//Sentry.configureScope((scope) => {
-//    scope.setTag("version", VERSION);
-//});
-
-
-function isDiff(obj1: any, obj2: any){
-    return JSON.stringify(obj1) !== JSON.stringify(obj2)
-}
+import {isDiff, serverUserToClient} from "../utils/data-handler";
+import messenger from "../utils/messenger";
 
 async function setData(client: SUPPORTED_CLIENT, clientUserId: string, data: any): Promise<IServerUser> {
     const serverUserSetOnClient = await storage.getUser(clientUserId);
@@ -39,35 +29,16 @@ async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, stora
     }
 
     return Promise.resolve(undefined);
-
 }
 
 async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IClientUser>{
     const currentUser = await getCurrentUser(client, clientUserId);
-
     return Promise.resolve(currentUser ? serverUserToClient(currentUser, client) : undefined)
 }
 
-async function sendMessageToContent(type: MESSAGE_TYPE, client: SUPPORTED_CLIENT, user?: IClientUser){
-    browser.tabs.query({
-        currentWindow: true,
-        active: true
-    }).then((tabs) => {
-        sendMessageToTabs(tabs, type, user)
-    }).catch(onError);
-}
-
-function sendMessageToTabs(tabs: {id?: number}[], type: MESSAGE_TYPE, user?: IClientUser) {
-    for (let tab of tabs) {
-        browser.tabs.sendMessage(
-            tab.id,
-            {type, user}
-        ).then((response: any) => {
-        }).catch(onError);
-    }
-}
-
-function onError(error: string) {
+async function handleCurrentUserRequest(clientId: SUPPORTED_CLIENT, userId: string){
+    const currentUser = await storage.getUser(userId);
+    return serverUserToClient(currentUser, clientId);
 }
 
 async function handleMessage({type, clientId, storageKeysWithData, userId}: {
@@ -81,24 +52,16 @@ async function handleMessage({type, clientId, storageKeysWithData, userId}: {
         case MESSAGE_TYPE.INIT_APP:
             return handleInitApp(clientId, userId);
         case MESSAGE_TYPE.REQUEST_INITIAL_STATE:
-            sendMessageToContent(MESSAGE_TYPE.CURRENT_USER, clientId)
+            return messenger.background.sendMessageToContent(MESSAGE_TYPE.CURRENT_USER, clientId);
             break;
         case MESSAGE_TYPE.ADD_DATA_FOR_USER:
-            return setUserData(clientId, userId, storageKeysWithData)
+            return setUserData(clientId, userId, storageKeysWithData);
         case MESSAGE_TYPE.CURRENT_USER_FORM_UI:
-            const currentUser = await storage.getUser(userId);
-            const currentUserForClient = await serverUserToClient(currentUser, clientId);
-            sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, clientId, currentUserForClient);
+            const currentUser = await handleCurrentUserRequest(clientId, userId);
+            return messenger.background.sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, clientId, currentUser);
             break;
         default:
     }
 }
 
-function handleBrowserAction(){
-    browser.runtime.openOptionsPage();
-}
-
-if(browser.browserAction){
-    //browser.browserAction.onClicked.addListener(handleBrowserAction);
-}
 browser.runtime.onMessage.addListener(handleMessage);

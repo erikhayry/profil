@@ -30,6 +30,5 @@ export const CLIENT_ORIGINS: IClientOrigins[] = [
 ];
 
 export function getClient(origin: string): IClientOrigins {
-    console.log("origin", origin)
     return CLIENT_ORIGINS.find(({ origins }) => origins.includes(origin));
 }

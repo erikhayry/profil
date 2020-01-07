@@ -39,7 +39,6 @@ function getInitialState(){
 }
 
 async function addUser(data?: any): Promise<IServerUser> {
-    console.log("addUser")
     const appData = await server.getData();
     const newUser = getNewUser(data);
     appData.users.push(newUser);
@@ -49,19 +48,15 @@ async function addUser(data?: any): Promise<IServerUser> {
 }
 
 async function deleteUser(userId: string): Promise<IApp> {
-    console.log("deleteUser", userId);
     const appData = await server.getData();
     const index = appData.users.findIndex(({ id }) => userId === id);
-    console.log(index)
     if(index > -1){
         appData.users.splice(index, 1);
     }
-    console.log(appData.users)
     return server.setData(appData);
 }
 
 async function setUserData(userId: string, storageKeysWithData: IStorageKeyWithData[], client: SUPPORTED_CLIENT): Promise<IServerUser> {
-    console.log("setUserData", userId, storageKeysWithData, client);
     const appData = await server.getData();
     const index = appData.users.findIndex(({ id }) => id === userId);
     appData.users[index].clientsData[client] = storageKeysWithData;
@@ -71,7 +66,6 @@ async function setUserData(userId: string, storageKeysWithData: IStorageKeyWithD
 }
 
 function getUsers(): Promise<IServerUser[]> {
-    console.log("getUsers")
     return server.getData()
         .then((app: IApp) => {
             return app.users;
@@ -79,7 +73,6 @@ function getUsers(): Promise<IServerUser[]> {
 }
 
 function getUser(userId: string): Promise<IServerUser> {
-    console.log("getUser", userId)
     return server.getData()
         .then((app: IApp) => {
             return app.users.find(({ id }) => id === userId);
@@ -87,7 +80,6 @@ function getUser(userId: string): Promise<IServerUser> {
 }
 
 function clearUser(userId: string): Promise<IApp> {
-    console.log("clearUser", userId)
     return server.getData()
         .then((app: IApp) => {
             const index = app.users.findIndex(({ id }) => id === userId);
@@ -98,7 +90,6 @@ function clearUser(userId: string): Promise<IApp> {
 }
 
 function clearApp(): Promise<IApp> {
-    console.log("clearApp")
     return server.setData({users: []})
         .then(server.getData)
 }
