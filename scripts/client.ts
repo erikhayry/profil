@@ -9,7 +9,7 @@
 import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE} from "../typings/index";
 import { browser } from "webextension-polyfill-ts";
 import Messenger from "../utils/messenger";
-import {isDiff} from "../utils/data-handler";
+import {getSearchFromUrl, isDiff} from "../utils/data-handler";
 import {IBackgroundResponse} from "./background";
 
 interface IAppUserState {
@@ -73,7 +73,7 @@ interface IAppUserState {
                 }
             });
         } else {
-            console.info('no user found');
+            console.info('init: no user found');
             window.location.href = `${profileSelectorUrl}?href=${window.location.href}`;
         }
     }
@@ -120,6 +120,9 @@ interface IAppUserState {
     /*
         INIT CLIENT
      */
+    const { profileCurrentUser } =  getSearchFromUrl(window.location);
+    localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, profileCurrentUser);
+
     Messenger.client.initAppReq(location.host)
         .then(handleInitResponse, handleError);
     window.setInterval(updateData, 5000);

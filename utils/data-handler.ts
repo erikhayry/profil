@@ -9,17 +9,37 @@ export function isDiff(obj1: any, obj2: any): Boolean{
 }
 
 export function serverUserToClient(user: IServerUser, client: SUPPORTED_CLIENT):IClientUser{
-    const clientDataKeys = CLIENT_ORIGINS.find(({id}) => id === client)?.dataKeys || [];
-    const storageKeysWithData = clientDataKeys.map(key => {
-        const data = user.clientsData[client]?.find(({ key:dataKey }) => key === dataKey)?.data;
+    if(user){
+        const clientDataKeys = CLIENT_ORIGINS.find(({id}) => id === client)?.dataKeys || [];
+        const storageKeysWithData = clientDataKeys.map(key => {
+            const data = user.clientsData[client]?.find(({ key:dataKey }) => key === dataKey)?.data;
+            return {
+                key,
+                data
+            }
+        });
         return {
-            key,
-            data
+            ...user,
+            storageKeysWithData,
+            clients: Object.keys(user?.clientsData || {}) as SUPPORTED_CLIENT[]
         }
-    });
-    return {
-        ...user,
-        storageKeysWithData,
-        clients: Object.keys(user.clientsData || {}) as SUPPORTED_CLIENT[]
     }
+
+    return undefined;
+}
+
+export function getSearchFromUrl(location: Location): Record<string, string>{
+    let pairs = location.search.substring(1).split("&")
+    let obj:Record<string, string> = {};
+    let pair: string[];
+    let i: string;
+
+    for (i in pairs) {
+        if (pairs[i] === "") continue;
+        pair = pairs[i].split("=");
+        const key = decodeURIComponent(pair[0]);
+        obj[key] = decodeURIComponent(pair[1]);
+    }
+
+    return obj;
 }

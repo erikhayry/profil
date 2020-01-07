@@ -46,7 +46,7 @@ async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, stora
 async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IBackgroundResponse>{
     const currentUser = await getCurrentUser(client, clientUserId);
     return Promise.resolve({
-        currentUser: serverUserToClient(currentUser, client),
+        currentUser: currentUser ? serverUserToClient(currentUser, client) : undefined,
         profileSelectorUrl
     })
 }

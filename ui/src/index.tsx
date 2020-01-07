@@ -3,6 +3,7 @@ import * as ReactDOM from "react-dom";
 
 import {Popup} from "./components/popup/popup";
 import {Options} from "./components/options/options";
+import {Selector} from "./components/selector/selector";
 
 const onPopup = document.getElementById("popup");
 const onOptions = document.getElementById("options");
@@ -20,8 +21,8 @@ if(onPopup){
     );
 } else if(onSelector) {
     ReactDOM.render(
-        <Options  />,
-        document.getElementById("options")
+        <Selector  />,
+        document.getElementById("selector")
     );
 }
 

@@ -21,6 +21,10 @@ describe('data-handler', function() {
 })
 
 describe('serverUserToClient', function() {
+    it('with no user', function () {
+        const clientUser = serverUserToClient(undefined, SUPPORTED_CLIENT.SVT);
+        expect(clientUser).toBeUndefined();
+    });
     it('with no data', function () {
         const user = {
             id: '1',
