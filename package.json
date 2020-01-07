@@ -38,6 +38,8 @@
   "dependencies": {
     "@sentry/browser": "^4.6.3",
     "@types/node": "^12.12.12",
+    "@types/react-transition-group": "^4.2.3",
+    "react-transition-group": "^4.3.0",
     "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {

@@ -52,13 +52,13 @@ async function handleMessage({type, clientId, storageKeysWithData, userId}: {
         case MESSAGE_TYPE.INIT_APP:
             return handleInitApp(clientId, userId);
         case MESSAGE_TYPE.REQUEST_INITIAL_STATE:
-            return messenger.background.sendMessageToContent(MESSAGE_TYPE.CURRENT_USER, clientId);
+            messenger.background.sendMessageToContent(MESSAGE_TYPE.CURRENT_USER, clientId);
             break;
         case MESSAGE_TYPE.ADD_DATA_FOR_USER:
             return setUserData(clientId, userId, storageKeysWithData);
         case MESSAGE_TYPE.CURRENT_USER_FORM_UI:
             const currentUser = await handleCurrentUserRequest(clientId, userId);
-            return messenger.background.sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, clientId, currentUser);
+            messenger.background.sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, clientId, currentUser);
             break;
         default:
     }

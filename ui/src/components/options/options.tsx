@@ -15,6 +15,7 @@ import {AvatarRevealer} from "../avatar-customizer/avatar-revealer";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 import {Title} from "../title/title";
 import {ProfilAvatar} from "../avatar/profil-avatar";
+import { CSSTransition } from "react-transition-group";
 
 interface ViewState {
     users: IServerUser[],
@@ -166,22 +167,45 @@ export const Options = () => {
                         [styles.hasNewSibling]: user.id === view.newUser?.id,
                     });
                     return (
-                        <li className={userListItemClasses} key={user.id}>
-                            <button className={userListItemBtnClasses} disabled={!!view.editUser} onClick={() =>
-                                        setView({
-                                            ...view,
-                                            editUser: user
-                                        })
-                            }>
-                                <AvatarRevealer
-                                    attributes={timeMachine(user.avatar)}
-                                />
-                            </button>
-                            {index === 0 && <div className={ghostAvatarWrapperClasses}>
-                                <ProfilAvatar attributes={user.avatar} className={styles.ghostAvatar} />
-                            </div>}
-                            <h2 className={styles.name}>{user.name}</h2>
-                        </li>
+                        <CSSTransition
+                            in={true}
+                            appear={true}
+                            timeout={index * 100}
+                            mountOnEnter
+                            unmountOnExit
+                            classNames={{
+                                appear: styles.userListItemAppear,
+                                appearDone: styles.userListItemAppearDone,
+                                enter: styles.userListItemEnter,
+                                enterActive: styles.userListItemEnterActive,
+                                exit: styles.userListItemExit,
+                                exitActive: styles.userListItemExitActive
+                            }}
+                        >
+                            <li className={userListItemClasses} key={user.id}>
+                                <button className={userListItemBtnClasses} disabled={!!view.editUser} onClick={() =>
+                                            setView({
+                                                ...view,
+                                                editUser: user
+                                            })
+                                }>
+                                    {view.newUser?.id === user.id &&
+                                        <AvatarRevealer
+                                            attributes={timeMachine(user.avatar)}
+                                        />
+                                    }
+                                    {view.newUser?.id !== user.id &&
+                                    <ProfilAvatar
+                                        attributes={timeMachine(user.avatar)}
+                                    />
+                                    }
+                                </button>
+                                {index === 0 && <div className={ghostAvatarWrapperClasses}>
+                                    <ProfilAvatar attributes={user.avatar} className={styles.ghostAvatar} />
+                                </div>}
+                                <h2 className={styles.name}>{user.name}</h2>
+                            </li>
+                        </CSSTransition>
                     )
                 })}
             </ul>

@@ -58,6 +58,33 @@
     filter: blur(4px);
 }
 
+.userListItemAppear{
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+.userListItemAppearDone {
+    opacity: 1;
+    transition: opacity 200ms ease-in;
+}
+
+.userListItemEnter {
+    opacity: 0;
+}
+
+.userListItemEnterActive {
+    opacity: 1;
+    transition: opacity 500ms ease-in;
+}
+.userListItemExit {
+    opacity: 1;
+}
+.userListItemExitActive {
+    opacity: 0;
+    transition: opacity 500ms ease-in;
+}
+
+
 .avatarButton{
     width: 250px;
     height: 250px;
