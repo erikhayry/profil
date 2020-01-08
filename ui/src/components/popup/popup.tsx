@@ -80,7 +80,7 @@ export const Popup = () => {
                             [styles.client]: true,
                             [styles[`is-${client.id}`]]: true,
                         })}>
-                            <a href={client.origins[0]} target='_newtab'>
+                            <a href={client.url} target='_newtab'>
                                 <img src={browser.runtime.getURL(client.imagePath)} alt={client.name}/>
                             </a>
                         </li>
