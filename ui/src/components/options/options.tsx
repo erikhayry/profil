@@ -230,6 +230,7 @@ export const Options = () => {
                     </li>
                     <li>
                         <button className={styles.promptBtn} onMouseEnter={onUndoDeleteBtnMouseEvent} onMouseLeave={onUndoDeleteBtnMouseEvent} onClick={() => {
+                            ga('send', 'event', 'Options', 'undo delete');
                             setView({
                                 ...view,
                                 deleteUser: undefined

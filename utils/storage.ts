@@ -43,6 +43,7 @@ async function addUser(data?: any): Promise<IServerUser> {
     const newUser = getNewUser(data);
     appData.users.push(newUser);
     await server.setData(appData);
+    ga('send', 'event', 'Storage', 'add');
 
     return getUser(newUser.id);
 }
@@ -53,6 +54,7 @@ async function deleteUser(userId: string): Promise<IApp> {
     if(index > -1){
         appData.users.splice(index, 1);
     }
+    ga('send', 'event', 'Storage', 'remove');
     return server.setData(appData);
 }
 

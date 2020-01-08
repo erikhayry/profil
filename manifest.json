@@ -47,6 +47,6 @@
 		"/static/sr-logo.png",
 		"/static/svtbarn-logo.svg"
 	],
-	"content_security_policy": "script-src 'self' https://unpkg.com; object-src 'self'"
+	"content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'"
 
 }
