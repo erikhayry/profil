@@ -97,3 +97,43 @@
     background: linear-gradient(320deg, rgba(34, 193, 195, 0.7) 0%, rgba(107, 45, 253, 0.7) 100%);
     color: primary;
 }
+
+.clients {
+
+}
+
+.client{
+    width: 200px;
+}
+
+.client a{
+    width: 100px;
+    border-radius: 50%;
+    overflow: hidden;
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px;
+    margin: 10px auto;
+}
+
+.client img{
+    max-width: 100%;
+}
+
+.client.is-svt a{
+    background-color: #000;
+}
+
+.client.is-ur a{
+    background-color: #110737;
+}
+
+.client.is-sr a{
+    background-color: #f3f3f3;
+}
+
+.client.is-svt_barn a{
+    background-color: #410f5a;
+}

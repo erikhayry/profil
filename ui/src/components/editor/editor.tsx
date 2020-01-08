@@ -3,7 +3,6 @@ import {useState} from "react";
 import AvataaarsCustomerizer from '../avatar-customizer/avatar-customizer';
 import styles from './editor.module.css';
 import a11y from '../../styles/a11y.module.css';
-import classNames from 'classnames';
 import {X, Save, Trash2, CornerDownLeft} from "react-feather";
 import {IServerUser} from "../../../../typings/index";
 import {IAvatarAttributes} from "../avatar/profil-avatar";
@@ -61,7 +60,7 @@ export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
                         <CornerDownLeft color="white" />Ångra ändringar
                     </button>
                     <button className={styles.btn} onClick={() => {
-                        onDelete(editableUser)
+                        onDelete({...user})
                     }}>
                         <Trash2 color="white"/>Radera
                     </button>

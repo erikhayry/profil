@@ -5,21 +5,24 @@ import styles from './popup.module.css';
 import storage from '../../../../utils/storage'
 import classNames from 'classnames';
 import { browser } from "webextension-polyfill-ts";
-import {IServerUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
+import {IClientData, IServerUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
 import useInitialClientState from "../../../utils/onMessage";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 import {ProfilAvatar} from "../avatar/profil-avatar";
 import {Title} from "../title/title";
+import {CLIENT_ORIGINS, getClient, IClientOrigins} from "../../../../utils/client-handler";
 
 interface IView {
     users: IServerUser[],
+    clients: IClientOrigins[],
     currentUser?: IServerUser,
     clientId?: SUPPORTED_CLIENT
 }
 
 export const Popup = () => {
     const [view, setView ] = useState<IView>({
-        users: []
+        users: [],
+        clients: CLIENT_ORIGINS
     });
     const initialClientState = useInitialClientState();
 
@@ -61,14 +64,32 @@ export const Popup = () => {
     }
 
     const isLegit = Boolean(view.clientId);
-    
+
     return(
         <div className={styles.container}>
             <div className={styles.header}>
                 <Title title={'Profil'} />
             </div>
-            {!isLegit && <div className={styles.info}>Laddar / webbsida stöds ej</div>}
-            {<ul className={styles.userList}>
+
+            {!isLegit &&
+            <>
+                <h2>Tjänster som Profiler stödjer:</h2>
+                <ul className={styles.clients}>
+                    {view.clients.map((client, index) => (
+                        <li key={index} className={classNames({
+                            [styles.client]: true,
+                            [styles[`is-${client.id}`]]: true,
+                        })}>
+                            <a href={client.origins[0]} target='_newtab'>
+                                <img src={browser.runtime.getURL(client.imagePath)} alt={client.name}/>
+                            </a>
+                        </li>
+                    ))}
+                </ul>
+            </>
+            }
+
+            {isLegit && <ul className={styles.userList}>
                 {view.currentUser &&
                     <li className={classNames({
                         [styles.userListItem]: true,

@@ -121,7 +121,9 @@ interface IAppUserState {
         INIT CLIENT
      */
     const { profileCurrentUser } =  getSearchFromUrl(window.location);
-    localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, profileCurrentUser);
+    if(profileCurrentUser){
+        localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, profileCurrentUser);
+    }
 
     Messenger.client.initAppReq(location.host)
         .then(handleInitResponse, handleError);

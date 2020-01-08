@@ -41,7 +41,11 @@
 	],
 	"web_accessible_resources": [
 		"/ui/selector.html",
-		"/ui/style.css"
+		"/ui/style.css",
+		"/static/svtplay-logo.png",
+		"/static/ur-logo.svg",
+		"/static/sr-logo.png",
+		"/static/svtbarn-logo.svg"
 	],
 	"content_security_policy": "script-src 'self' https://unpkg.com; object-src 'self'"
 

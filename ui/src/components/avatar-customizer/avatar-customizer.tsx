@@ -19,21 +19,21 @@ interface IProps {
 function translate(label: string){
   switch (label){
     case 'Skin':
-      return 'Hy';
+      return 'Kropp';
     case 'Head':
-      return 'Huvud & hår'
+      return 'Huvud';
     case 'Facial Hair':
-        return 'Skägg'      
+        return 'Skägg';
     case 'Eyes':
-        return 'Ögon'  
+        return 'Ögon';
     case 'Eyebrows':
-        return 'Ögonbryn'    
+        return 'Ögonbryn';
     case 'Accessories':
-        return 'Glasögon'     
+        return 'Glasögon';
     case 'Mouth':
-        return 'Mun'
+        return 'Mun';
     case 'Clothes':
-        return 'Kläder'                                            
+        return 'Kläder';
     default:
       return label  
   }
