@@ -204,6 +204,12 @@
     position: fixed;
 }
 
+.addUserButton.hasNoUsers{
+    right: 50%;
+    top: 50%;
+    transform: translate(50%, -50%);
+}
+
 .prompt{
     position: fixed;
     z-index: 1;

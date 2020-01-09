@@ -4,6 +4,7 @@ import {IClientUser, IServerUser, IStorageKeyWithData, MESSAGE_TYPE, SUPPORTED_C
 import {getCurrentUser} from "./utils/get-current-data";
 import {isDiff, serverUserToClient} from "../utils/data-handler";
 import messenger from "../utils/messenger";
+import {getImageFromAvatar} from "./utils/image-utils";
 
 const profileSelectorUrl = browser.runtime.getURL('/ui/selector.html');
 
@@ -56,7 +57,19 @@ async function handleCurrentUserRequest(clientId: SUPPORTED_CLIENT, userId: stri
     return serverUserToClient(currentUser, clientId);
 }
 
-async function handleMessage({type, clientId, storageKeysWithData, userId}: {
+async function notify(userId: string, clientId: string){
+    const user = await storage.getUser(userId);
+    const image = await getImageFromAvatar(user.avatar);
+
+    browser.notifications.create({
+        "type": "basic",
+        "iconUrl": image,
+        "title": 'Profil',
+        "message": `Inloggad på ${clientId} som ${user.name}`
+    });
+}
+
+async function handleMessage({type, clientId, storageKeysWithData, userId, user}: {
     type: MESSAGE_TYPE,
     clientId: SUPPORTED_CLIENT,
     storageKeysWithData: IStorageKeyWithData[],
@@ -74,6 +87,9 @@ async function handleMessage({type, clientId, storageKeysWithData, userId}: {
         case MESSAGE_TYPE.CURRENT_USER_FORM_UI:
             const currentUser = await handleCurrentUserRequest(clientId, userId);
             messenger.background.sendMessageToContent(MESSAGE_TYPE.CURRENT_USER_FROM_BACKGROUND, clientId, currentUser);
+            break;
+        case MESSAGE_TYPE.CURRENT_USER:
+            notify(userId, clientId);
             break;
         default:
     }

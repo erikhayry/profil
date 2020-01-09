@@ -57,9 +57,11 @@ interface IAppUserState {
         onLoad();
         if(currentUser){
             const { id: serverUserId } = currentUser;
-
-            localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
             Messenger.client.currentUser(location.host);
+
+            if(localStorage.getItem(CLIENT_APP_KEY.APP_USER_KEY) !== serverUserId){
+                localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
+            }
 
             currentUser.storageKeysWithData.forEach(( {key, data} ) => {
                 let reload = false;
@@ -127,5 +129,5 @@ interface IAppUserState {
 
     Messenger.client.initAppReq(location.host)
         .then(handleInitResponse, handleError);
-    window.setInterval(updateData, 5000);
+    //window.setInterval(updateData, 5000);
 }());

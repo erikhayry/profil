@@ -37,7 +37,13 @@
   },
   "dependencies": {
     "@sentry/browser": "^4.6.3",
+    "avataaars": "^1.2.1",
+    "domify": "^1.4.0",
+    "jsonpack": "^1.1.5",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
     "react-transition-group": "^4.3.0",
+    "svg-to-canvas": "^1.0.1",
     "webextension-polyfill": "^0.4.0"
   },
   "devDependencies": {
@@ -45,6 +51,7 @@
     "@types/google.analytics": "0.0.40",
     "@types/jest": "^24.0.25",
     "@types/node": "^12.12.12",
+    "@types/react-dom": "^16.9.4",
     "@types/react-transition-group": "^4.2.3",
     "jest": "^24.9.0",
     "npm-watch": "^0.6.0",

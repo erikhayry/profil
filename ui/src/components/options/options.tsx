@@ -210,7 +210,10 @@ export const Options = () => {
 
             <button className={styles.temp} onClick={clear}>Clear app</button>
 
-            {!view.editUser && <button className={styles.addUserButton} onClick={addUser}>
+            {!view.editUser && <button className={classNames({
+                [styles.addUserButton]: true,
+                [styles.hasNoUsers]: view.users.length === 0
+            })} onClick={addUser}>
                 <Plus color={'white'} size={50}/>
                 <span className={a11y.hidden}>Lägg till användare</span>
             </button>}

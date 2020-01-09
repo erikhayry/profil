@@ -16,10 +16,10 @@ export enum CLIENT_APP_KEY {
 }
 
 export enum SUPPORTED_CLIENT {
-    SVT = 'svt',
-    UR = 'ur',
-    SVT_BARN = 'svt_barn',
-    SR = 'sr'
+    SVT = 'SVT Play',
+    UR = 'UR Play',
+    SVT_BARN = 'SVT Barn',
+    SR = 'Sveriges Radio'
 }
 
 export interface IStorageKeyWithData {

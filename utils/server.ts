@@ -14,7 +14,7 @@ function getData(): Promise<IApp> {
     console.info("getData");
     return browser.storage.sync.get('app')
         .then(({ app }: IAppStorageData) => {
-            return app;
+            return app ? app : { users: []}
         })
 }
 

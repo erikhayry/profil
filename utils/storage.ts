@@ -43,6 +43,7 @@ async function addUser(data?: any): Promise<IServerUser> {
     const newUser = getNewUser(data);
     appData.users.push(newUser);
     await server.setData(appData);
+
     ga('send', 'event', 'Storage', 'add');
 
     return getUser(newUser.id);
@@ -70,14 +71,14 @@ async function setUserData(userId: string, storageKeysWithData: IStorageKeyWithD
 function getUsers(): Promise<IServerUser[]> {
     return server.getData()
         .then((app: IApp) => {
-            return app.users;
+            return app ? app.users : [];
         })
 }
 
 function getUser(userId: string): Promise<IServerUser> {
     return server.getData()
         .then((app: IApp) => {
-            return app.users.find(({ id }) => id === userId);
+            return app?.users.find(({ id }) => id === userId);
         })
 }
 

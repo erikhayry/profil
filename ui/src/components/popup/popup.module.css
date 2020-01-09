@@ -2,7 +2,7 @@
 
 .container{
     width: 100%;
-    background-color: primary;
+    background-color: secondary;
     padding: 30px;
     color: primary;
     font-family: Helvetica;
@@ -43,9 +43,10 @@
     height: 100px;
     display: inline-block;
     border-radius: 50%;
-    border: none;
     overflow: hidden;
     padding: 0;
+    background-color: secondary;
+    border: 5px solid primary;
 }
 
 .avatarButton svg {
@@ -57,7 +58,8 @@
     filter: grayscale(0)
 }
 .userListItem.isCurrent .avatarButton{
-    background-color: lightGray;
+    zoom: 1.4;
+    border-color: #ffff62;
 }
 
 .name {
@@ -98,6 +100,14 @@
     color: primary;
 }
 
+.hr{
+    border: none;
+    height: 2px;
+    background-color: #eee;
+    width: 75%;
+    margin: 25px auto;
+}
+
 .clients {
 
 }
@@ -116,24 +126,25 @@
     align-items: center;
     padding: 15px;
     margin: 10px auto;
+    background-color: #000;
 }
 
 .client img{
     max-width: 100%;
 }
 
-.client.is-svt a{
+.client.is-SVTPlay a{
     background-color: #000;
 }
 
-.client.is-ur a{
+.client.is-URPlay a{
     background-color: #110737;
 }
 
-.client.is-sr a{
+.client.is-SverigesRadio a{
     background-color: #f3f3f3;
 }
 
-.client.is-svt_barn a{
+.client.is-SVTBarn a{
     background-color: #410f5a;
 }

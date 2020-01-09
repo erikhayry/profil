@@ -65,6 +65,28 @@ export const Popup = () => {
 
     const isLegit = Boolean(view.clientId);
 
+    function getClientList(isSmall = false){
+        const clientsClasses = classNames({
+            [styles.client]: true,
+            [styles[`isSmall`]]: isSmall,
+        });
+
+        console.log(`is-${view.clients[0].id.replace(/ /g, '')}`)
+
+        return (<ul className={clientsClasses}>
+            {view.clients.map((client, index) => (
+                <li key={index} className={classNames({
+                    [styles.client]: true,
+                    [styles[`is-${client.id.replace(/ /g, '')}`]]: true,
+                })}>
+                    <a href={client.url} target='_newtab'>
+                        <img src={browser.runtime.getURL(client.imagePath)} alt={client.name}/>
+                    </a>
+                </li>
+            ))}
+        </ul>)
+    }
+
     return(
         <div className={styles.container}>
             <div className={styles.header}>
@@ -74,18 +96,7 @@ export const Popup = () => {
             {!isLegit &&
             <>
                 <h2>Tjänster som Profiler stödjer:</h2>
-                <ul className={styles.clients}>
-                    {view.clients.map((client, index) => (
-                        <li key={index} className={classNames({
-                            [styles.client]: true,
-                            [styles[`is-${client.id}`]]: true,
-                        })}>
-                            <a href={client.url} target='_newtab'>
-                                <img src={browser.runtime.getURL(client.imagePath)} alt={client.name}/>
-                            </a>
-                        </li>
-                    ))}
-                </ul>
+                {getClientList()}
             </>
             }
 
@@ -107,6 +118,7 @@ export const Popup = () => {
                         <div className={styles.name}>{view.currentUser.name}</div>
                     </li>
                 }
+                <hr className={styles.hr}/>
                 {view.users
                     .filter(user => {
                         if(!view.currentUser) {
@@ -137,17 +149,17 @@ export const Popup = () => {
                         </li>
                     )
                 })}
-                <li className={classNames({
-                    [styles.userListItem]: true,
-                    [styles.menu]: true
-                })}>
-                    <button className={styles.settingsBtn} onClick={() => {
-                        browser.runtime.openOptionsPage();
-                    }}>
-                        <Sliders color="white"/>
-                    </button>
-                </li>
             </ul>}
+            <div className={classNames({
+                [styles.userListItem]: true,
+                [styles.menu]: true
+            })}>
+                <button className={styles.settingsBtn} onClick={() => {
+                    browser.runtime.openOptionsPage();
+                }}>
+                    <Sliders color="white"/>
+                </button>
+            </div>
         </div>
     )
 };
