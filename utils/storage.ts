@@ -93,7 +93,7 @@ function clearUser(userId: string): Promise<IApp> {
 }
 
 function clearApp(): Promise<IApp> {
-    return server.setData({users: []})
+    return server.setData(undefined)
         .then(server.getData)
 }
 

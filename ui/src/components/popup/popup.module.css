@@ -10,14 +10,26 @@
     font-size: 16px;
 }
 
-.header{
+.container h2{
+    text-align: center;
+}
 
+.header{
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.header h2{
+    font-size: 16px;
 }
 
 .userList{
     text-align: center;
-    padding-bottom: 100px;
     padding-top: 25px;
+}
+
+.userList:last-of-type{
+    padding-bottom: 100px;
 }
 
 .info{
@@ -39,8 +51,8 @@
 }
 
 .avatarButton {
-    width: 100px;
-    height: 100px;
+    width: 65px;
+    height: 65px;
     display: inline-block;
     border-radius: 50%;
     overflow: hidden;
@@ -58,8 +70,8 @@
     filter: grayscale(0)
 }
 .userListItem.isCurrent .avatarButton{
-    zoom: 1.4;
-    border-color: #ffff62;
+    zoom: 1.2;
+    cursor: pointer
 }
 
 .name {
@@ -69,14 +81,17 @@
 
 .menu{
     vertical-align: middle;
+    background-color: #222;
+    width: 100%;
+    padding: 10px;
+    box-sizing: border-box;
+    text-align: center;
+}
+
+.menu.isLegit{
     position: fixed;
     left: 0;
     bottom: 0;
-    background-color: #222;
-    width: 100%;
-    margin: 0;
-    padding: 10px;
-    box-sizing: border-box;
 }
 
 
@@ -117,15 +132,15 @@
 }
 
 .client a{
-    width: 100px;
+    width: 65px;
     border-radius: 50%;
     overflow: hidden;
-    height: 100px;
+    height: 65px;
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 15px;
-    margin: 10px auto;
+    padding: 10px;
+    margin: 15px auto;
     background-color: #000;
 }
 
@@ -134,7 +149,7 @@
 }
 
 .client.is-SVTPlay a{
-    background-color: #000;
+    background-color: #0e0e0e;
 }
 
 .client.is-URPlay a{

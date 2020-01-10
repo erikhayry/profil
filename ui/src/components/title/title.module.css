@@ -3,10 +3,11 @@
 
 .title{
     font-family: 'Kulim Park', sans-serif;
-    font-size: 50px;
+    font-size: 35px;
     text-transform: uppercase;
     letter-spacing: 5px;
     font-weight: bold;
+    display: inline-block;
 }
 
 .title span:nth-child(1){

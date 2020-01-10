@@ -1,11 +1,9 @@
 import {IClientUser, IServerUser, SUPPORTED_CLIENT} from "../typings/index";
 import {CLIENT_ORIGINS} from "./client-handler";
+import _ from 'lodash';
 
 export function isDiff(obj1: any, obj2: any): Boolean{
-    if(!Boolean(obj1) && !Boolean(obj2)){
-        return false
-    }
-    return JSON.stringify(obj1) !== JSON.stringify(obj2)
+    return !_.isEqual(obj1, obj2)
 }
 
 export function serverUserToClient(user: IServerUser, client: SUPPORTED_CLIENT):IClientUser{

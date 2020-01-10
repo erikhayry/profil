@@ -129,5 +129,5 @@ interface IAppUserState {
 
     Messenger.client.initAppReq(location.host)
         .then(handleInitResponse, handleError);
-    //window.setInterval(updateData, 5000);
+    window.setInterval(updateData, 5000);
 }());

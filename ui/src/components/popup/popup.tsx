@@ -95,64 +95,70 @@ export const Popup = () => {
 
             {!isLegit &&
             <>
-                <h2>Tjänster som Profiler stödjer:</h2>
+                <h2>Webbsidor som stödjs</h2>
                 {getClientList()}
             </>
             }
 
-            {isLegit && <ul className={styles.userList}>
-                {view.currentUser &&
-                    <li className={classNames({
-                        [styles.userListItem]: true,
-                        [styles.isCurrent]: true,
-                        [styles.isLegit]: isLegit
-                    })}>
-                        <button
-                            className={styles.avatarButton}
-                            disabled={true}
-                        >
-                            <ProfilAvatar
-                                attributes={withEmotion(view.currentUser.avatar, isLegit ? undefined : Emotion.SAD)}
-                            />
-                        </button>
-                        <div className={styles.name}>{view.currentUser.name}</div>
-                    </li>
-                }
-                <hr className={styles.hr}/>
-                {view.users
-                    .filter(user => {
-                        if(!view.currentUser) {
-                            return true
-                        }
-
-                        return view.currentUser.id !== user.id
-                    })
-                    .map(user => {
-                    const userListItemClasses = classNames({
-                        [styles.userListItem]: true,
-                        [styles.isLegit]: isLegit
-                    });
-                    return (
-                        <li className={userListItemClasses}>
+            {isLegit && <>
+                <h2>Inloggad som</h2>
+                <ul className={styles.userList}>
+                    {view.currentUser &&
+                        <li className={classNames({
+                            [styles.userListItem]: true,
+                            [styles.isCurrent]: true,
+                            [styles.isLegit]: isLegit
+                        })}>
                             <button
                                 className={styles.avatarButton}
-                                disabled={!isLegit}
-                                onClick={() =>
-                                    handleSetCurrentUser(user.id)
-                                }
+                                disabled={true}
                             >
                                 <ProfilAvatar
-                                    attributes={withEmotion(user.avatar, isLegit ? undefined : Emotion.SAD)}
+                                    attributes={withEmotion(view.currentUser.avatar, isLegit ? undefined : Emotion.SAD)}
                                 />
                             </button>
-                            <div className={styles.name}>{user.name}</div>
+                            <div className={styles.name}>{view.currentUser.name}</div>
                         </li>
-                    )
-                })}
-            </ul>}
+                    }
+                </ul>
+                <hr className={styles.hr}/>
+                <h2>Byt användare</h2>
+                <ul className={styles.userList}>
+                    {view.users.filter(user => {
+                            if(!view.currentUser) {
+                                return true
+                            }
+
+                            return view.currentUser.id !== user.id
+                        })
+                        .map(user => {
+                            const userListItemClasses = classNames({
+                                [styles.userListItem]: true,
+                                [styles.isLegit]: isLegit
+                            });
+                            return (
+                                <li className={userListItemClasses}>
+                                    <button
+                                        className={styles.avatarButton}
+                                        disabled={!isLegit}
+                                        onClick={() =>
+                                            handleSetCurrentUser(user.id)
+                                        }
+                                    >
+                                        <ProfilAvatar
+                                            attributes={withEmotion(user.avatar, isLegit ? undefined : Emotion.SAD)}
+                                        />
+                                    </button>
+                                    <div className={styles.name}>{user.name}</div>
+                                </li>
+                            )
+                        }
+                    )}
+                </ul>
+            </>}
             <div className={classNames({
-                [styles.userListItem]: true,
-                [styles.menu]: true
+                [styles.menu]: true,
+                [styles.isLegit]: isLegit
             })}>
                 <button className={styles.settingsBtn} onClick={() => {
                     browser.runtime.openOptionsPage();
