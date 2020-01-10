@@ -7,6 +7,7 @@
     letter-spacing: 2px;
     font-size: 16px;
     height: 100vh;
+    overflow: auto;
 }
 
 .userList{
@@ -15,7 +16,7 @@
     overflow: auto;
     position: relative;
     padding: 10px;
-    height: 100vh;
+    height: 100%;
     align-items: center;
 }
 
