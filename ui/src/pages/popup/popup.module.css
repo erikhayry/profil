@@ -1,4 +1,4 @@
-@value secondary, primary, darken, pink from "../../styles/colors.css";
+@value secondary, primary, darken, pink from "../../../src/styles/colors.css";
 
 .container{
     width: 100%;

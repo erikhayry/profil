@@ -1,0 +1,25 @@
+.overlayAppear{
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+
+.overlayAppearDone {
+    opacity: 1;
+    transition: opacity 200ms ease-in;
+}
+
+.overlayEnter {
+    opacity: 0;
+}
+
+.overlayEnterActive {
+    opacity: 1;
+    transition: opacity 500ms ease-in;
+}
+.overlayExit {
+    opacity: 1;
+}
+.overlayExitActive {
+    opacity: 0;
+    transition: opacity 500ms ease-in;
+}

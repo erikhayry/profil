@@ -28,19 +28,20 @@
 	"browser_action": {
 		"default_icon": "icons/logo.png",
 		"default_title": "Profiler",
-		"default_popup": "/ui/popup.html"
+		"default_popup": "/ui/src/pages/popup/popup.html"
 	},
 	"options_ui": {
-		"page": "/ui/options.html",
+		"page": "/ui/src/pages/options/options.html",
 		"open_in_tab": true
 	},
 	"permissions": [
 		"tabs",
 		"storage",
-		"notifications"
+		"notifications",
+		"unlimitedStorage"
 	],
 	"web_accessible_resources": [
-		"/ui/selector.html",
+		"/ui/src/pages/selector/selector.html",
 		"/ui/style.css",
 		"/static/svtplay-logo.png",
 		"/static/ur-logo.svg",

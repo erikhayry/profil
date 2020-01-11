@@ -1,5 +1,6 @@
 import * as React from "react";
-import {AvatarList} from "../avatar/avatar-list";
+import '../../styles/base.css';
+import {AvatarList} from "../../components/avatar/avatar-list";
 import {getSearchFromUrl} from "../../../../utils/data-handler";
 
 export const Selector = () => {

@@ -6,7 +6,7 @@ import {isDiff, serverUserToClient} from "../utils/data-handler";
 import messenger from "../utils/messenger";
 import {getImageFromAvatar} from "./utils/image-utils";
 
-const profileSelectorUrl = browser.runtime.getURL('/ui/selector.html');
+const profileSelectorPageUrl = browser.runtime.getURL('/ui/src/pages/selector/selector.html');
 
 export interface IBackgroundResponse {
     currentUser?: IClientUser,
@@ -35,12 +35,12 @@ async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, stora
                 .then((user:IServerUser) => storage.getUser(user.id));
         return Promise.resolve({
             currentUser: serverUserToClient(currentUser, client),
-            profileSelectorUrl
+            profileSelectorUrl: profileSelectorPageUrl
         })
     }
 
     return Promise.resolve({
-        profileSelectorUrl
+        profileSelectorUrl: profileSelectorPageUrl
     });
 }
 
@@ -48,7 +48,7 @@ async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Pro
     const currentUser = await getCurrentUser(client, clientUserId);
     return Promise.resolve({
         currentUser: currentUser ? serverUserToClient(currentUser, client) : undefined,
-        profileSelectorUrl
+        profileSelectorUrl: profileSelectorPageUrl
     })
 }
 

@@ -1,27 +1,44 @@
-import {IApp} from "../typings/index";
+import {IApp, IServerUser, IUserData} from "../typings/index";
 import { browser } from "webextension-polyfill-ts";
 import {isDiff} from "./data-handler";
+import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
 
 export interface IServer {
     getData: () => Promise<IApp>;
     setData: (app: IApp) => Promise<IApp>;
 }
 
-interface IAppStorageData {
-    app?: IApp
+export function getNewUser(clientsData?: IUserData): IServerUser {
+    let newUser: IServerUser = {
+        name: 'Ny användare',
+        id: ID(),
+        avatar: randomAvatar(),
+        clientsData: {} as IUserData
+    };
+
+    if(clientsData){
+        newUser.clientsData = clientsData;
+    }
+
+    return newUser;
 }
 
-function getInitialApp():IApp{
-    return {
-        users: []
-    }
+function ID(): string {
+    return '_' + Math.random().toString(36).substr(2, 9);
+}
+
+function getInitialApp(){
+    const newUser = getNewUser();
+    return  {
+        users: [newUser]
+    };
 }
 
 async function getData(): Promise<IApp> {
     console.info("getData");
-    const { app } = await browser.storage.sync.get('app');
+    const { app } = await browser.storage.local.get('app');
 
-    return  app ? app : getInitialApp()
+    return  app ? app : setData(getInitialApp())
 }
 
 async function setData(app: IApp): Promise<IApp> {
@@ -30,7 +47,7 @@ async function setData(app: IApp): Promise<IApp> {
 
     if(isDiff(prevServerApp, app)){
         console.info("data set", prevServerApp, app);
-        await browser.storage.sync.set({ app })
+        await browser.storage.local.set({ app })
     }
 
     return getData();

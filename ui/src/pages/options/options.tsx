@@ -1,19 +1,21 @@
 import * as React from "react";
 import {useEffect, useState} from "react";
+import '../../styles/base.css';
 import styles from './options.module.css';
 import storage from '../../../../utils/storage'
-import {Editor} from "../editor/editor";
+import {Editor} from "../../components/editor/editor";
 import classNames from 'classnames';
 import {Plus} from "react-feather";
 import a11y from "../../styles/a11y.module.css";
 import {IServerUser} from "../../../../typings/index";
 import server from "../../../../utils/server";
-import timeMachine from "../avatar-customizer/time-machine";
-import {AvatarRevealer} from "../avatar-customizer/avatar-revealer";
-import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
-import {Title} from "../title/title";
-import {ProfilAvatar} from "../avatar/profil-avatar";
+import timeMachine from "../../components/avatar-customizer/time-machine";
+import {AvatarRevealer} from "../../components/avatar-customizer/avatar-revealer";
+import {Emotion, withEmotion} from "../../components/avatar-customizer/emotion-converter";
+import {Title} from "../../components/title/title";
+import {ProfilAvatar} from "../../components/avatar/profil-avatar";
 import { CSSTransition } from "react-transition-group";
+import {Overlay} from "../../components/overlay/overlay";
 
 interface ViewState {
     users: IServerUser[],
@@ -218,30 +220,38 @@ export const Options = () => {
                 <span className={a11y.hidden}>Lägg till användare</span>
             </button>}
 
-            {view.editUser && <Editor user={view.editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} />}
+            {view.editUser &&
+                <Overlay>
+                    <Editor user={view.editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} numberOfUsers={view.users.length} />
+                </Overlay>
+            }
 
-            {view.deleteUser && <div className={styles.prompt}>
-                <h1 className={styles.promptTitle}>Är du säker du vill radera {view.deleteUser.name} och all hens historik?</h1>
-                <div className={styles.promptAvatarWrapper}>
-                    <ProfilAvatar attributes={view.deleteUser.avatar} className={styles.promptAvatar}/>
-                </div>
-                <ul className={styles.promptOptions}>
-                    <li className={styles.promptOption}>
-                        <button className={styles.promptBtn} onMouseEnter={onDeleteBtnMouseEvent} onMouseLeave={onDeleteBtnMouseEvent} onClick={() => {
-                            onConfirmedRemoveUser(view.deleteUser.id)
-                        }}>Ja</button>
-                    </li>
-                    <li>
-                        <button className={styles.promptBtn} onMouseEnter={onUndoDeleteBtnMouseEvent} onMouseLeave={onUndoDeleteBtnMouseEvent} onClick={() => {
-                            ga('send', 'event', 'Options', 'undo delete');
-                            setView({
-                                ...view,
-                                deleteUser: undefined
-                            })
-                        }}>Nej</button>
-                    </li>
-                </ul>
-            </div>}
+            {view.deleteUser &&
+                <Overlay>
+                    <div className={styles.prompt}>
+                        <h1 className={styles.promptTitle}>Är du säker du vill radera {view.deleteUser.name} och all hens historik?</h1>
+                        <div className={styles.promptAvatarWrapper}>
+                            <ProfilAvatar attributes={view.deleteUser.avatar} className={styles.promptAvatar}/>
+                        </div>
+                        <ul className={styles.promptOptions}>
+                            <li className={styles.promptOption}>
+                                <button className={styles.promptBtn} onMouseEnter={onDeleteBtnMouseEvent} onMouseLeave={onDeleteBtnMouseEvent} onClick={() => {
+                                    onConfirmedRemoveUser(view.deleteUser.id)
+                                }}>Ja</button>
+                            </li>
+                            <li>
+                                <button className={styles.promptBtn} onMouseEnter={onUndoDeleteBtnMouseEvent} onMouseLeave={onUndoDeleteBtnMouseEvent} onClick={() => {
+                                    ga('send', 'event', 'Options', 'undo delete');
+                                    setView({
+                                        ...view,
+                                        deleteUser: undefined
+                                    })
+                                }}>Nej</button>
+                            </li>
+                        </ul>
+                    </div>
+                </Overlay>
+            }
         </div>
     )
 };

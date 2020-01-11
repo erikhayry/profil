@@ -1,9 +1,9 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 
-import {Popup} from "./components/popup/popup";
-import {Options} from "./components/options/options";
-import {Selector} from "./components/selector/selector";
+import {Popup} from "./pages/popup/popup";
+import {Options} from "./pages/options/options";
+import {Selector} from "./pages/selector/selector";
 
 const onPopup = document.getElementById("popup");
 const onOptions = document.getElementById("options");

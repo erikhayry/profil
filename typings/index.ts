@@ -50,4 +50,3 @@ export interface IServerUser {
 export interface IApp {
     users: IServerUser[];
 }
-

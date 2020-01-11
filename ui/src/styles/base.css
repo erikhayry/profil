@@ -59,6 +59,16 @@ button{
     background-color: transparent;
     border: none;
     cursor: pointer;
+    transform-origin: center center;
+    transition: all 200ms ease-in-out;
+}
+
+button:hover{
+    transform: scale(1.05);
+}
+
+button[disabled]{
+    opacity: 0.5;
 }
 
 ul{

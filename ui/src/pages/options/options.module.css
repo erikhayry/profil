@@ -1,4 +1,4 @@
-@value secondary, primary, darken, pink from "../../styles/colors.css";
+@value secondary, primary, darken, pink from "../../../src/styles/colors.css";
 
 .container{
     background-color: primary;
@@ -99,6 +99,11 @@
     left: 50%;
     transform: translateX(-50%) translateY(0) scale(1);
 }
+
+.avatarButton:hover{
+    transform: translateX(-50%) translateY(0) scale(1.05);
+}
+
 .avatarButton.isNew{
     position: absolute;
     transform: translateX(-50%) translateY(-50%) scale(3);

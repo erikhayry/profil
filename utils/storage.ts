@@ -1,6 +1,6 @@
 import {IApp, IServerUser, IStorageKeyWithData, IUserData, SUPPORTED_CLIENT} from "../typings/index";
 import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
-import server from "./server";
+import server, {getNewUser} from "./server";
 
 export interface IStorage {
     addUser: (storageKeysWithData?: IStorageKeyWithData[]) => Promise<IServerUser>
@@ -10,32 +10,6 @@ export interface IStorage {
     getUser: (userId: string) => Promise<IServerUser>
     getUsers: () => Promise<IServerUser[]>
     clearApp: () => Promise<IApp>
-}
-
-function getNewUser(clientsData?: IUserData): IServerUser {
-    let newUser: IServerUser = {
-        name: 'Ny användare',
-        id: ID(),
-        avatar: randomAvatar(),
-        clientsData: {} as IUserData
-    };
-
-    if(clientsData){
-        newUser.clientsData = clientsData;
-    }
-
-    return newUser;
-}
-
-function ID(): string {
-    return '_' + Math.random().toString(36).substr(2, 9);
-}
-
-function getInitialState(){
-    const newUser = getNewUser();
-    return  {
-        users: [newUser]
-    };
 }
 
 async function addUser(data?: any): Promise<IServerUser> {

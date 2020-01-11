@@ -11,6 +11,7 @@ import { browser } from "webextension-polyfill-ts";
 import Messenger from "../utils/messenger";
 import {getSearchFromUrl, isDiff} from "../utils/data-handler";
 import {IBackgroundResponse} from "./background";
+import storage from "../utils/storage";
 
 interface IAppUserState {
     scrollY: number,
@@ -53,7 +54,7 @@ interface IAppUserState {
         }
     }
 
-    function handleInitResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
+    async function handleInitResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
         onLoad();
         if(currentUser){
             const { id: serverUserId } = currentUser;
@@ -76,7 +77,10 @@ interface IAppUserState {
             });
         } else {
             console.info('init: no user found');
-            window.location.href = `${profileSelectorUrl}?href=${window.location.href}`;
+            const users = await storage.getUsers();
+            if(users.length > 0){
+                window.location.href = `${profileSelectorUrl}?href=${window.location.href}`;
+            }
         }
     }
 

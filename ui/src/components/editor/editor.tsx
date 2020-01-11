@@ -12,9 +12,10 @@ interface IProps {
     onSave: (editedUser: IServerUser) => void
     onDelete: (user: IServerUser) => void
     onCancel: () => void
+    numberOfUsers: number;
 }
 
-export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
+export const Editor = ({user, onSave, onCancel, onDelete, numberOfUsers} :IProps) => {
     const [editableUser, setEditableUser] = useState<IServerUser>(user)
     function handleAvatarChange(customizedAttributes: IAvatarAttributes) {
         console.log("handleAvatarChange")
@@ -59,7 +60,7 @@ export const Editor = ({user, onSave, onCancel, onDelete} :IProps) => {
                     }>
                         <CornerDownLeft color="white" />Ångra ändringar
                     </button>
-                    <button className={styles.btn} onClick={() => {
+                    <button disabled={numberOfUsers < 2} className={styles.btn} onClick={() => {
                         onDelete({...user})
                     }}>
                         <Trash2 color="white"/>Radera
