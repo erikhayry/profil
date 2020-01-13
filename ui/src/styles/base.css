@@ -50,6 +50,7 @@ table {
 * {
     box-sizing: border-box;
 }
+
 body, html {
     width: 100%;
     background: #fff;

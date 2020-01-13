@@ -35,10 +35,17 @@ function getInitialApp(){
 }
 
 async function getData(): Promise<IApp> {
-    console.info("getData");
     const { app } = await browser.storage.local.get('app');
+    console.info("getData", app);
 
-    return  app ? app : { users : []}
+    if(app){
+        return app;
+    }
+
+    const initialApp = getInitialApp();
+    await browser.storage.local.set({ app: getInitialApp() })
+
+    return initialApp;
 }
 
 async function setData(app: IApp): Promise<IApp> {
