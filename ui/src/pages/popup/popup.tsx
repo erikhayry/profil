@@ -61,11 +61,6 @@ export const Popup = () => {
         window.close();
     }
 
-    async function clearUser(userId: string) {
-        console.log("clearUser", userId)
-        storage.clearUser(userId)
-    }
-
     const isLegit = Boolean(view.clientId);
 
     function getClientList(isSmall = false){
@@ -106,9 +101,7 @@ export const Popup = () => {
 
     return(
         <div className={styles.container}>
-            <div className={styles.header}>
-                <Title title={'Profil'} />
-            </div>
+            <h1 className={styles.header}>Profil</h1>
 
             {!isLegit &&
             <>
@@ -118,29 +111,23 @@ export const Popup = () => {
             }
 
             {isLegit && <>
-                <ul className={styles.userList}>
-                    {view.currentUser &&
-                        <li className={classNames({
-                            [styles.userListItem]: true,
-                            [styles.isCurrent]: true,
-                            [styles.isLegit]: isLegit
-                        })}>
-                            <div
-                                className={styles.avatarButton}
-                            >
-                                <ProfilAvatar
-                                    attributes={view.currentUser.avatar}
-                                />
-                            </div>
-                            <div className={styles.name}>
-                                Inloggad som <strong>{view.currentUser.name}</strong>
-                            </div>
-                        </li>
-                    }
-                </ul>
+                <div className={styles.currentUser}>
+                    <div className={styles.currentUserBg}>
+                        <ProfilAvatar
+                            attributes={view.currentUser.avatar}
+                        />
+                    </div>
+                    <div className={styles.currentUserAvatar}>
+                        <ProfilAvatar
+                            attributes={view.currentUser.avatar}
+                        />
+                    </div>
+                    <div className={styles.currentUserName}>
+                        Inloggad på {view.clientId} som <strong>{view.currentUser.name}</strong>
+                    </div>
+                </div>
                 {view.users.length > 1 &&
                     <>
-                        <hr className={styles.hr}/>
                         <h2>Byt användare</h2>
                         <ul className={styles.userList}>
                             {view.users.filter(user => {
@@ -170,13 +157,17 @@ export const Popup = () => {
                                                         onDeleteBtnMouseEvent(event, user.id)
                                                     }}
                                                 >
-                                                    <div>
-                                                        <ProfilAvatar
-                                                            attributes={withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : Emotion.SAD)}
-                                                        />
-                                                    </div>
-                                                    <div className={styles.name}><span className={a11y.hidden}>Byt till användare till </span>{user.name}</div>
+                                                    <ProfilAvatar
+                                                        attributes={withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : Emotion.SAD)}
+                                                    />
                                                 </button>
+                                                <div className={styles.name}><span className={a11y.hidden}>Byt till användare till </span>{user.name}</div>
+                                                <ul className={styles.avatarClients}>
+                                                    <li className={styles.avatarClient}></li>
+                                                    <li className={styles.avatarClient}></li>
+                                                    <li className={styles.avatarClient}></li>
+                                                    <li className={styles.avatarClient}></li>
+                                                </ul>
                                             </li>
                                         )
                                     }
@@ -193,7 +184,7 @@ export const Popup = () => {
                 <button className={styles.settingsBtn} onClick={() => {
                     browser.runtime.openOptionsPage();
                 }}>
-                    <Sliders color="white"/>
+                    Inställningar <Sliders color="white"/>
                 </button>
             </div>
         </div>

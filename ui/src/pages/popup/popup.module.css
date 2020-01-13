@@ -2,30 +2,81 @@
 
 .container{
     width: 100%;
-    background-color: secondary;
-    padding: 30px;
-    color: primary;
-    font-family: Helvetica;
-    letter-spacing: 2px;
-    font-size: 16px;
+    background: linear-gradient(0deg, rgba(52,45,74,1) 0%, rgba(45,39,64,1) 100%);
+    padding: 10px;
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+    overflow: hidden;
+    min-width: 380px;
 }
 
 .container h2{
-    text-align: center;
+    font-family: 'Roboto', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    margin: 10px 5px;
+    color: #fff;
+}
+
+.container svg {
+    max-width: 100%;
+    height: auto;
 }
 
 .header{
+    font-family: 'Righteous', cursive;
+    font-size: 35px;
+    text-transform: uppercase;
+    text-align: left;
+    color: #fff;
+    margin-bottom: 0;
+    padding: 10px;
+}
+
+.currentUser{
+    position: relative;
+    width: 100%;
+    overflow: hidden;
     margin-bottom: 20px;
+    border-radius: 20px;
+    background-color: #fff;
+}
+
+.currentUserBg{
+    width: 200%;
+    height: auto;
+    position: absolute;
+    left: 0;
+    filter: blur(20px);
+    opacity: 0.5;
+}
+
+.currentUserAvatar{
+    width: 200px;
+    height: 200px;
+    display: block;
+    position: relative;
+    z-index: 1;
+    border-radius: 50%;
+    overflow: hidden;
+    margin: 20px auto;
+}
+
+.currentUserName{
+    background: #fff;
+    z-index: 1;
+    position: relative;
+    padding: 10px;
+    line-height: 1.5;
+    font-family: 'Roboto', sans-serif;
+    color: #000;
     text-align: center;
 }
 
-.header h2{
-    font-size: 16px;
-}
 
 .userList{
-    text-align: center;
-    padding-top: 25px;
+
 }
 
 .userList:last-of-type{
@@ -43,23 +94,36 @@
 }
 
 .userListItem{
-    display: inline-block;
-    margin: 10px 0;
-    text-align: center;
+    margin-bottom: 15px;
+    text-align: left;
     vertical-align: middle;
-    filter: grayscale(0);
     width: 100%;
+    overflow: hidden;
+    position: relative;
+    margin-top: 10px;
+    padding: 10px 20px;
+    border-radius: 20px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    background-color: #393050;
+    color: #fff;
 }
 
 .avatarButton {
-    width: 65px;
-    height: 65px;
+    cursor: pointer;
+    transform-origin: center center;
+    transition: all 200ms ease-in-out;
+    width: 75px;
+    height: 75px;
     display: inline-block;
     border-radius: 50%;
     overflow: hidden;
     padding: 0;
-    background-color: secondary;
-    border: 5px solid primary;
+    background-color: #222;
+    border: 2px solid #fff;
+    flex-grow: 0;
+    flex-shrink: 0;
 }
 
 .avatarButton svg {
@@ -67,19 +131,34 @@
     height: auto;
 }
 
-.userListItem.isLegit{
-    filter: grayscale(0)
-}
 .userListItem.isCurrent .avatarButton{
     zoom: 1.2;
     cursor: pointer
 }
 
 .name {
-    color: primary;
-    font-size: 12px;
-    margin-top: 10px;
+    color: #fff;
+    padding: 10px;
+    flex-grow: 1;
+    text-align: center;
 }
+
+.avatarClients{
+    display: flex;
+    width: 60px;
+    flex-wrap: wrap;
+}
+
+.avatarClient{
+    width: 20px;
+    height: 20px;
+    background-color: pink;
+    margin: 5px;
+    border-radius: 50%;
+    padding: 0;
+    border: none;
+}
+
 
 .menu{
     vertical-align: middle;
@@ -101,7 +180,7 @@
     color: primary;
     font-size: 16px;
     text-transform: uppercase;
-    margin: 10px 20px;
+    margin: 0 20px;
     border-radius: 50%;
     width: 44px;
     height: 44px;
@@ -115,14 +194,6 @@
 .settingsBtn:hover{
     background: linear-gradient(320deg, rgba(34, 193, 195, 0.7) 0%, rgba(107, 45, 253, 0.7) 100%);
     color: primary;
-}
-
-.hr{
-    border: none;
-    height: 2px;
-    background-color: #eee;
-    width: 75%;
-    margin: 25px auto;
 }
 
 .clients {

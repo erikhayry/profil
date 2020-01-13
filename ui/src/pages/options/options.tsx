@@ -30,7 +30,7 @@ export const Options = () => {
     });
 
     useEffect(() => {
-        console.log('useEffect');
+        console.log('useEffect options');
         storage.getUsers()
             .then(() => updateView());
     }, []);
@@ -46,11 +46,12 @@ export const Options = () => {
 
     async function updateView(newUser?: IServerUser){
         const users = await storage.getUsers();
+        console.log("updateView", newUser, users)
         setView({
             users,
             editUser: undefined,
             deleteUser: undefined,
-            newUser
+            newUser: undefined
         });
     }
 
@@ -222,7 +223,13 @@ export const Options = () => {
 
             {view.editUser &&
                 <Overlay>
-                    <Editor user={view.editUser} onCancel={onCloseEditor} onSave={onUpdateUser} onDelete={removeUser} numberOfUsers={view.users.length} />
+                    <Editor
+                        user={view.editUser}
+                        onCancel={onCloseEditor}
+                        onSave={onUpdateUser}
+                        onDelete={removeUser}
+                        numberOfUsers={view.users.length}
+                    />
                 </Overlay>
             }
 

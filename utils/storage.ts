@@ -1,6 +1,7 @@
 import {IApp, IServerUser, IStorageKeyWithData, IUserData, SUPPORTED_CLIENT} from "../typings/index";
 import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
 import server, {getNewUser} from "./server";
+import {browser} from "webextension-polyfill-ts";
 
 export interface IStorage {
     addUser: (storageKeysWithData?: IStorageKeyWithData[]) => Promise<IServerUser>
@@ -67,8 +68,8 @@ function clearUser(userId: string): Promise<IApp> {
 }
 
 function clearApp(): Promise<IApp> {
-    return server.setData(undefined)
-        .then(server.getData)
+    // @ts-ignore
+    return browser.storage.local.clear()
 }
 
 const storage: IStorage = {
