@@ -6,9 +6,11 @@ import {IServerUser} from "../../../../typings/index";
 import timeMachine from "../avatar-customizer/time-machine";
 import {ProfilAvatar} from "./profil-avatar";
 import { CSSTransition } from "react-transition-group";
+import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
 
 interface ViewState {
-    users: IServerUser[]
+    users: IServerUser[],
+    currentHoveredUserId?: string
 }
 
 interface IProps {
@@ -17,7 +19,7 @@ interface IProps {
 
 export const AvatarList: React.FC<IProps>= ({onClick}) => {
     const [view, setView ] = useState<ViewState>({
-        users: []
+        users: [],
     });
 
     useEffect(() => {
@@ -29,10 +31,24 @@ export const AvatarList: React.FC<IProps>= ({onClick}) => {
             }));
     }, []);
 
+    function onBtnMouseEvent(event:React.MouseEvent<HTMLElement>, userId: string){
+        if(event.type === "mouseenter"){
+            setView({
+                ...view,
+                currentHoveredUserId: userId
+            })
+        } else {
+            setView({
+                ...view,
+                currentHoveredUserId: undefined
+            })
+        }
+    }
+
 
     return(
             <ul className={styles.userList}>
-                {view.users.reverse().map((user, index) => {
+                {view.users.map((user, index) => {
                     return (
                         <CSSTransition
                             in={true}
@@ -50,9 +66,18 @@ export const AvatarList: React.FC<IProps>= ({onClick}) => {
                             }}
                         >
                             <li className={styles.userListItem} key={user.id}>
-                                <button className={styles.avatarButton} onClick={() => onClick(user.id)}>
+                                <button
+                                    className={styles.avatarButton}
+                                    onClick={() => onClick(user.id)}
+                                    onMouseEnter={(event) => {
+                                        onBtnMouseEvent(event, user.id)
+                                    }}
+                                    onMouseLeave={(event) => {
+                                        onBtnMouseEvent(event, user.id)
+                                    }}
+                                >
                                     <ProfilAvatar
-                                        attributes={timeMachine(user.avatar)}
+                                        attributes={timeMachine(withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : null))}
                                     />
                                 </button>
                                 <h2 className={styles.name}>{user.name}</h2>
