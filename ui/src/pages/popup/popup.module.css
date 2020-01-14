@@ -3,11 +3,11 @@
 .container{
     width: 100%;
     background: linear-gradient(0deg, rgba(52,45,74,1) 0%, rgba(45,39,64,1) 100%);
-    padding: 10px;
+    padding: 10px 10px 0;
     position: relative;
     font-family: 'Roboto', sans-serif;
     overflow: hidden;
-    min-width: 380px;
+    min-width: 320px;
 }
 
 .container h2{
@@ -37,19 +37,30 @@
 .currentUser{
     position: relative;
     width: 100%;
-    overflow: hidden;
+    overflow: visible;
     margin-bottom: 20px;
     border-radius: 20px;
     background-color: #fff;
 }
 
-.currentUserBg{
-    width: 200%;
-    height: auto;
+.currentUserBgOuter{
+    width: 100%;
+    height: 100%;
     position: absolute;
     left: 0;
+    top: 0;
+    overflow: hidden;
+}
+
+.currentUserBg{
+    width: 400%;
+    height: auto;
+    position: absolute;
+    left: -150%;
+    top: 0;
     filter: blur(20px);
-    opacity: 0.5;
+    opacity: 0.7;
+    text-align: center;
 }
 
 .currentUserAvatar{
@@ -72,7 +83,20 @@
     font-family: 'Roboto', sans-serif;
     color: #000;
     text-align: center;
+    border-radius: 0 0 20px 20px;
 }
+
+.currentUserClientList{
+    position: absolute;
+    top: 5px;
+    right: 5px;
+}
+
+.currentUserClientList .avatarClients{
+    flex-direction: column;
+    width: auto;
+}
+
 
 
 .userList{
@@ -80,7 +104,7 @@
 }
 
 .userList:last-of-type{
-    padding-bottom: 100px;
+    padding-bottom: 60px;
 }
 
 .info{
@@ -101,16 +125,29 @@
     overflow: hidden;
     position: relative;
     margin-top: 10px;
-    padding: 10px 20px;
+    padding: 10px;
     border-radius: 20px;
     box-sizing: border-box;
     display: flex;
     align-items: center;
     background-color: #393050;
     color: #fff;
+    transform-origin: center center;
+    transition: all 200ms ease-in-out;
 }
 
-.avatarButton {
+.userListItem:hover{
+    transform: scale(1.03);
+}
+
+.userListItemButton{
+    display: flex;
+    width: 100%;
+    align-items: center;
+    font-size: 16px;
+}
+
+.avatar {
     cursor: pointer;
     transform-origin: center center;
     transition: all 200ms ease-in-out;
@@ -123,7 +160,7 @@
     background-color: #222;
     border: 2px solid #fff;
     flex-grow: 0;
-    flex-shrink: 0;
+    flex-shrink: 1;
 }
 
 .avatarButton svg {
@@ -147,29 +184,62 @@
     display: flex;
     width: 60px;
     flex-wrap: wrap;
+    flex-shrink: 0;
 }
 
 .avatarClient{
-    width: 20px;
-    height: 20px;
-    background-color: pink;
-    margin: 5px;
+    width: 25px;
+    height: 25px;
+    background-color: #222;
+    margin: 5px auto;
     border-radius: 50%;
-    padding: 0;
+    padding: 3px;
     border: none;
+    opacity: 1;
+    vertical-align: middle;
+    line-height: 20px;
+}
+
+.avatarClient img {
+    max-width: 100%;
+    height: auto;
+}
+
+.avatarClient.isUsing{
+    opacity: 1;
+}
+
+.avatarClient.is-SVTPlay{
+    line-height: 18px;
+    background-color: #0e0e0e;
+}
+
+.avatarClient.is-URPlay{
+    background-color: #110737;
+}
+
+.avatarClient.is-SverigesRadio{
+    background-color: #f3f3f3;
+}
+
+.avatarClient.is-SVTBarn{
+    line-height: 14px;
+    background-color: #410f5a;
 }
 
 
-.menu{
+.footer{
     vertical-align: middle;
-    background-color: #222;
+    background-color: rgba(45,39,64,1);
     width: 100%;
     padding: 10px;
     box-sizing: border-box;
     text-align: center;
+    box-shadow: -2px -2px 5px 0 rgba(0,0,0,0.2);
+
 }
 
-.menu.isLegit{
+.footer.isLegit{
     position: fixed;
     left: 0;
     bottom: 0;
@@ -178,30 +248,37 @@
 
 .settingsBtn {
     color: primary;
-    font-size: 16px;
+    font-size: 12px;
     text-transform: uppercase;
-    margin: 0 20px;
-    border-radius: 50%;
-    width: 44px;
-    height: 44px;
     cursor: pointer;
     text-align: center;
-    background: pink;
-    padding: 0;
-    border: 2px solid white
+    display: flex;
+    align-items: center;
+    margin: 0 auto;
+    transform-origin: center center;
+    transition: all 200ms ease-in-out;
 }
 
-.settingsBtn:hover{
-    background: linear-gradient(320deg, rgba(34, 193, 195, 0.7) 0%, rgba(107, 45, 253, 0.7) 100%);
-    color: primary;
+.settingsBtn:hover {
+}
+
+.settingsBtn svg{
+    margin: 0 10px;
+}
+
+.settingsBtn:hover svg {
+    transform: rotate(180deg);
 }
 
 .clients {
-
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    margin: 10px 0;
 }
 
 .client{
-    width: 200px;
+    width: 50%;
 }
 
 .client a{
@@ -215,6 +292,11 @@
     padding: 10px;
     margin: 15px auto;
     background-color: #000;
+    transform-origin: center center;
+    transition: all 200ms ease-in-out;
+}
+.client a:hover{
+    transform: scale(1.05);
 }
 
 .client img{

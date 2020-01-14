@@ -12,6 +12,7 @@ import Messenger from "../utils/messenger";
 import {getSearchFromUrl, isDiff} from "../utils/data-handler";
 import {IBackgroundResponse} from "./background";
 import storage from "../utils/storage";
+import {removeURLParameters} from "../utils/url";
 
 interface IAppUserState {
     scrollY: number,
@@ -22,20 +23,6 @@ interface IAppUserState {
     function updateData(){
         Messenger.client.addDataForUser(location.host)
             .then(handleSetDataResponse, handleError);
-    }
-
-    /**
-     * Removes URL parameters
-     * @param removeParams - param array
-     */
-    function removeURLParameters(removeParams: string[]) {
-        const deleteRegex = new RegExp(removeParams.join('=|') + '=')
-
-        const params = location.search.slice(1).split('&')
-        let search = []
-        for (let i = 0; i < params.length; i++) if (deleteRegex.test(params[i]) === false) search.push(params[i])
-
-        window.history.replaceState({}, document.title, location.pathname + (search.length ? '?' + search.join('&') : '') + location.hash)
     }
 
     function handleSetDataResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {

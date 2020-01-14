@@ -7,7 +7,7 @@ import styles from './popup.module.css';
 import storage from '../../../../utils/storage'
 import classNames from 'classnames';
 import {browser} from "webextension-polyfill-ts";
-import {IServerUser, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
+import {IClientUser, IServerUser, IUserData, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
 import useInitialClientState from "../../../utils/onMessage";
 import {Emotion, withEmotion} from "../../components/avatar-customizer/emotion-converter";
 import {ProfilAvatar} from "../../components/avatar/profil-avatar";
@@ -65,17 +65,15 @@ export const Popup = () => {
 
     function getClientList(isSmall = false){
         const clientsClasses = classNames({
-            [styles.client]: true,
+            [styles.clients]: true,
             [styles[`isSmall`]]: isSmall,
         });
-
-        console.log(`is-${view.clients[0].id.replace(/ /g, '')}`)
 
         return (<ul className={clientsClasses}>
             {view.clients.map((client, index) => (
                 <li key={index} className={classNames({
                     [styles.client]: true,
-                    [styles[`is-${client.id.replace(/ /g, '')}`]]: true,
+                    [styles[clientIdToClassName(client.id)]]: true,
                 })}>
                     <a href={client.url} target='_newtab'>
                         <img src={browser.runtime.getURL(client.imagePath)} alt={client.name}/>
@@ -85,7 +83,7 @@ export const Popup = () => {
         </ul>)
     }
 
-    function onDeleteBtnMouseEvent(event:React.MouseEvent<HTMLElement>, userId: string){
+    function onBtnMouseEvent(event:React.MouseEvent<HTMLElement>, userId: string){
         if(event.type === "mouseenter"){
             setView({
                 ...view,
@@ -97,6 +95,42 @@ export const Popup = () => {
                 currentHoveredUserId: undefined
             })
         }
+    }
+
+    function getUserClientList(user: IServerUser){
+        return (
+            <ul className={styles.avatarClients}>
+                {getUserClientUsage(user.clientsData).map(({clientId, isUsing}) => (
+                    <li className={classNames({
+                        [styles.avatarClient]: true,
+                        [styles.isUsing]: isUsing,
+                        [styles[clientIdToClassName(clientId)]]: true
+                    })}>
+                        <img src={browser.runtime.getURL(view.clients.find(({id}) => clientId === id)?.imagePath)} alt={clientId}/>
+                        <span className={a11y.hidden}>{clientId}</span>
+                    </li>
+                ))}
+            </ul>
+        )
+    }
+
+    function getUserClientUsage(clientsData: IUserData): {clientId: string, isUsing: Boolean}[] {
+        const ret = [];
+
+        for(const key in clientsData){
+            const clientData = clientsData[key];
+
+            ret.push({
+                clientId: key,
+                isUsing: clientData.some(({data}) => Boolean(data))
+            })
+        }
+
+        return ret;
+    }
+
+    function clientIdToClassName(id = ''){
+        return `is-${id.replace(/ /g, '')}`
     }
 
     return(
@@ -112,18 +146,23 @@ export const Popup = () => {
 
             {isLegit && <>
                 <div className={styles.currentUser}>
-                    <div className={styles.currentUserBg}>
-                        <ProfilAvatar
-                            attributes={view.currentUser.avatar}
-                        />
+                    <div className={styles.currentUserBgOuter}>
+                        <div className={styles.currentUserBg}>
+                            <ProfilAvatar
+                                attributes={view.currentUser.avatar}
+                            />
+                        </div>
                     </div>
                     <div className={styles.currentUserAvatar}>
                         <ProfilAvatar
-                            attributes={view.currentUser.avatar}
+                            attributes={withEmotion(view.currentUser.avatar, view.currentHoveredUserId ? Emotion.SAD : null)}
                         />
                     </div>
                     <div className={styles.currentUserName}>
                         Inloggad på {view.clientId} som <strong>{view.currentUser.name}</strong>
+                    </div>
+                    <div className={styles.currentUserClientList}>
+                        {getUserClientList(view.currentUser)}
                     </div>
                 </div>
                 {view.users.length > 1 &&
@@ -145,29 +184,25 @@ export const Popup = () => {
                                         return (
                                             <li className={userListItemClasses}>
                                                 <button
-                                                    className={styles.avatarButton}
+                                                    className={styles.userListItemButton}
                                                     disabled={!isLegit}
                                                     onClick={() =>
                                                         handleSetCurrentUser(user.id)
                                                     }
                                                     onMouseEnter={(event) => {
-                                                        onDeleteBtnMouseEvent(event, user.id)
+                                                        onBtnMouseEvent(event, user.id)
                                                     }}
                                                     onMouseLeave={(event) => {
-                                                        onDeleteBtnMouseEvent(event, user.id)
+                                                        onBtnMouseEvent(event, user.id)
                                                     }}
                                                 >
                                                     <ProfilAvatar
-                                                        attributes={withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : Emotion.SAD)}
+                                                        attributes={withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : null)}
+                                                        className={styles.avatar}
                                                     />
+                                                    <div className={styles.name}><span className={a11y.hidden}>Byt till användare till </span>{user.name}</div>
                                                 </button>
-                                                <div className={styles.name}><span className={a11y.hidden}>Byt till användare till </span>{user.name}</div>
-                                                <ul className={styles.avatarClients}>
-                                                    <li className={styles.avatarClient}></li>
-                                                    <li className={styles.avatarClient}></li>
-                                                    <li className={styles.avatarClient}></li>
-                                                    <li className={styles.avatarClient}></li>
-                                                </ul>
+                                                {getUserClientList(user)}
                                             </li>
                                         )
                                     }
@@ -178,7 +213,7 @@ export const Popup = () => {
 
             </>}
             <div className={classNames({
-                [styles.menu]: true,
+                [styles.footer]: true,
                 [styles.isLegit]: isLegit
             })}>
                 <button className={styles.settingsBtn} onClick={() => {

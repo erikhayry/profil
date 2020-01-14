@@ -51,7 +51,7 @@ export const Options = () => {
             users,
             editUser: undefined,
             deleteUser: undefined,
-            newUser: undefined
+            newUser
         });
     }
 
