@@ -30,7 +30,8 @@ describe('serverUserToClient', function() {
             id: '1',
             name: 'Name',
             avatar: randomAvatar(),
-            clientsData: {}
+            clientsData: {},
+            created: 1
         };
         const clientUser = serverUserToClient(user, SUPPORTED_CLIENT.SVT);
         const clientDataKeys = CLIENT_ORIGINS.find(({id}) => id === SUPPORTED_CLIENT.SVT).dataKeys;
@@ -52,7 +53,8 @@ describe('serverUserToClient', function() {
                     key: 'persistent_state',
                     data: 'some data'
                 }]
-            }
+            },
+            created: 1
         };
         const clientUser = serverUserToClient(user, SUPPORTED_CLIENT.SVT);
         const clientDataKeys = CLIENT_ORIGINS.find(({id}) => id === SUPPORTED_CLIENT.SVT).dataKeys;

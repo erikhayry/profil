@@ -14,7 +14,8 @@ function mockUser(id: string, client?: SUPPORTED_CLIENT, data?: IStorageKeyWithD
         name: 'Ny användare',
         id: id,
         avatar: randomAvatar(),
-        clientsData: {}
+        clientsData: {},
+        created: 1
     };
 
     if(client && data){

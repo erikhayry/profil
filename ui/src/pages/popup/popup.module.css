@@ -1,46 +1,13 @@
 @value secondary, primary, darken, pink from "../../../src/styles/colors.css";
 
-.container{
-    width: 100%;
-    background: linear-gradient(0deg, rgba(52,45,74,1) 0%, rgba(45,39,64,1) 100%);
-    position: relative;
-    font-family: 'Roboto', sans-serif;
-    overflow: hidden;
-    min-width: 320px;
-}
-
 .containerInner{
-    padding: 10px;
-}
-
-.container h2{
-    font-family: 'Roboto', sans-serif;
-    font-size: 16px;
-    letter-spacing: 1px;
-    text-transform: uppercase;
-    margin: 10px 5px;
-    color: #fff;
-}
-
-.container svg {
-    max-width: 100%;
-    height: auto;
-}
-
-.header{
-    font-family: 'Righteous', cursive;
-    font-size: 35px;
-    text-transform: uppercase;
-    text-align: left;
-    color: #fff;
-    margin-bottom: 0;
     padding: 10px;
 }
 
 .currentUser{
     position: relative;
     width: 100%;
-    overflow: visible;
+    overflow: hidden;
     margin-bottom: 20px;
     border-radius: 20px;
     background-color: #fff;
@@ -242,7 +209,7 @@
 
 }
 
-.footer.isLegit{
+.footer.isFixed{
     position: fixed;
     left: 0;
     bottom: 0;

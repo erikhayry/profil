@@ -12,16 +12,17 @@ import server from "../../../../utils/server";
 import timeMachine from "../../components/avatar-customizer/time-machine";
 import {AvatarRevealer} from "../../components/avatar-customizer/avatar-revealer";
 import {Emotion, withEmotion} from "../../components/avatar-customizer/emotion-converter";
-import {Title} from "../../components/title/title";
 import {ProfilAvatar} from "../../components/avatar/profil-avatar";
 import { CSSTransition } from "react-transition-group";
 import {Overlay} from "../../components/overlay/overlay";
+import {Page} from "../page";
 
 interface ViewState {
     users: IServerUser[],
     editUser?: IServerUser,
     deleteUser?: IServerUser,
-    newUser?: IServerUser
+    newUser?: IServerUser,
+    currentHoveredUserId?: string
 }
 
 export const Options = () => {
@@ -145,69 +146,92 @@ export const Options = () => {
         [styles.hasNew]: Boolean(view.newUser),
     });
 
-    const titleClasses = classNames({
-        [styles.title]: true,
-        [styles.isDisabled]: Boolean(view.editUser)
-    });
+    function onBtnMouseEvent(event:React.MouseEvent<HTMLElement>, userId: string){
+        if(event.type === "mouseenter"){
+            setView({
+                ...view,
+                currentHoveredUserId: userId
+            })
+        } else {
+            setView({
+                ...view,
+                currentHoveredUserId: undefined
+            })
+        }
+    }
 
     return(
-        <div className={styles.container}>
-            <h1 className={styles.header}>Profil</h1>
+        <Page bodyClassNames={styles.body}>
             <ul className={userListClasses}>
-                {view.users.reverse().map((user, index) => {
-                    const userListItemClasses = classNames({
-                        [styles.userListItem]: true,
-                        [styles.isNew]: user.id === view.newUser?.id,
-                    });
-                    const userListItemBtnClasses = classNames({
-                        [styles.avatarButton]: true,
-                        [styles.isNew]: user.id === view.newUser?.id,
-                    });
-                    const ghostAvatarWrapperClasses = classNames({
-                        [styles.ghostAvatarWrapper]: true,
-                        [styles.hasNewSibling]: user.id === view.newUser?.id,
-                    });
-                    return (
-                        <CSSTransition
-                            in={true}
-                            appear={true}
-                            timeout={index * 100}
-                            mountOnEnter
-                            unmountOnExit
-                            classNames={{
-                                appear: styles.userListItemAppear,
-                                appearDone: styles.userListItemAppearDone,
-                                enter: styles.userListItemEnter,
-                                enterActive: styles.userListItemEnterActive,
-                                exit: styles.userListItemExit,
-                                exitActive: styles.userListItemExitActive
-                            }}
-                        >
-                            <li className={userListItemClasses} key={user.id}>
-                                <button className={userListItemBtnClasses} disabled={!!view.editUser} onClick={() =>
-                                            setView({
-                                                ...view,
-                                                editUser: user
-                                            })
-                                }>
-                                    {view.newUser?.id === user.id &&
-                                        <AvatarRevealer
-                                            attributes={timeMachine(user.avatar)}
+                {view.users
+                    .sort((a, b) => b.created - a.created)
+                    .map((user, index) => {
+                        const userListItemClasses = classNames({
+                            [styles.userListItem]: true,
+                            [styles.isNew]: user.id === view.newUser?.id,
+                        });
+                        const userListItemBtnClasses = classNames({
+                            [styles.avatarButton]: true,
+                            [styles.isNew]: user.id === view.newUser?.id,
+                        });
+                        const ghostAvatarWrapperClasses = classNames({
+                            [styles.ghostAvatarWrapper]: true,
+                            [styles.hasNewSibling]: user.id === view.newUser?.id,
+                        });
+                        return (
+                            <CSSTransition
+                                in={true}
+                                appear={true}
+                                timeout={index * 100}
+                                mountOnEnter
+                                unmountOnExit
+                                classNames={{
+                                    appear: styles.userListItemAppear,
+                                    appearDone: styles.userListItemAppearDone,
+                                    enter: styles.userListItemEnter,
+                                    enterActive: styles.userListItemEnterActive,
+                                    exit: styles.userListItemExit,
+                                    exitActive: styles.userListItemExitActive
+                                }}
+                            >
+                                <li className={userListItemClasses} key={user.id}>
+                                    <button
+                                        className={userListItemBtnClasses}
+                                        disabled={!!view.editUser}
+                                        onClick={() =>
+                                                setView({
+                                                    ...view,
+                                                    editUser: user
+                                                })
+                                        }
+                                        onMouseEnter={(event) => {
+                                            onBtnMouseEvent(event, user.id)
+                                        }}
+                                        onMouseLeave={(event) => {
+                                            onBtnMouseEvent(event, user.id)
+                                        }}
+                                    >
+                                        {view.newUser?.id === user.id &&
+                                            <AvatarRevealer
+                                                attributes={timeMachine(user.avatar)}
+                                            />
+                                        }
+                                        {view.newUser?.id !== user.id &&
+                                        <ProfilAvatar
+                                            attributes={timeMachine(withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : null))}
                                         />
-                                    }
-                                    {view.newUser?.id !== user.id &&
-                                    <ProfilAvatar
-                                        attributes={timeMachine(user.avatar)}
-                                    />
-                                    }
-                                </button>
-                                {index === 0 && <div className={ghostAvatarWrapperClasses}>
-                                    <ProfilAvatar attributes={user.avatar} className={styles.ghostAvatar} />
-                                </div>}
-                                <h2 className={styles.name}>{user.name}</h2>
-                            </li>
-                        </CSSTransition>
-                    )
+                                        }
+                                    </button>
+                                    {index === 0 && <div className={ghostAvatarWrapperClasses}>
+                                        <ProfilAvatar
+                                            attributes={user.avatar}
+                                            className={styles.ghostAvatar}
+                                        />
+                                    </div>}
+                                    <h2 className={styles.name}>{user.name}</h2>
+                                </li>
+                            </CSSTransition>
+                        )
                 })}
             </ul>
 
@@ -259,6 +283,6 @@ export const Options = () => {
                     </div>
                 </Overlay>
             }
-        </div>
+        </Page>
     )
 };

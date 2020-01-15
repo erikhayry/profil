@@ -1,0 +1,31 @@
+@value secondary, primary, darken, pink from "../../src/styles/colors.css";
+
+.container{
+    width: 100%;
+    background: linear-gradient(0deg, rgba(52,45,74,1) 0%, rgba(45,39,64,1) 100%);
+    position: relative;
+    font-family: 'Roboto', sans-serif;
+    overflow: auto;
+    min-width: 320px;
+    min-height: 100vh;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.header{
+    font-family: 'Righteous', cursive;
+    font-size: 35px;
+    text-transform: uppercase;
+    text-align: left;
+    color: #fff;
+    margin-bottom: 0;
+    padding: 10px;
+    flex-grow: 0;
+    flex-shrink: 0;
+}
+
+.body{
+    height: 100%;
+}
+

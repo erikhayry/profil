@@ -7,12 +7,12 @@ import styles from './popup.module.css';
 import storage from '../../../../utils/storage'
 import classNames from 'classnames';
 import {browser} from "webextension-polyfill-ts";
-import {IClientUser, IServerUser, IUserData, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
+import {IServerUser, IUserData, MESSAGE_TYPE, SUPPORTED_CLIENT} from "../../../../typings/index";
 import useInitialClientState from "../../../utils/onMessage";
 import {Emotion, withEmotion} from "../../components/avatar-customizer/emotion-converter";
 import {ProfilAvatar} from "../../components/avatar/profil-avatar";
-import {Title} from "../../components/title/title";
 import {CLIENT_ORIGINS, IClientOrigins} from "../../../../utils/client-handler";
+import {Page} from "../page";
 
 interface IView {
     users: IServerUser[],
@@ -134,9 +134,8 @@ export const Popup = () => {
     }
 
     return(
-        <div className={styles.container}>
+        <Page>
             <div className={styles.containerInner}>
-                <h1 className={styles.header}>Profil</h1>
 
                 {!isLegit &&
                 <>
@@ -216,7 +215,7 @@ export const Popup = () => {
             </div>
             <div className={classNames({
                 [styles.footer]: true,
-                [styles.isLegit]: isLegit
+                [styles.isFixed]: isLegit && view.users.length > 1
             })}>
                 <button className={styles.settingsBtn} onClick={() => {
                     browser.runtime.openOptionsPage();
@@ -224,6 +223,6 @@ export const Popup = () => {
                     Inställningar <Sliders color="white"/>
                 </button>
             </div>
-        </div>
+        </Page>
     )
 };

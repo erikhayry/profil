@@ -13,7 +13,8 @@ export function getNewUser(clientsData?: IUserData): IServerUser {
         name: 'Ny användare',
         id: ID(),
         avatar: randomAvatar(),
-        clientsData: {} as IUserData
+        clientsData: {} as IUserData,
+        created: new Date().getTime()
     };
 
     if(clientsData){

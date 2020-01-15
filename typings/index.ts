@@ -45,7 +45,8 @@ export interface IServerUser {
     id: string;
     name: string;
     avatar: IAvatarAttributes;
-    clientsData: IUserData
+    clientsData: IUserData,
+    created: number
 }
 export interface IApp {
     users: IServerUser[];
