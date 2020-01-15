@@ -2,6 +2,7 @@ import * as React from "react";
 import '../../styles/base.css';
 import {AvatarList} from "../../components/avatar/avatar-list";
 import {getSearchFromUrl} from "../../../../utils/data-handler";
+import styles from "./selector.module.css";
 
 export const Selector = () => {
     const { href } =  getSearchFromUrl(window.location);
@@ -14,7 +15,8 @@ export const Selector = () => {
     }
 
     return (
-        <div>
+        <div className={styles.container}>
+            <h1 className={styles.header}>Profil</h1>
             <AvatarList onClick={onClick}/>
         </div>
     )

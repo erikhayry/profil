@@ -152,7 +152,7 @@ export const Options = () => {
 
     return(
         <div className={styles.container}>
-            <Title title={'Profil'} className={titleClasses} />
+            <h1 className={styles.header}>Profil</h1>
             <ul className={userListClasses}>
                 {view.users.reverse().map((user, index) => {
                     const userListItemClasses = classNames({

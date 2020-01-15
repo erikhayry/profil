@@ -135,83 +135,85 @@ export const Popup = () => {
 
     return(
         <div className={styles.container}>
-            <h1 className={styles.header}>Profil</h1>
+            <div className={styles.containerInner}>
+                <h1 className={styles.header}>Profil</h1>
 
-            {!isLegit &&
-            <>
-                <h2>Webbsidor som stödjs</h2>
-                {getClientList()}
-            </>
-            }
-
-            {isLegit && <>
-                <div className={styles.currentUser}>
-                    <div className={styles.currentUserBgOuter}>
-                        <div className={styles.currentUserBg}>
-                            <ProfilAvatar
-                                attributes={view.currentUser.avatar}
-                            />
-                        </div>
-                    </div>
-                    <div className={styles.currentUserAvatar}>
-                        <ProfilAvatar
-                            attributes={withEmotion(view.currentUser.avatar, view.currentHoveredUserId ? Emotion.SAD : null)}
-                        />
-                    </div>
-                    <div className={styles.currentUserName}>
-                        Inloggad på {view.clientId} som <strong>{view.currentUser.name}</strong>
-                    </div>
-                    <div className={styles.currentUserClientList}>
-                        {getUserClientList(view.currentUser)}
-                    </div>
-                </div>
-                {view.users.length > 1 &&
-                    <>
-                        <h2>Byt användare</h2>
-                        <ul className={styles.userList}>
-                            {view.users.filter(user => {
-                                if(!view.currentUser) {
-                                    return true
-                                }
-
-                                return view.currentUser.id !== user.id
-                            })
-                                .map(user => {
-                                        const userListItemClasses = classNames({
-                                            [styles.userListItem]: true,
-                                            [styles.isLegit]: isLegit
-                                        });
-                                        return (
-                                            <li className={userListItemClasses}>
-                                                <button
-                                                    className={styles.userListItemButton}
-                                                    disabled={!isLegit}
-                                                    onClick={() =>
-                                                        handleSetCurrentUser(user.id)
-                                                    }
-                                                    onMouseEnter={(event) => {
-                                                        onBtnMouseEvent(event, user.id)
-                                                    }}
-                                                    onMouseLeave={(event) => {
-                                                        onBtnMouseEvent(event, user.id)
-                                                    }}
-                                                >
-                                                    <ProfilAvatar
-                                                        attributes={withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : null)}
-                                                        className={styles.avatar}
-                                                    />
-                                                    <div className={styles.name}><span className={a11y.hidden}>Byt till användare till </span>{user.name}</div>
-                                                </button>
-                                                {getUserClientList(user)}
-                                            </li>
-                                        )
-                                    }
-                                )}
-                        </ul>
-                    </>
+                {!isLegit &&
+                <>
+                    <h2>Webbsidor som stödjs</h2>
+                    {getClientList()}
+                </>
                 }
 
-            </>}
+                {isLegit && <>
+                    <div className={styles.currentUser}>
+                        <div className={styles.currentUserBgOuter}>
+                            <div className={styles.currentUserBg}>
+                                <ProfilAvatar
+                                    attributes={view.currentUser.avatar}
+                                />
+                            </div>
+                        </div>
+                        <div className={styles.currentUserAvatar}>
+                            <ProfilAvatar
+                                attributes={withEmotion(view.currentUser.avatar, view.currentHoveredUserId ? Emotion.SAD : null)}
+                            />
+                        </div>
+                        <div className={styles.currentUserName}>
+                            Inloggad på {view.clientId} som <strong>{view.currentUser.name}</strong>
+                        </div>
+                        <div className={styles.currentUserClientList}>
+                            {getUserClientList(view.currentUser)}
+                        </div>
+                    </div>
+                    {view.users.length > 1 &&
+                        <>
+                            <h2>Byt användare</h2>
+                            <ul className={styles.userList}>
+                                {view.users.filter(user => {
+                                    if(!view.currentUser) {
+                                        return true
+                                    }
+
+                                    return view.currentUser.id !== user.id
+                                })
+                                    .map(user => {
+                                            const userListItemClasses = classNames({
+                                                [styles.userListItem]: true,
+                                                [styles.isLegit]: isLegit
+                                            });
+                                            return (
+                                                <li className={userListItemClasses}>
+                                                    <button
+                                                        className={styles.userListItemButton}
+                                                        disabled={!isLegit}
+                                                        onClick={() =>
+                                                            handleSetCurrentUser(user.id)
+                                                        }
+                                                        onMouseEnter={(event) => {
+                                                            onBtnMouseEvent(event, user.id)
+                                                        }}
+                                                        onMouseLeave={(event) => {
+                                                            onBtnMouseEvent(event, user.id)
+                                                        }}
+                                                    >
+                                                        <ProfilAvatar
+                                                            attributes={withEmotion(user.avatar, user.id === view.currentHoveredUserId ? Emotion.HAPPY : null)}
+                                                            className={styles.avatar}
+                                                        />
+                                                        <div className={styles.name}><span className={a11y.hidden}>Byt till användare till </span>{user.name}</div>
+                                                    </button>
+                                                    {getUserClientList(user)}
+                                                </li>
+                                            )
+                                        }
+                                    )}
+                            </ul>
+                        </>
+                    }
+
+                </>}
+            </div>
             <div className={classNames({
                 [styles.footer]: true,
                 [styles.isLegit]: isLegit

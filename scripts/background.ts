@@ -65,7 +65,7 @@ async function notify(userId: string, clientId: string){
         "type": "basic",
         "iconUrl": image,
         "title": 'Profil',
-        "message": `Inloggad på ${clientId} som ${user.name}`
+        "message": `Inloggad på ${clientId} som ${user.name}`,
     });
 }
 

@@ -3,11 +3,14 @@
 .container{
     width: 100%;
     background: linear-gradient(0deg, rgba(52,45,74,1) 0%, rgba(45,39,64,1) 100%);
-    padding: 10px 10px 0;
     position: relative;
     font-family: 'Roboto', sans-serif;
     overflow: hidden;
     min-width: 320px;
+}
+
+.containerInner{
+    padding: 10px;
 }
 
 .container h2{

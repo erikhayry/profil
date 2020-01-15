@@ -1,13 +1,24 @@
 @value secondary, primary, darken, pink from "../../../src/styles/colors.css";
 
 .container{
-    background-color: primary;
+    background: linear-gradient(0deg, rgba(52,45,74,1) 0%, rgba(45,39,64,1) 100%);
     color: secondary;
     font-family: Helvetica;
     letter-spacing: 2px;
     font-size: 16px;
     height: 100vh;
     overflow: auto;
+}
+
+.header{
+    font-family: 'Righteous', cursive;
+    font-size: 35px;
+    text-transform: uppercase;
+    text-align: left;
+    color: #fff;
+    margin-bottom: 0;
+    padding: 10px;
+    position: absolute;
 }
 
 .userList{
@@ -98,6 +109,7 @@
     top: 0;
     left: 50%;
     transform: translateX(-50%) translateY(0) scale(1);
+    border: 5px solid white;
 }
 
 .avatarButton:hover{
