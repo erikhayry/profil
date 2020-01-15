@@ -5,6 +5,7 @@ import {getCurrentUser} from "./utils/get-current-data";
 import {isDiff, serverUserToClient} from "../utils/data-handler";
 import messenger from "../utils/messenger";
 import {getImageFromAvatar} from "./utils/image-utils";
+import sizeof from "object-sizeof";
 
 const profileSelectorPageUrl = browser.runtime.getURL('/ui/src/pages/selector/selector.html');
 
@@ -46,6 +47,7 @@ async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, stora
 
 async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IBackgroundResponse>{
     const currentUser = await getCurrentUser(client, clientUserId);
+    ga('send', 'event', 'Storage', 'total', sizeof(currentUser.clientsData));
     return Promise.resolve({
         currentUser: currentUser ? serverUserToClient(currentUser, client) : undefined,
         profileSelectorUrl: profileSelectorPageUrl
