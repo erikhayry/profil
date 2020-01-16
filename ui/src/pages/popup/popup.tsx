@@ -145,26 +145,30 @@ export const Popup = () => {
                 }
 
                 {isLegit && <>
-                    <div className={styles.currentUser}>
-                        <div className={styles.currentUserBgOuter}>
-                            <div className={styles.currentUserBg}>
-                                <ProfilAvatar
-                                    attributes={view.currentUser.avatar}
-                                />
+                    {view.currentUser &&
+                        <>
+                            <div className={styles.currentUser}>
+                                <div className={styles.currentUserBgOuter}>
+                                    <div className={styles.currentUserBg}>
+                                        <ProfilAvatar
+                                            attributes={view.currentUser.avatar}
+                                        />
+                                    </div>
+                                </div>
+                                <div className={styles.currentUserAvatar}>
+                                    <ProfilAvatar
+                                        attributes={withEmotion(view.currentUser.avatar, view.currentHoveredUserId ? Emotion.SAD : null)}
+                                    />
+                                </div>
+                                <div className={styles.currentUserName}>
+                                    Inloggad på {view.clientId} som <strong>{view.currentUser.name}</strong>
+                                </div>
+                                <div className={styles.currentUserClientList}>
+                                    {getUserClientList(view.currentUser)}
+                                </div>
                             </div>
-                        </div>
-                        <div className={styles.currentUserAvatar}>
-                            <ProfilAvatar
-                                attributes={withEmotion(view.currentUser.avatar, view.currentHoveredUserId ? Emotion.SAD : null)}
-                            />
-                        </div>
-                        <div className={styles.currentUserName}>
-                            Inloggad på {view.clientId} som <strong>{view.currentUser.name}</strong>
-                        </div>
-                        <div className={styles.currentUserClientList}>
-                            {getUserClientList(view.currentUser)}
-                        </div>
-                    </div>
+                        </>
+                    }
                     {view.users.length > 1 &&
                         <>
                             <h2>Byt användare</h2>

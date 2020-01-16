@@ -1,21 +1,21 @@
 {
-  "name": "profiler",
-  "version": "1.0.0",
+  "name": "Profiler",
+  "version": "0.0.1",
   "description": "",
   "main": "",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/erikportin/once-a-day.git"
+    "url": "git+https://github.com/erikportin/profiler.git"
   },
   "keywords": [
     "web-extension"
   ],
-  "author": "Erik Portin <erikportin@gmail.com>",
+  "author": "Erik Häyry <erikhayryn@gmail.com>",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/er ikportin/once-a-day/issues"
+    "url": "https://github.com/er ikportin/profiler/issues"
   },
-  "homepage": "https://github.com/erikportin/once-a-day#readme",
+  "homepage": "https://github.com/erikportin/profiler#readme",
   "watch": {
     "typescript": {
       "patterns": [
@@ -33,14 +33,15 @@
     "typescript": "npx webpack",
     "dev": "npm run typescript && npm-watch",
     "test": "jest",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "lint": "$(npm bin)/eslint . --ext .js,.ts,.tsx",
+    "lint-fix": "$(npm bin)/eslint --fix . --ext .js,.ts,.tsx"
   },
   "dependencies": {
     "@sentry/browser": "^4.6.3",
     "avataaars": "^1.2.1",
     "domify": "^1.4.0",
     "jsonpack": "^1.1.5",
-    "lodash": "^4.17.15",
     "object-sizeof": "^1.5.2",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
@@ -56,8 +57,20 @@
     "@types/node": "^12.12.12",
     "@types/react-dom": "^16.9.4",
     "@types/react-transition-group": "^4.2.3",
+    "@typescript-eslint/eslint-plugin": "^2.16.0",
+    "@typescript-eslint/parser": "^2.16.0",
+    "adm-zip": "^0.4.13",
+    "eslint": "^6.6.0",
+    "eslint-config-prettier": "^6.5.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-react": "^7.16.0",
+    "eslint-plugin-react-hooks": "^2.3.0",
     "jest": "^24.9.0",
+    "lodash": "^4.17.15",
     "npm-watch": "^0.6.0",
+    "prettier": "^1.19.1",
+    "semver": "^7.1.1",
     "ts-jest": "^24.2.0",
     "ts-loader": "^6.2.1",
     "typescript": "^3.7.4",

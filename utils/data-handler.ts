@@ -26,12 +26,14 @@ export function serverUserToClient(user: IServerUser, client: SUPPORTED_CLIENT):
     return undefined;
 }
 
-export function getSearchFromUrl(location: Location): Record<string, string>{
-    let pairs = location.search.substring(1).split("&")
+export function getSearchFromUrl(search = ''): Record<string, string>{
+    let pairs = search.substring(1).split("&")
     let obj:Record<string, string> = {};
     let pair: string[];
     let i: string;
 
+    console.log("pairs", pairs)
+    
     for (i in pairs) {
         if (pairs[i] === "") continue;
         pair = pairs[i].split("=");

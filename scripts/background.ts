@@ -6,6 +6,10 @@ import {isDiff, serverUserToClient} from "../utils/data-handler";
 import messenger from "../utils/messenger";
 import {getImageFromAvatar} from "./utils/image-utils";
 import sizeof from "object-sizeof";
+import sentry from "../utils/sentry";
+import {init} from "../utils/ga";
+const ga = init();
+sentry.run();
 
 const profileSelectorPageUrl = browser.runtime.getURL('/ui/src/pages/selector/selector.html');
 
@@ -14,7 +18,7 @@ export interface IBackgroundResponse {
     profileSelectorUrl: string
 }
 
-async function setData(client: SUPPORTED_CLIENT, clientUserId: string, data: any): Promise<IServerUser> {
+async function setData(client: SUPPORTED_CLIENT, clientUserId: string, data: any): Promise<IServerUser | undefined> {
     const serverUserSetOnClient = await storage.getUser(clientUserId);
     if(serverUserSetOnClient){
         const clientDataFromServer = serverUserSetOnClient.clientsData ? serverUserSetOnClient.clientsData[client] : undefined;
@@ -47,7 +51,9 @@ async function setUserData(client: SUPPORTED_CLIENT, clientUserId: string, stora
 
 async function handleInitApp(client: SUPPORTED_CLIENT, clientUserId?:string):Promise<IBackgroundResponse>{
     const currentUser = await getCurrentUser(client, clientUserId);
-    ga('send', 'event', 'Storage', 'total', sizeof(currentUser.clientsData));
+    if(currentUser){
+        ga('send', 'event', 'Storage', 'total', sizeof(currentUser.clientsData));
+    }
     return Promise.resolve({
         currentUser: currentUser ? serverUserToClient(currentUser, client) : undefined,
         profileSelectorUrl: profileSelectorPageUrl

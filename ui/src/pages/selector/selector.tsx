@@ -6,9 +6,10 @@ import styles from "./selector.module.css";
 import {Page} from "../page";
 
 export const Selector = () => {
-    const { href } =  getSearchFromUrl(window.location);
+    const { href } = getSearchFromUrl(window.location.search);
 
     function onClick(id: string){
+        console.log("url", new URL(href));
         const { search } = new URL(href);
         const currentUserDelim = search ? `&` : '?';
 
@@ -20,4 +21,4 @@ export const Selector = () => {
             <AvatarList onClick={onClick}/>
         </Page>
     )
-}
+};

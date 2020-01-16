@@ -1,4 +1,4 @@
-import {isDiff, serverUserToClient} from "./data-handler";
+import {getSearchFromUrl, isDiff, serverUserToClient} from "./data-handler";
 import {IUserData, SUPPORTED_CLIENT} from "../typings/index";
 import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
 import {CLIENT_ORIGINS} from "./client-handler";
@@ -66,5 +66,12 @@ describe('serverUserToClient', function() {
         expect(clientUser.storageKeysWithData[0].data).toMatch('some data');
         expect(clientUser.clients.length).toEqual(1);
         expect(clientUser.clients[0]).toMatch(SUPPORTED_CLIENT.SVT);
+    });
+})
+
+describe('getSearchFromUrl', function() {
+    it('with query', function () {
+        const {href} = getSearchFromUrl("?href=" + encodeURIComponent('https://www.svtplay.se/video/25141886/rapport-fran-2050/rapport-fran-2050-boende?start=auto'));
+        expect(href).toMatch('https://www.svtplay.se/video/25141886/rapport-fran-2050/rapport-fran-2050-boende?start=auto')
     });
 })

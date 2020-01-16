@@ -1,11 +1,3 @@
-//import * as Sentry from "Sentry";
-//
-//const VERSION = '1.0.0';
-//Sentry.init({ dsn: 'https://25806d610e264b83a4a363f1bca8cfe3@sentry.io/1873455' });
-//Sentry.configureScope((scope: any) => {
-//    scope.setTag("version", VERSION);
-//});
-
 import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE} from "../typings/index";
 import { browser } from "webextension-polyfill-ts";
 import Messenger from "../utils/messenger";
@@ -13,6 +5,8 @@ import {getSearchFromUrl, isDiff} from "../utils/data-handler";
 import {IBackgroundResponse} from "./background";
 import storage from "../utils/storage";
 import {removeURLParameters} from "../utils/url";
+import sentry from "../utils/sentry";
+sentry.run();
 
 interface IAppUserState {
     scrollY: number,
@@ -42,7 +36,7 @@ interface IAppUserState {
             }
         } else {
             console.info('no user found');
-            //window.location.href = `${profileSelectorUrl}?href=${window.location.href}`;
+            window.location.href = `${profileSelectorUrl}?href=${encodeURIComponent(window.location.href)}`;
         }
     }
 
@@ -127,7 +121,7 @@ interface IAppUserState {
     /*
         INIT CLIENT
      */
-    const { profileCurrentUser } =  getSearchFromUrl(window.location);
+    const { profileCurrentUser } =  getSearchFromUrl(window.location.search );
     if(profileCurrentUser){
         removeURLParameters(['profileCurrentUser']);
         localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, profileCurrentUser);
