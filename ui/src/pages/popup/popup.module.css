@@ -1,5 +1,8 @@
 @value secondary, primary, darken, pink from "../../../src/styles/colors.css";
 
+.containe{
+    padding-bottom: 30px;
+}
 .containerInner{
     padding: 10px;
 }

@@ -134,7 +134,7 @@ export const Popup = () => {
     }
 
     return(
-        <Page>
+        <Page bodyClassNames={styles.container}>
             <div className={styles.containerInner}>
 
                 {!isLegit &&

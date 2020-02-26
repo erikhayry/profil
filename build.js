@@ -1,11 +1,10 @@
-const manifestPath = './manifest.json';
-const AdmZip = require('adm-zip');
 const fs = require('fs');
+const path = require('path');
+const manifestPath = './manifest.json';
 const manifest = require(manifestPath);
 const semver = require('semver');
 const _ = require('lodash');
 const filesToCopy = [];
-const path = require('path');
 
 function map(data){
     if(data.length !== undefined){
@@ -49,10 +48,21 @@ const newManifest = JSON.stringify({
     version: newVersion
 }, null,'\t');
 
-const zip = new AdmZip();
-zip.addFile(manifestPath, Buffer.alloc(newManifest.length, newManifest));
+function copyFileSync(source, target) {
+    const targetFolderPath = path.dirname(target);
+    fs.mkdirSync(targetFolderPath, {recursive: true});
+    fs.copyFile(source, target, (err) => {
+        if (err) throw err;
+    });
+}
+
+
+var dir = `${__dirname }/product/profiler-[${newVersion}]`;
+if (!fs.existsSync(dir)){
+    fs.mkdirSync(dir);
+}
+fs.writeFileSync(dir + '/manifest.json', newManifest, 'binary');
 filesToCopy.forEach(filePath => {
-    zip.addLocalFile(__dirname + '/' + filePath, path.dirname(filePath), path.basename(filePath));
+    copyFileSync(`${__dirname }/${filePath}`, `${dir}/${filePath}`);
 });
-zip.writeZip(`./product/profiler-[${newVersion}].zip`);
 fs.writeFileSync(manifestPath, newManifest, 'binary');

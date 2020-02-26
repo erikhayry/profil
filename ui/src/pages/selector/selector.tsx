@@ -9,7 +9,6 @@ export const Selector = () => {
     const { href } = getSearchFromUrl(window.location.search);
 
     function onClick(id: string){
-        console.log("url", new URL(href));
         const { search } = new URL(href);
         const currentUserDelim = search ? `&` : '?';
 
