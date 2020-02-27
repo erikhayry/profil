@@ -1,8 +1,8 @@
 {
 	"manifest_version": 2,
 	"name": "Profiler",
-	"version": "0.0.28",
-	"description": "Profiler",
+	"version": "0.0.32",
+	"description": "Skapa användarprofiler för alla i ert hushåll. Stöd för SVT Play, SVT Barn, UR Play och SR Min Sida.",
 	"icons": {
 		"48": "icons/logo.png",
 		"96": "icons/logo@2x.png"

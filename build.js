@@ -61,8 +61,8 @@ var dir = `${__dirname }/product/profiler-[${newVersion}]`;
 if (!fs.existsSync(dir)){
     fs.mkdirSync(dir);
 }
-fs.writeFileSync(dir + '/manifest.json', newManifest, 'binary');
+fs.writeFileSync(dir + '/manifest.json', newManifest, 'UTF-8');
 filesToCopy.forEach(filePath => {
     copyFileSync(`${__dirname }/${filePath}`, `${dir}/${filePath}`);
 });
-fs.writeFileSync(manifestPath, newManifest, 'binary');
+fs.writeFileSync(manifestPath, newManifest, 'UTF-8');
