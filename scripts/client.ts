@@ -13,6 +13,8 @@ interface IAppUserState {
     scrollX: number
 }
 
+const HAS_RELOADED_KEY = 'profil-reloaded';
+
 (function() {
     function updateData(){
         Messenger.client.addDataForUser(location.host)
@@ -20,24 +22,31 @@ interface IAppUserState {
     }
 
     function handleSetDataResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
+        const haveReloaded = Number.parseInt(localStorage.getItem(HAS_RELOADED_KEY)) || 0;
         if(currentUser){
             let reload = false;
-            const { id: serverUserId, storageKeysWithData = [] } = currentUser;
+            const { id: serverUserId, storageKeysWithData = [], ignoredKeysDiffCompare = [] } = currentUser;
             localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
 
             storageKeysWithData.forEach(({key, data} ) => {
-                if(isDiff(data, localStorage.getItem(key))){
+                if(ignoredKeysDiffCompare.includes(key)){
+                    localStorage.setItem(key, data);
+                } else if(isDiff(data, localStorage.getItem(key))){
                     reload = true;
                     localStorage.setItem(key, data);
                 }
             });
-            if(reload){
+            if(reload && !haveReloaded){
+                localStorage.setItem(HAS_RELOADED_KEY, '1');
                 location.reload();
             }
+
         } else {
-            console.info('no user found');
+            console.info('no user found on: ');
+            console.log('encode', encodeURIComponent(window.location.href))
             window.location.href = `${profileSelectorUrl}?href=${encodeURIComponent(window.location.href)}`;
         }
+        localStorage.setItem(HAS_RELOADED_KEY, '0');
     }
 
     function onLoad(){
@@ -74,7 +83,7 @@ interface IAppUserState {
             const users = await storage.getUsers();
             console.info('init: no user found', users);
             if(users.length > 0){
-                window.location.href = `${profileSelectorUrl}?href=${window.location.href}`;
+                window.location.href = `${profileSelectorUrl}?href=${encodeURIComponent(window.location.href)}`;
             }
         }
     }

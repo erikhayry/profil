@@ -6,7 +6,8 @@ export interface IClientOrigins {
     url: string,
     name: string;
     imagePath: string,
-    dataKeys: string[]
+    dataKeys: string[],
+    ignoredKeysDiffCompare?: string[]
 }
 
 export const CLIENT_ORIGINS: IClientOrigins[] = [
@@ -40,7 +41,8 @@ export const CLIENT_ORIGINS: IClientOrigins[] = [
         url: 'https://www.svt.se/barn',
         name: 'SVT Barn',
         imagePath: '/static/svtbarn-logo.svg',
-        dataKeys: ['bp_global', 'bp_episodedata', 'bp_videosettings', 'bp_historylist']
+        dataKeys: ['bp_global', 'bp_episodedata', 'bp_videosettings', 'bp_historylist'],
+        ignoredKeysDiffCompare: ['bp_global']
     }
 ];
 

@@ -38,7 +38,8 @@ export interface IClientUser {
     name: string;
     avatar: IAvatarAttributes;
     clients: SUPPORTED_CLIENT[];
-    storageKeysWithData: IStorageKeyWithData[]
+    storageKeysWithData: IStorageKeyWithData[],
+    ignoredKeysDiffCompare?: string[]
 }
 
 export interface IServerUser {
