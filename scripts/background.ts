@@ -66,15 +66,20 @@ async function handleCurrentUserRequest(clientId: SUPPORTED_CLIENT, userId: stri
 }
 
 async function notify(userId: string, clientId: string){
-    const user = await storage.getUser(userId);
-    const image = await getImageFromAvatar(user.avatar);
+    const notificationId = `${userId}-${clientId}`;
+    const notifications = await browser.notifications.getAll();
+    const notificationsIds = Object.keys(notifications);
 
-    browser.notifications.create({
-        "type": "basic",
-        "iconUrl": image,
-        "title": 'Profil',
-        "message": `Inloggad på ${clientId} som ${user.name}`,
-    });
+    if (notificationsIds.indexOf(notificationId) === -1) {
+        const user = await storage.getUser(userId);
+        const image = await getImageFromAvatar(user.avatar);
+        browser.notifications.create(notificationId, {
+            "type": "basic",
+            "iconUrl": image,
+            "title": 'Profil',
+            "message": `Inloggad på ${clientId} som ${user.name}`,
+        });
+    }
 }
 
 async function handleMessage({type, clientId, storageKeysWithData, userId, user}: {

@@ -23,6 +23,7 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
 
     function handleSetDataResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
         const haveReloaded = Number.parseInt(localStorage.getItem(HAS_RELOADED_KEY)) || 0;
+        console.log('haveReloaded', haveReloaded)
         if(currentUser){
             let reload = false;
             const { id: serverUserId, storageKeysWithData = [], ignoredKeysDiffCompare = [] } = currentUser;
@@ -42,8 +43,7 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
             }
 
         } else {
-            console.info('no user found on: ');
-            console.log('encode', encodeURIComponent(window.location.href))
+            console.info('no user found');
             window.location.href = `${profileSelectorUrl}?href=${encodeURIComponent(window.location.href)}`;
         }
         localStorage.setItem(HAS_RELOADED_KEY, '0');
@@ -60,6 +60,8 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
 
     async function handleInitResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
         onLoad();
+        const haveReloaded = Number.parseInt(localStorage.getItem(HAS_RELOADED_KEY)) || 0;
+
         if(currentUser){
             const { id: serverUserId } = currentUser;
             Messenger.client.currentUser(location.host);
@@ -71,11 +73,12 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
             currentUser.storageKeysWithData.forEach(( {key, data} ) => {
                 let reload = false;
                 const clientUserData =  localStorage.getItem(key);
-                if(data && (!clientUserData || isDiff(data, clientUserData))) {
+                if(data && (!clientUserData || currentUser?.ignoredKeysDiffCompare.includes(key) || isDiff(data, clientUserData))) {
                     localStorage.setItem(key, data);
                     reload = true;
                 }
-                if(reload){
+                if(reload && !haveReloaded){
+                    localStorage.setItem(HAS_RELOADED_KEY, '0');
                     location.reload();
                 }
             });
@@ -86,6 +89,7 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
                 window.location.href = `${profileSelectorUrl}?href=${encodeURIComponent(window.location.href)}`;
             }
         }
+        localStorage.setItem(HAS_RELOADED_KEY, '0');
     }
 
     function handleChangeUser(user: IClientUser){
