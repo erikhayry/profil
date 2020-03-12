@@ -73,7 +73,7 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
             currentUser.storageKeysWithData.forEach(( {key, data} ) => {
                 let reload = false;
                 const clientUserData =  localStorage.getItem(key);
-                if(data && (!clientUserData || currentUser?.ignoredKeysDiffCompare.includes(key) || isDiff(data, clientUserData))) {
+                if(data && (!clientUserData || currentUser?.ignoredKeysDiffCompare?.includes(key) || isDiff(data, clientUserData))) {
                     localStorage.setItem(key, data);
                     reload = true;
                 }
