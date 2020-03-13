@@ -78,7 +78,7 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
                     reload = true;
                 }
                 if(reload && !haveReloaded){
-                    localStorage.setItem(HAS_RELOADED_KEY, '0');
+                    localStorage.setItem(HAS_RELOADED_KEY, '1');
                     location.reload();
                 }
             });
