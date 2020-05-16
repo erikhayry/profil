@@ -1,4 +1,4 @@
-import {CLIENT_APP_KEY, IClientUser, MESSAGE_TYPE} from "../typings/index";
+import {CLIENT_APP_KEY, IClientUser, IStorageKeyWithData, MESSAGE_TYPE} from "../typings/index";
 import { browser } from "webextension-polyfill-ts";
 import Messenger from "../utils/messenger";
 import {getSearchFromUrl, isDiff} from "../utils/data-handler";
@@ -18,38 +18,10 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
 (function() {
     function updateData(){
         Messenger.client.addDataForUser(location.host)
-            .then(handleSetDataResponse, handleError);
+            .catch(handleError);
     }
 
-    function handleSetDataResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
-        const haveReloaded = Number.parseInt(localStorage.getItem(HAS_RELOADED_KEY)) || 0;
-        console.log('haveReloaded', haveReloaded)
-        if(currentUser){
-            let reload = false;
-            const { id: serverUserId, storageKeysWithData = [], ignoredKeysDiffCompare = [] } = currentUser;
-            localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
-
-            storageKeysWithData.forEach(({key, data} ) => {
-                if(ignoredKeysDiffCompare.includes(key)){
-                    localStorage.setItem(key, data);
-                } else if(isDiff(data, localStorage.getItem(key))){
-                    reload = true;
-                    localStorage.setItem(key, data);
-                }
-            });
-            if(reload && !haveReloaded){
-                localStorage.setItem(HAS_RELOADED_KEY, '1');
-                location.reload();
-            }
-
-        } else {
-            console.info('no user found');
-            window.location.href = `${profileSelectorUrl}?href=${encodeURIComponent(window.location.href)}`;
-        }
-        localStorage.setItem(HAS_RELOADED_KEY, '0');
-    }
-
-    function onLoad(){
+    function handlePrevClientState(){
         const prevAppUserState = JSON.parse(localStorage.getItem(CLIENT_APP_KEY.APP_USER_STATE)) as IAppUserState;
 
         if(prevAppUserState){
@@ -58,33 +30,38 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
         }
     }
 
+    function updateLocalStorage({key, data}: IStorageKeyWithData, ignoredKeysDiffCompare: string[] = []){
+        const clientUserData =  localStorage.getItem(key);
+
+        //if stored date and no current data or is not ignored key or is new date => update local storage
+        if(data && (!clientUserData || ignoredKeysDiffCompare.includes(key) || isDiff(data, clientUserData))) {
+            localStorage.setItem(key, data);
+            //Check if host has been reloaded for current user
+            const haveReloaded = Number.parseInt(localStorage.getItem(HAS_RELOADED_KEY)) || 0;
+            if(!haveReloaded){
+                localStorage.setItem(HAS_RELOADED_KEY, '1');
+                location.reload();
+            }
+        }
+    }
+
     async function handleInitResponse({currentUser, profileSelectorUrl}: IBackgroundResponse) {
-        onLoad();
-        const haveReloaded = Number.parseInt(localStorage.getItem(HAS_RELOADED_KEY)) || 0;
+        handlePrevClientState();
 
         if(currentUser){
-            const { id: serverUserId } = currentUser;
+            const { id: serverUserId, ignoredKeysDiffCompare, storageKeysWithData } = currentUser;
             Messenger.client.currentUser(location.host);
 
+            //Update current user in local storage
             if(localStorage.getItem(CLIENT_APP_KEY.APP_USER_KEY) !== serverUserId){
                 localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, serverUserId);
             }
 
-            currentUser.storageKeysWithData.forEach(( {key, data} ) => {
-                let reload = false;
-                const clientUserData =  localStorage.getItem(key);
-                if(data && (!clientUserData || currentUser?.ignoredKeysDiffCompare?.includes(key) || isDiff(data, clientUserData))) {
-                    localStorage.setItem(key, data);
-                    reload = true;
-                }
-                if(reload && !haveReloaded){
-                    localStorage.setItem(HAS_RELOADED_KEY, '1');
-                    location.reload();
-                }
-            });
+            //Update local storage with user data from server
+            storageKeysWithData.forEach(storageKeyWithData => updateLocalStorage(storageKeyWithData, ignoredKeysDiffCompare));
         } else {
             const users = await storage.getUsers();
-            console.info('init: no user found', users);
+            console.info('no user found', users);
             if(users.length > 0){
                 window.location.href = `${profileSelectorUrl}?href=${encodeURIComponent(window.location.href)}`;
             }
@@ -93,7 +70,6 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
     }
 
     function handleChangeUser(user: IClientUser){
-        console.log("handleChangeUser", user.storageKeysWithData)
         const appUserState: IAppUserState = {
             scrollY: window.scrollY,
             scrollX: window.scrollX,
@@ -130,11 +106,10 @@ const HAS_RELOADED_KEY = 'profil-reloaded';
         }
     });
 
-
     /*
         INIT CLIENT
      */
-    const { profileCurrentUser } =  getSearchFromUrl(window.location.search );
+    const { profileCurrentUser } =  getSearchFromUrl(window.location.search);
     if(profileCurrentUser){
         removeURLParameters(['profileCurrentUser']);
         localStorage.setItem(CLIENT_APP_KEY.APP_USER_KEY, profileCurrentUser);

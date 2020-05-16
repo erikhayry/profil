@@ -32,8 +32,6 @@ export function getSearchFromUrl(search = ''): Record<string, string>{
     let pair: string[];
     let i: string;
 
-    console.log("pairs", pairs)
-    
     for (i in pairs) {
         if (pairs[i] === "") continue;
         pair = pairs[i].split("=");
