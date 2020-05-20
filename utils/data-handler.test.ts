@@ -33,14 +33,15 @@ describe('serverUserToClient', function() {
             clientsData: {},
             created: 1
         };
-        const clientUser = serverUserToClient(user, SUPPORTED_CLIENT.SVT);
-        const clientDataKeys = CLIENT_ORIGINS.find(({id}) => id === SUPPORTED_CLIENT.SVT).dataKeys;
+        const clientUser = serverUserToClient(user, SUPPORTED_CLIENT.SVT_BARN);
+        const clientDataKeys = CLIENT_ORIGINS.find(({id}) => id === SUPPORTED_CLIENT.SVT_BARN).dataKeys;
 
         expect(clientUser.name).toMatch('Name');
         expect(clientUser.id).toMatch('1');
         expect(clientUser.avatar).toBeDefined();
         expect(clientUser.storageKeysWithData.length).toEqual(clientDataKeys.length);
         expect(clientUser.storageKeysWithData[0].data).toBeUndefined();
+        expect(clientUser.ignoredKeysDiffCompare.length).toEqual(1)
         expect(clientUser.clients.length).toEqual(0);
     });
     it('with data', function () {

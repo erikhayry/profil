@@ -1,5 +1,4 @@
-import {IApp, IServerUser, IStorageKeyWithData, IUserData, SUPPORTED_CLIENT} from "../typings/index";
-import {randomAvatar} from "../ui/src/components/avatar-customizer/avatar-options";
+import {IApp, IServerUser, IStorageKeyWithData, SUPPORTED_CLIENT} from "../typings/index";
 import server, {getNewUser} from "./server";
 import {browser} from "webextension-polyfill-ts";
 

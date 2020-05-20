@@ -30,7 +30,6 @@ export const Popup = () => {
     const initialClientState = useInitialClientState();
 
     useEffect(() => {
-        console.log("initialClientState", initialClientState);
         setView({
             ...view,
             currentUser: view.users.find(user => user.id === initialClientState.currentUser),
@@ -39,7 +38,6 @@ export const Popup = () => {
     }, [initialClientState]);
 
     useEffect(() => {
-        console.log('useEffect')
         async function init() {
             const users = await storage.getUsers();
             setView({

@@ -18,7 +18,6 @@ interface IProps {
 export const Editor = ({user, onSave, onCancel, onDelete, numberOfUsers} :IProps) => {
     const [editableUser, setEditableUser] = useState<IServerUser>(user)
     function handleAvatarChange(customizedAttributes: IAvatarAttributes) {
-        console.log("handleAvatarChange")
         setEditableUser({
             ...editableUser,
             avatar: customizedAttributes
@@ -33,7 +32,6 @@ export const Editor = ({user, onSave, onCancel, onDelete, numberOfUsers} :IProps
     }
 
     function handleUndo(user: IServerUser){
-        console.log("handleUndo", user)
         setEditableUser({
             ...user
         })

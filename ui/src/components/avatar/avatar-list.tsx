@@ -7,6 +7,7 @@ import timeMachine from "../avatar-customizer/time-machine";
 import {ProfilAvatar} from "./profil-avatar";
 import { CSSTransition } from "react-transition-group";
 import {Emotion, withEmotion} from "../avatar-customizer/emotion-converter";
+import classNames from 'classnames';
 
 interface ViewState {
     users: IServerUser[],
@@ -15,15 +16,15 @@ interface ViewState {
 
 interface IProps {
     onClick: (id: string) => void
+    listClassname?: string;
 }
 
-export const AvatarList: React.FC<IProps>= ({onClick}) => {
+export const AvatarList: React.FC<IProps>= ({onClick, listClassname = ''}) => {
     const [view, setView ] = useState<ViewState>({
         users: [],
     });
 
     useEffect(() => {
-        console.log('useEffect');
         storage.getUsers()
             .then((users) => setView({
                 ...view,
@@ -47,7 +48,10 @@ export const AvatarList: React.FC<IProps>= ({onClick}) => {
 
 
     return(
-            <ul className={styles.userList}>
+            <ul className={classNames({
+                [styles.userList]: true,
+                [listClassname]: true
+            })}>
                 {view.users.map((user, index) => {
                     return (
                         <CSSTransition

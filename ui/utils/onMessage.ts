@@ -10,7 +10,6 @@ const useInitialClientState = () => {
     } | undefined>(undefined);
     useEffect(() => {
         function updateAppState(clientId: SUPPORTED_CLIENT, userId: string) {
-            console.log("updateAppState", userId)
             setInitialState({
                 clientId,
                 currentUser: userId
@@ -21,7 +20,6 @@ const useInitialClientState = () => {
             userId: string,
             clientId: SUPPORTED_CLIENT
         }) => {
-            console.log("onMessage", type, userId)
             switch (type) {
                 case MESSAGE_TYPE.INITIAL_STATE_RESPONSE:
                     updateAppState(clientId, userId)

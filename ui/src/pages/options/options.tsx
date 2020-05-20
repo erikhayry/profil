@@ -31,7 +31,6 @@ export const Options = () => {
     });
 
     useEffect(() => {
-        console.log('useEffect options');
         storage.getUsers()
             .then(() => updateView());
     }, []);
@@ -47,7 +46,6 @@ export const Options = () => {
 
     async function updateView(newUser?: IServerUser){
         const users = await storage.getUsers();
-        console.log("updateView", newUser, users)
         setView({
             users,
             editUser: undefined,
@@ -62,7 +60,6 @@ export const Options = () => {
     }
 
     async function addUser() {
-        console.log("addUser");
         const user =  await storage.addUser();
 
         updateView(user);
@@ -82,7 +79,6 @@ export const Options = () => {
     }
 
     function removeUser(user: IServerUser){
-        console.log("removeUser", user);
         setView({
             ...view,
             deleteUser: user
@@ -128,7 +124,6 @@ export const Options = () => {
     }
 
     function onUpdateUser(editedUser: IServerUser){
-        console.log("onUpdateUser", editedUser);
         const index = view.users.findIndex(({ id }) => view.editUser.id === id);
         view.users[index] = editedUser;
 

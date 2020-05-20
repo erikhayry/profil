@@ -8,8 +8,8 @@ export function isDiff(obj1: any, obj2: any): Boolean{
 
 export function serverUserToClient(user: IServerUser, client: SUPPORTED_CLIENT):IClientUser{
     if(user){
-        const clientDataKeys = CLIENT_ORIGINS.find(({id}) => id === client)?.dataKeys || [];
-        const storageKeysWithData = clientDataKeys.map(key => {
+        const clientOrigin = CLIENT_ORIGINS.find(({id}) => id === client);
+        const storageKeysWithData = clientOrigin.dataKeys.map(key => {
             const data = user.clientsData[client]?.find(({ key:dataKey }) => key === dataKey)?.data;
             return {
                 key,
@@ -19,6 +19,7 @@ export function serverUserToClient(user: IServerUser, client: SUPPORTED_CLIENT):
         return {
             ...user,
             storageKeysWithData,
+            ignoredKeysDiffCompare: clientOrigin.ignoredKeysDiffCompare,
             clients: Object.keys(user?.clientsData || {}) as SUPPORTED_CLIENT[]
         }
     }
