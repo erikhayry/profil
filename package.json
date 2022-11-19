@@ -75,6 +75,6 @@
     "typescript": "^3.7.4",
     "webextension-polyfill-ts": "^0.11.0",
     "webpack": "^4.41.2",
-    "webpack-cli": "^3.3.10"
+    "webpack-cli": "^3.3.12"
   }
 }
